@@ -195,7 +195,7 @@ const createCloudFrontDistributionForMediaBucket = (
   mediaDomain: string
 ): void => {
   const zone = Route53.HostedZone.fromLookup(scope, 'HostedZone', {
-    domainName: mediaDomain.split('.').slice(-2).join('.')
+    domainName: mediaDomain.split('.').slice(-3).join('.')
   });
 
   const certificate = new ACM.DnsValidatedCertificate(scope, 'MediaCertificate', {

@@ -17,7 +17,7 @@ export class SESStack extends cdk.Stack {
     const region = cdk.Stack.of(this).region;
     const account = cdk.Stack.of(this).account;
 
-    const domainName = props.domain.split('.').slice(-2).join('.');
+    const domainName = props.domain.split('.').slice(-3).join('.');
     const sesDomain = new VerifySesDomain(this, 'DomainIdentity', { domainName });
 
     this.identityArn = `arn:aws:ses:${region}:${account}:identity/${domainName}`;

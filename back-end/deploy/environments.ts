@@ -1,30 +1,22 @@
 /**
  * The codename of the project.
  */
-export const PROJECT = 'esn-ga';
+export const PROJECT = 'ga-app-cyprus';
 /**
  * The purchased domain to use.
  */
-export const DOMAIN = 'esn-ga.link';
-/**
- * An additional custom domain to use.
- */
-export const PROD_CUSTOM_DOMAIN: string | null = 'ga.esn.org'; // in case of first creation, use: `null`
+export const DOMAIN = 'ga.esncy.org';
 
 export const parameters: Parameters = {
   project: PROJECT,
   apiDomain: 'api.'.concat(DOMAIN),
   webSocketApiDomain: 'socket.'.concat(DOMAIN),
-  mediaDomain: 'media.'.concat(DOMAIN),
-  frontEndCertificateARN: PROD_CUSTOM_DOMAIN
-    ? 'arn:aws:acm:us-east-1:772823474617:certificate/12d7466b-c989-46ee-86c5-61b2cda3c35c'
-    : undefined
+  mediaDomain: 'media.'.concat(DOMAIN)
 };
 
 export const stages: { [stage: string]: Stage } = {
   prod: {
     domain: DOMAIN,
-    alternativeDomains: PROD_CUSTOM_DOMAIN ? [PROD_CUSTOM_DOMAIN] : undefined,
     destroyDataOnDelete: false,
     logLevel: 'INFO'
   },

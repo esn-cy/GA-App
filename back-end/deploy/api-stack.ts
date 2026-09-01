@@ -341,7 +341,7 @@ export class ApiStack extends cdk.Stack {
     params.lambdaFunctions.forEach(lambdaFn => {
       if (lambdaFn.role) lambdaFn.role.attachInlinePolicy(accessSES);
       lambdaFn.addEnvironment('SES_IDENTITY_ARN', params.sesIdentityArn);
-      const domainName = params.apiDomain.split('.').slice(-2).join('.');
+      const domainName = params.apiDomain.split('.').slice(-3).join('.');
       lambdaFn.addEnvironment('SES_SOURCE_ADDRESS', `no-reply@${domainName}`);
       lambdaFn.addEnvironment('SES_REGION', region);
     });

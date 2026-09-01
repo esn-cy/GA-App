@@ -14,7 +14,7 @@ export class ApiDomainStack extends cdk.Stack {
     super(scope, id, props);
 
     const zone = Route53.HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: props.domain.split('.').slice(-2).join('.')
+      domainName: props.domain.split('.').slice(-3).join('.')
     });
 
     const certificate = new ACM.DnsValidatedCertificate(this, 'ApiCertificate', {

@@ -32,7 +32,7 @@ export class FrontEndStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'S3BucketName', { value: frontEndBucket.bucketName });
 
     const zone = Route53.HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: props.domain.split('.').slice(-2).join('.')
+      domainName: props.domain.split('.').slice(-3).join('.')
     });
 
     const certificate = props.certificateARN
