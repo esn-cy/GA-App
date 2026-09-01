@@ -41,3 +41,5 @@ back-end/output-config.json
 back-end/src/**/*.js
 back-end/src/**/*.js.map
 front-end/.angular/cache
+
+.idea
