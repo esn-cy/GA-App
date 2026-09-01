@@ -122,6 +122,7 @@ export class ManageCommunicationComponent {
   browseImagesForElementId(elementId: string): void {
     document.getElementById(elementId).click();
   }
+
   async uploadImage({ target }): Promise<void> {
     const file = target.files[0];
     if (!file) return;
@@ -156,6 +157,7 @@ export class ManageCommunicationComponent {
       this.loading.hide();
     }
   }
+
   close(): void {
     this.modalCtrl.dismiss();
   }
@@ -185,6 +187,7 @@ export class ManageCommunicationComponent {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async askAndArchive(archive = true): Promise<void> {
     const doArchive = async (): Promise<void> => {
       try {
@@ -207,6 +210,7 @@ export class ManageCommunicationComponent {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async askAndDelete(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {

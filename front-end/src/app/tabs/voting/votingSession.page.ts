@@ -29,6 +29,7 @@ export class VotingSessionPage {
     private t: IDEATranslationsService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -39,6 +40,7 @@ export class VotingSessionPage {
       this.loading.hide();
     }
   }
+
   private async loadResources(): Promise<void> {
     this.votingSession = await this._voting.getById(this.sessionId);
     if (this.votingSession.resultsPublished) this.absentVoters = this.votingSession.getAbsentVoters();
@@ -47,6 +49,7 @@ export class VotingSessionPage {
       delete this.votingSession.participantVoters;
     }
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     await this.loadResources();
     refresh.complete();

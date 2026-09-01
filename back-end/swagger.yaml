@@ -55,7 +55,7 @@ paths:
     get:
       summary: Manage the login accepted request from ESN Accounts and prepare a token to authenticate the user
       description: Acquire the CAS ticket, validate it, create the user (if necessary) and return a token.
-      tags: [Login]
+      tags: [ Login ]
       parameters:
         - name: ticket
           in: query
@@ -69,16 +69,16 @@ paths:
   /configurations:
     get:
       summary: Get the platform's configurations
-      tags: [Configurations]
+      tags: [ Configurations ]
       responses:
         200:
           $ref: '#/components/responses/Configurations'
     put:
       summary: Edit the platform's configurations
       description: Requires to be Administrator
-      tags: [Configurations]
+      tags: [ Configurations ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -93,9 +93,9 @@ paths:
     patch:
       summary: Set specific configurations
       description: Requires to be Administrator
-      tags: [Configurations]
+      tags: [ Configurations ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -128,18 +128,18 @@ paths:
     post:
       summary: Get a signed URL to upload a new image
       description: Requires to be Administrator
-      tags: [Configurations]
+      tags: [ Configurations ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
   /categories:
     get:
       summary: Get the categories
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: all
           in: query
@@ -152,9 +152,9 @@ paths:
     post:
       summary: Insert a new category
       description: Requires to be Administrator
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -169,9 +169,9 @@ paths:
   /categories/{categoryId}:
     get:
       summary: Get a category
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: categoryId
           in: path
@@ -185,9 +185,9 @@ paths:
     put:
       summary: Edit a category
       description: Requires to be Administrator
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: categoryId
           in: path
@@ -208,9 +208,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on a category
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: categoryId
           in: path
@@ -227,7 +227,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [ARCHIVE, UNARCHIVE]
+                  enum: [ ARCHIVE, UNARCHIVE ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -236,9 +236,9 @@ paths:
     delete:
       summary: Delete a category
       description: Requires to be Administrator; it works only if it's not used in any topic.
-      tags: [Categories]
+      tags: [ Categories ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: categoryId
           in: path
@@ -254,9 +254,9 @@ paths:
   /events:
     get:
       summary: Get the events
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: all
           in: query
@@ -269,9 +269,9 @@ paths:
     post:
       summary: Insert a new event
       description: Requires to be Administrator
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -286,9 +286,9 @@ paths:
   /events/{eventId}:
     get:
       summary: Get an event
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: eventId
           in: path
@@ -302,9 +302,9 @@ paths:
     put:
       summary: Edit an event
       description: Requires to be Administrator
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: eventId
           in: path
@@ -325,9 +325,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on an event
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: eventId
           in: path
@@ -344,7 +344,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [ARCHIVE, UNARCHIVE]
+                  enum: [ ARCHIVE, UNARCHIVE ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -353,9 +353,9 @@ paths:
     delete:
       summary: Delete an event
       description: Requires to be Administrator; it works only if it's not used in any topic.
-      tags: [Events]
+      tags: [ Events ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: eventId
           in: path
@@ -371,9 +371,9 @@ paths:
   /public-attachments:
     patch:
       summary: Actions on the public attachments
-      tags: [Configurations]
+      tags: [ Configurations ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -383,7 +383,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [GET_ATTACHMENT_UPLOAD_URL, GET_ATTACHMENT_DOWNLOAD_URL]
+                  enum: [ GET_ATTACHMENT_UPLOAD_URL, GET_ATTACHMENT_DOWNLOAD_URL ]
                 attachmentId:
                   type: string
                   description: (GET_ATTACHMENT_DOWNLOAD_URL)
@@ -398,9 +398,9 @@ paths:
   /topics:
     get:
       summary: Get the topics
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: archived
           in: query
@@ -413,9 +413,9 @@ paths:
     post:
       summary: Insert a new topic
       description: Requires to be Administrator
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -429,9 +429,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on the topics
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -441,7 +441,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [INSERT_FROM_APPLICATION]
+                  enum: [ INSERT_FROM_APPLICATION ]
                 opportunity:
                   description: (INSERT_FROM_APPLICATION)
                   $ref: '#/components/responses/Opportunity'
@@ -462,9 +462,9 @@ paths:
   /topics/{topicId}:
     get:
       summary: Get a topic
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -493,9 +493,9 @@ paths:
     put:
       summary: Edit a topic
       description: Requires to be Administrator
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -517,9 +517,9 @@ paths:
     delete:
       summary: Delete a topic
       description: Requires to be Administrator
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -534,9 +534,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on a topic
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -553,7 +553,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [OPEN, CLOSE, ARCHIVE, UNARCHIVE, MESSAGES_UPVOTES]
+                  enum: [ OPEN, CLOSE, ARCHIVE, UNARCHIVE, MESSAGES_UPVOTES ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -562,9 +562,9 @@ paths:
   /topics/{topicId}/related:
     get:
       summary: Get the related topics
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -579,9 +579,9 @@ paths:
     post:
       summary: Link two topics together
       description: Requires to be Administrator
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -609,9 +609,9 @@ paths:
     delete:
       summary: Delete the relation between two topics
       description: Requires to be Administrator
-      tags: [Topics]
+      tags: [ Topics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -633,9 +633,9 @@ paths:
   /topics/{topicId}/questions:
     get:
       summary: Get the questions of a topic
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -649,9 +649,9 @@ paths:
     post:
       summary: Insert a new question on a topic
       description: Permissions depend on topic configuration
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -673,9 +673,9 @@ paths:
   /topics/{topicId}/questions/{questionId}:
     get:
       summary: Get the question on a topic
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -695,9 +695,9 @@ paths:
     put:
       summary: Edit the question on a topic
       description: Requires to be Administrator or the creator
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -724,9 +724,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on a question
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -749,7 +749,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [USER_CLAPS]
+                  enum: [ USER_CLAPS ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -758,9 +758,9 @@ paths:
     delete:
       summary: Delete the question on a topic
       description: Requires to be Administrator or the creator
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -782,9 +782,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/upvotes:
     get:
       summary: Get the users who upvoted the question
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -803,9 +803,9 @@ paths:
           $ref: '#/components/responses/Subjects'
     post:
       summary: Upvote a question
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -826,9 +826,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     delete:
       summary: Cancel the upvote to a question
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -850,9 +850,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/upvotes/{userId}:
     get:
       summary: Whether the user has upvoted the question
-      tags: [Questions]
+      tags: [ Questions ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -878,9 +878,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/answers:
     get:
       summary: Get the answers to a question
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -900,9 +900,9 @@ paths:
     post:
       summary: Insert a new answer to a question
       description: Requires to be Administrator or a subject of the topic
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -930,9 +930,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/answers/{answerId}:
     get:
       summary: Get the answer to a question
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -958,9 +958,9 @@ paths:
     put:
       summary: Edit the answer to a question
       description: Requires to be Administrator or the creator
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -994,9 +994,9 @@ paths:
     delete:
       summary: Delete the answer to a question
       description: Requires to be Administrator or the creator
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1024,9 +1024,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/answers/{answerId}/claps:
     get:
       summary: Get the users who clapped to an answer
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1051,9 +1051,9 @@ paths:
           $ref: '#/components/responses/Subjects'
     post:
       summary: Clap to an answer
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1080,9 +1080,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     delete:
       summary: Cancel the clap to a question
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1110,9 +1110,9 @@ paths:
   /topics/{topicId}/questions/{questionId}/answers/{answerId}/claps/{userId}:
     get:
       summary: Whether the user has clapped the answer
-      tags: [Answers]
+      tags: [ Answers ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1144,9 +1144,9 @@ paths:
   /topics/{topicId}/messages:
     get:
       summary: Get the messages of a live topic
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1160,9 +1160,9 @@ paths:
     post:
       summary: Insert a new message on a live topic
       description: Permissions depend on topic configuration
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1184,9 +1184,9 @@ paths:
   /topics/{topicId}/messages/{messageId}:
     patch:
       summary: Actions on a message of a live topic
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1209,7 +1209,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [MARK_COMPLETE, UNDO_COMPLETE]
+                  enum: [ MARK_COMPLETE, UNDO_COMPLETE ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -1218,9 +1218,9 @@ paths:
     delete:
       summary: Delete the message of a live topic
       description: Requires to be Administrator or the creator
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1243,7 +1243,7 @@ paths:
     post:
       summary: Insert a new message on a live topic, anonimously
       description: Only if the live topics allows it
-      tags: [Messages]
+      tags: [ Messages ]
       parameters:
         - name: topicId
           in: path
@@ -1265,9 +1265,9 @@ paths:
   /topics/{topicId}/messages/{messageId}/upvotes:
     get:
       summary: Get the users who upvoted the message
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1286,9 +1286,9 @@ paths:
           $ref: '#/components/responses/Subjects'
     post:
       summary: Upvote a message
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1309,9 +1309,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     delete:
       summary: Cancel the upvote to a message
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1333,9 +1333,9 @@ paths:
   /topics/{topicId}/messages/{messageId}/upvotes/{userId}:
     get:
       summary: Whether the user has upvoted the message
-      tags: [Messages]
+      tags: [ Messages ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: path
@@ -1361,18 +1361,18 @@ paths:
   /badges:
     get:
       summary: Get the badges available in the platform
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       responses:
         200:
           $ref: '#/components/responses/Badges'
     post:
       summary: Add a badge
       description: Requires to be Administrator
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -1387,9 +1387,9 @@ paths:
   /badges/{badge}:
     get:
       summary: Get the detail of a badge
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1403,9 +1403,9 @@ paths:
     put:
       summary: Edit a badge
       description: Requires to be Administrator
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1427,9 +1427,9 @@ paths:
     delete:
       summary: Delete a badge
       description: Requires to be Administrator
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1445,9 +1445,9 @@ paths:
   /usersBadges:
     get:
       summary: Get the user's earned badges
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: userId
           in: query
@@ -1461,9 +1461,9 @@ paths:
   /usersBadges/{badge}:
     get:
       summary: Get the badge earned (if so) by the user (and mark as seen)
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1483,9 +1483,9 @@ paths:
     post:
       summary: Add the badge to a user
       description: Requires to be Administrator
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1507,9 +1507,9 @@ paths:
     delete:
       summary: Remove the badge from a user
       description: Requires to be Administrator
-      tags: [Badges]
+      tags: [ Badges ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: badge
           in: path
@@ -1531,18 +1531,18 @@ paths:
   /usefulLinks:
     get:
       summary: Get the useful links
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       responses:
         200:
           $ref: '#/components/responses/UsefulLinks'
     post:
       summary: Insert a new useful link
       description: Requires to be Administrator
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -1557,9 +1557,9 @@ paths:
   /usefulLinks/{linkId}:
     get:
       summary: Get a useful link
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: linkId
           in: path
@@ -1573,9 +1573,9 @@ paths:
     put:
       summary: Edit a useful link
       description: Requires to be Administrator
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: linkId
           in: path
@@ -1596,9 +1596,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on a useful link
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: linkId
           in: path
@@ -1615,7 +1615,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [SWAP_SORT]
+                  enum: [ SWAP_SORT ]
                 otherLinkId:
                   type: string
                   description: (SWAP_SORT)
@@ -1627,9 +1627,9 @@ paths:
     delete:
       summary: Delete a useful link
       description: Requires to be Administrator
-      tags: [UsefulLinks]
+      tags: [ UsefulLinks ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: linkId
           in: path
@@ -1645,9 +1645,9 @@ paths:
   /deadlines:
     get:
       summary: Get the deadlines
-      tags: [Deadlines]
+      tags: [ Deadlines ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: year
           in: query
@@ -1660,9 +1660,9 @@ paths:
     post:
       summary: Insert a new deadline
       description: Requires to be Administrator
-      tags: [Deadlines]
+      tags: [ Deadlines ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -1677,9 +1677,9 @@ paths:
   /deadlines/{deadlineId}:
     get:
       summary: Get a deadline
-      tags: [Deadlines]
+      tags: [ Deadlines ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: deadlineId
           in: path
@@ -1693,9 +1693,9 @@ paths:
     put:
       summary: Edit a deadline
       description: Requires to be Administrator
-      tags: [Deadlines]
+      tags: [ Deadlines ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: deadlineId
           in: path
@@ -1717,9 +1717,9 @@ paths:
     delete:
       summary: Delete a deadline
       description: Requires to be Administrator
-      tags: [Deadlines]
+      tags: [ Deadlines ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: deadlineId
           in: path
@@ -1735,9 +1735,9 @@ paths:
   /communications:
     get:
       summary: Get the communications
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: year
           in: query
@@ -1750,9 +1750,9 @@ paths:
     post:
       summary: Insert a new communication
       description: Requires to be Administrator
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -1767,9 +1767,9 @@ paths:
   /communications/{communicationId}:
     get:
       summary: Get a communication
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: communicationId
           in: path
@@ -1783,9 +1783,9 @@ paths:
     put:
       summary: Edit a communication
       description: Requires to be Administrator
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: communicationId
           in: path
@@ -1806,9 +1806,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on a communication
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: communicationId
           in: path
@@ -1825,7 +1825,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [ARCHIVE, UNARCHIVE]
+                  enum: [ ARCHIVE, UNARCHIVE ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -1834,9 +1834,9 @@ paths:
     delete:
       summary: Delete a communication
       description: Requires to be Administrator
-      tags: [Communications]
+      tags: [ Communications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: communicationId
           in: path
@@ -1853,9 +1853,9 @@ paths:
     get:
       summary: Get statistics on the use of the app
       description: Requires to be Administrator
-      tags: [Statistics]
+      tags: [ Statistics ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: since
           in: query
@@ -1875,7 +1875,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [MONTHLY, DAILY, HOURLY]
+            enum: [ MONTHLY, DAILY, HOURLY ]
             default: MONTHLY
         - name: entityType
           in: query
@@ -1897,9 +1897,9 @@ paths:
   /drafts:
     get:
       summary: Get your drafts
-      tags: [Drafts]
+      tags: [ Drafts ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: topicId
           in: query
@@ -1916,9 +1916,9 @@ paths:
           $ref: '#/components/responses/Drafts'
     post:
       summary: Save a new draft
-      tags: [Drafts]
+      tags: [ Drafts ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -1933,9 +1933,9 @@ paths:
   /drafts/{draftId}:
     get:
       summary: Get a draft of yours
-      tags: [Drafts]
+      tags: [ Drafts ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: draftId
           in: path
@@ -1948,9 +1948,9 @@ paths:
           $ref: '#/components/responses/Draft'
     put:
       summary: Edit one of your drafts
-      tags: [Drafts]
+      tags: [ Drafts ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: draftId
           in: path
@@ -1971,9 +1971,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     delete:
       summary: Delete one of your drafts
-      tags: [Drafts]
+      tags: [ Drafts ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: draftId
           in: path
@@ -1989,9 +1989,9 @@ paths:
   /opportunities:
     get:
       summary: Get the opportunities
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: archivedFromYear
           in: query
@@ -2004,9 +2004,9 @@ paths:
     post:
       summary: Insert a new opportunity
       description: Requires permissions to manage opportunities
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -2021,9 +2021,9 @@ paths:
   /opportunities/{opportunityId}:
     get:
       summary: Get an opportunity's detail
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2037,9 +2037,9 @@ paths:
     put:
       summary: Edit an opportunity
       description: Requires permissions to manage the opportunity
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2061,9 +2061,9 @@ paths:
     delete:
       summary: Delete an opportunity
       description: Requires permissions to manage the opportunity
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2079,9 +2079,9 @@ paths:
     patch:
       summary: Actions on an opportunity
       description: Requires permissions to manage the opportunity
-      tags: [Opportunities]
+      tags: [ Opportunities ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2098,7 +2098,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [OPEN, CLOSE, ARCHIVE, UNARCHIVE]
+                  enum: [ OPEN, CLOSE, ARCHIVE, UNARCHIVE ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -2108,9 +2108,9 @@ paths:
     get:
       summary: Get the applications to an opportunity
       description: Users that can manage the opportunity will see every application, whereas normal users only theirs
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2124,9 +2124,9 @@ paths:
     post:
       summary: Application of the user to an opportunity
       description: Each user can apply only once
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2147,9 +2147,9 @@ paths:
           $ref: '#/components/responses/BadParameters'
     patch:
       summary: Actions on the applications
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2166,7 +2166,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [GET_ATTACHMENT_UPLOAD_URL]
+                  enum: [ GET_ATTACHMENT_UPLOAD_URL ]
       responses:
         200:
           $ref: '#/components/responses/OperationCompleted'
@@ -2176,9 +2176,9 @@ paths:
     put:
       summary: Fix the rejected application to an opportunity
       description: Requires permissions to manage the opportunity or to be the creator
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2206,9 +2206,9 @@ paths:
     patch:
       summary: Actions on the application
       description: Permissions depend on the action
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2231,7 +2231,7 @@ paths:
               properties:
                 action:
                   type: string
-                  enum: [GET_ATTACHMENT_DOWNLOAD_URL, REVIEW_APPROVE, REVIEW_REJECT]
+                  enum: [ GET_ATTACHMENT_DOWNLOAD_URL, REVIEW_APPROVE, REVIEW_REJECT ]
                 name:
                   type: string
                   description: (GET_ATTACHMENT_DOWNLOAD_URL)
@@ -2246,9 +2246,9 @@ paths:
     delete:
       summary: Withdraw/delete the application to an opportunity
       description: Requires permissions to manage the opportunity or to be the creator
-      tags: [Applications]
+      tags: [ Applications ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: opportunityId
           in: path
@@ -2270,9 +2270,9 @@ paths:
   /voting-sessions:
     get:
       summary: Get the voting sessions
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: archived
           in: query
@@ -2285,9 +2285,9 @@ paths:
     post:
       summary: Insert a new voting session
       description: Requires to be Administrator
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       requestBody:
         required: true
         content:
@@ -2302,9 +2302,9 @@ paths:
   /voting-sessions/{sessionId}:
     get:
       summary: Get a voting session
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: sessionId
           in: path
@@ -2328,9 +2328,9 @@ paths:
     put:
       summary: Edit a voting session
       description: Requires to be Administrator (or Scrutineer of the session)
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: sessionId
           in: path
@@ -2352,9 +2352,9 @@ paths:
     patch:
       summary: Actions on a voting session
       description: Permissions depend on the action
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: sessionId
           in: path
@@ -2415,9 +2415,9 @@ paths:
     delete:
       summary: Delete a voting session
       description: Requires to be Administrator (or Scrutineer of the session)
-      tags: [Voting]
+      tags: [ Voting ]
       security:
-        - AuthFunction: []
+        - AuthFunction: [ ]
       parameters:
         - name: sessionId
           in: path
@@ -2434,7 +2434,7 @@ paths:
     get:
       summary: Login to a voting session and begin to vote
       description: The combination of voting ID and token authenticates the request
-      tags: [Voting]
+      tags: [ Voting ]
       parameters:
         - name: sessionId
           in: path
@@ -2460,7 +2460,7 @@ paths:
     post:
       summary: Submit a vote
       description: The combination of voting ID and token authenticates the request
-      tags: [Voting]
+      tags: [ Voting ]
       parameters:
         - name: sessionId
           in: path
@@ -2491,61 +2491,61 @@ components:
   schemas:
     Configurations:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Category:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Event:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Topic:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Question:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Answer:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Message:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Badge:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     UserBadge:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     UsefulLink:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Deadline:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Communication:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Subject:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Statistic:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Draft:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Opportunity:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     Application:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     VotingSession:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
     VotingTicket:
       type: object
-      additionalProperties: {}
+      additionalProperties: { }
 
   responses:
     Configurations:

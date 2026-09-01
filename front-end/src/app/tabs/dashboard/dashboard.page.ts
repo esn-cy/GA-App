@@ -59,6 +59,7 @@ export class DashboardPage implements OnInit {
     private _statistics: StatisticsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     [this.communications, this.deadlines, this.usefulLinks, this.statistic] = await Promise.all([
       this._communications.getList(),
@@ -90,6 +91,7 @@ export class DashboardPage implements OnInit {
       // no problem
     }
   }
+
   async manageCommunication(communication: Communication): Promise<void> {
     if (!this.editMode) return;
     const modal = await this.modalCtrl.create({
@@ -102,6 +104,7 @@ export class DashboardPage implements OnInit {
     });
     await modal.present();
   }
+
   async addCommunication(): Promise<void> {
     await this.manageCommunication(new Communication());
   }
@@ -130,6 +133,7 @@ export class DashboardPage implements OnInit {
       });
     await modal.present();
   }
+
   private getNextDeadlines(): Deadline[] {
     return this.deadlines.filter(x => isBefore(new Date(x.at), addDays(new Date(), NEXT_DEADLINES_NUM_DAYS)));
   }
@@ -150,6 +154,7 @@ export class DashboardPage implements OnInit {
       // no problem
     }
   }
+
   async swapSortUsefulLinks(usefulLinkA: UsefulLink, usefulLinkB: UsefulLink, event?: Event): Promise<void> {
     if (event) event.stopPropagation();
     try {
@@ -162,6 +167,7 @@ export class DashboardPage implements OnInit {
       this.loading.hide();
     }
   }
+
   async editUsefulLink(usefulLink: UsefulLink): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ManageUsefulLinkComponent,
@@ -173,6 +179,7 @@ export class DashboardPage implements OnInit {
     });
     await modal.present();
   }
+
   async addUsefulLink(): Promise<void> {
     await this.editUsefulLink(new UsefulLink());
   }

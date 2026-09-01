@@ -15,6 +15,7 @@ export class EventsPage {
   events: GAEvent[];
 
   constructor(private _events: GAEventsService, public app: AppService) {}
+
   async ionViewDidEnter(): Promise<void> {
     this.events = await this._events.getList({ force: true, withPagination: true });
   }
@@ -31,6 +32,7 @@ export class EventsPage {
   addEvent(): void {
     this.app.goToInTabs(['configurations', 'events', 'new']);
   }
+
   openEvent(event: GAEvent): void {
     this.app.goToInTabs(['configurations', 'events', event.eventId]);
   }

@@ -16,6 +16,7 @@ export class AuthPage implements OnInit {
   version = env.idea.app.version;
 
   constructor(private storage: IDEAStorageService, public app: AppService) {}
+
   async ngOnInit(): Promise<void> {
     // complete the flow from ESN Accounts
     if (this.token) {

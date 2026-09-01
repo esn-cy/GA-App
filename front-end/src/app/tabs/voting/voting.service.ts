@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WorkBook, utils, writeFile } from 'xlsx';
+import { utils, WorkBook, writeFile } from 'xlsx';
 import { IDEAApiService } from '@idea-ionic/common';
 
 import { ExportableVoter, Voter, VotingSession } from '@models/votingSession.model';
@@ -27,6 +27,7 @@ export class VotingService {
     });
     this.votingSessions = votingSessions.map(x => new VotingSession(x));
   }
+
   /**
    * Get (and optionally filter) the list of active voting sessions.
    * Note: it's a slice of the array.
@@ -87,6 +88,7 @@ export class VotingService {
     const votingSessions: VotingSession[] = await this.api.getResource('voting-sessions', { params });
     this.archivedVotingSessions = votingSessions.map(x => new VotingSession(x));
   }
+
   /**
    * Get (and optionally filter) the list of archived voting sessions.
    * Note: it's a slice of the array.
@@ -153,6 +155,7 @@ export class VotingService {
   async archive(votingSession: VotingSession): Promise<void> {
     await this.api.patchResource(['voting-sessions', votingSession.sessionId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive a voting session.
    */
@@ -189,6 +192,7 @@ export class VotingService {
     const { votingSession, votingTicket } = await this.api.getResource(path, { params });
     return { votingSession: new VotingSession(votingSession), votingTicket: new VotingTicket(votingTicket) };
   }
+
   /**
    * Submit the votes.
    * Note: the combination of voting ID and token authenticates the request.
@@ -208,6 +212,7 @@ export class VotingService {
     const res: VotingTicket[] = await this.api.patchResource(path, { body });
     return res.map(x => new VotingTicket(x));
   }
+
   /**
    * Extend the duration of the voting session by setting a new end.
    */
@@ -216,6 +221,7 @@ export class VotingService {
     const body = { action: 'EXTEND_END', endsAt: votingSession.endsAt, timezone: votingSession.timezone };
     return new VotingSession(await this.api.patchResource(path, { body }));
   }
+
   /**
    * Stop the current voting session by setting the end time to now.
    */
@@ -224,6 +230,7 @@ export class VotingService {
     const body = { action: 'STOP' };
     return new VotingSession(await this.api.patchResource(path, { body }));
   }
+
   /**
    * Resend the voting ticket to a voter
    */
@@ -232,6 +239,7 @@ export class VotingService {
     const body = { action: 'RESEND_VOTING_LINK', voterId: voter.id, email };
     await this.api.patchResource(path, { body });
   }
+
   /**
    * Get the voting token of a voter.
    */
@@ -241,6 +249,7 @@ export class VotingService {
     const { token }: VotingTicket = await this.api.patchResource(path, { body });
     return token;
   }
+
   /**
    * Check whether the session should be closed early because everyone voted.
    */
@@ -258,6 +267,7 @@ export class VotingService {
     const body = { action: 'GET_RESULTS' };
     return await this.api.patchResource(path, { body });
   }
+
   /**
    * Publish the results for everyone to see.
    */
@@ -309,8 +319,8 @@ export class VotingService {
             votedOptionIndex === -1
               ? 'Absent'
               : votedOptionIndex === ballot.options.length
-              ? 'Abstain'
-              : votingSession.ballots[bIndex].options[votedOptionIndex];
+                ? 'Abstain'
+                : votingSession.ballots[bIndex].options[votedOptionIndex];
           row.push(votedOption);
         });
         sheetRows.push(row);
@@ -320,6 +330,7 @@ export class VotingService {
     utils.book_append_sheet(wb, utils.aoa_to_sheet(sheetRows), filename.slice(0, 30));
     writeFile(wb, filename);
   }
+
   /**
    * Download a spreadsheet with the voters audit data.
    */
@@ -348,6 +359,7 @@ export class VotingService {
     utils.book_append_sheet(wb, utils.json_to_sheet(exportableVotingTickets), filename.slice(0, 30));
     return writeFile(wb, filename);
   }
+
   /**
    * Download a spreadsheet with the voters.
    */

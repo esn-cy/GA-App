@@ -109,6 +109,7 @@ class UsefulLinks extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async swapSort(otherLinkId: string): Promise<void> {
     if (!(this.galaxyUser.isAdministrator || this.galaxyUser.canManageDashboard))
       throw new HandledError('Unauthorized');

@@ -1,6 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SecurityContext, SimpleChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { SecurityContext } from '@angular/core';
 
 import { AppService } from '@app/app.service';
 
@@ -28,6 +27,7 @@ export class MessageBubbleComponent implements OnChanges {
   sanitizedHtml: string;
 
   constructor(private sanitizer: DomSanitizer, public app: AppService) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.text?.currentValue) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.text);
   }

@@ -120,6 +120,7 @@ export class ImportVotersStandaloneComponent implements OnInit {
     private _voting: VotingService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     this.otherVotingSessions = (await this._voting.getActiveList()).filter(
       x => x.sessionId !== this.votingSession.sessionId
@@ -132,6 +133,7 @@ export class ImportVotersStandaloneComponent implements OnInit {
     session.voters = [new Voter({ id: ' ' }, session)];
     this._voting.downloadVotersSpreadsheet(filename, session);
   }
+
   async import({ target }): Promise<void> {
     const file = target.files[0];
     if (!file) return;
@@ -164,6 +166,7 @@ export class ImportVotersStandaloneComponent implements OnInit {
     };
     fileReader.readAsBinaryString(file);
   }
+
   resetFileToUpload(): void {
     const inputEl = document.getElementById('filePicker') as HTMLInputElement;
     if (inputEl) inputEl.value = '';

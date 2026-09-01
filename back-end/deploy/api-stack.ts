@@ -1,7 +1,7 @@
 import SwaggerParser from '@apidevtools/swagger-parser';
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -32,11 +32,13 @@ export interface ApiProps extends cdk.StackProps {
   lambdaLogLevel: 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
   appDomain: string;
 }
+
 export interface ResourceController {
   name: string;
   paths?: string[];
   isAuthFunction?: boolean;
 }
+
 export interface DDBTable {
   PK: DDB.Attribute;
   SK?: DDB.Attribute;
@@ -262,6 +264,7 @@ export class ApiStack extends cdk.Stack {
 
     return { lambdaFunctions };
   }
+
   private allowLambdaFunctionsToAccessIDEATablesAndFunctions(params: { lambdaFunctions: NodejsFunction[] }): void {
     const region = cdk.Stack.of(this).region;
     const account = cdk.Stack.of(this).account;
@@ -282,6 +285,7 @@ export class ApiStack extends cdk.Stack {
       if (lambdaFn.role) lambdaFn.role.attachInlinePolicy(accessIDEAResources);
     });
   }
+
   private allowLambdaFunctionsToAccessMediaBucketFoldersAndUploadAssets(params: {
     stage: string;
     lambdaFunctions: NodejsFunction[];
@@ -318,6 +322,7 @@ export class ApiStack extends cdk.Stack {
       destinationKeyPrefix: params.assetsFolder.concat('/', params.stage)
     });
   }
+
   private allowLambdaFunctionsToSystemsManager(params: { lambdaFunctions: NodejsFunction[] }): void {
     const accessSystemsManagerPolicy = new IAM.Policy(this, 'AccessSystemsManager', {
       statements: [
@@ -328,6 +333,7 @@ export class ApiStack extends cdk.Stack {
       if (lambdaFn.role) lambdaFn.role.attachInlinePolicy(accessSystemsManagerPolicy);
     });
   }
+
   private allowLambdaFunctionsToAccessSES(params: {
     lambdaFunctions: NodejsFunction[];
     sesIdentityArn: string;
@@ -418,8 +424,8 @@ export class ApiStack extends cdk.Stack {
 
     const authorizer = params.authorizerLambdaFn
       ? new ApiGwAlphaAuthorizers.WebSocketLambdaAuthorizer('WebSocketApiAuthorizer', params.authorizerLambdaFn, {
-          identitySource: ['route.request.querystring.authorization']
-        })
+        identitySource: ['route.request.querystring.authorization']
+      })
       : undefined;
 
     const webSocketApi = new ApiGwAlpha.WebSocketApi(this, 'WebSocketApi', {

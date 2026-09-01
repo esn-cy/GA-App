@@ -26,6 +26,7 @@ export class TopicsService {
     const topics: Topic[] = await this.api.getResource('topics', { params: { archived: false } });
     this.topics = topics.map(x => new Topic(x));
   }
+
   /**
    * Get (and optionally filter) the list of active topics.
    * Note: it's a slice of the array.
@@ -121,6 +122,7 @@ export class TopicsService {
     const topics: Topic[] = await this.api.getResource('topics', { params });
     this.archivedTopics = topics.map(x => new Topic(x));
   }
+
   /**
    * Get (and optionally filter) the list of archived topics.
    * Note: it's a slice of the array.
@@ -178,6 +180,7 @@ export class TopicsService {
   async insert(topic: Topic): Promise<Topic> {
     return new Topic(await this.api.postResource('topics', { body: topic }));
   }
+
   /**
    * Insert a topic from an opportunity's application.
    */
@@ -204,6 +207,7 @@ export class TopicsService {
   async open(topic: Topic): Promise<void> {
     await this.api.patchResource(['topics', topic.topicId], { body: { action: 'OPEN' } });
   }
+
   /**
    * Close a topic.
    */
@@ -217,6 +221,7 @@ export class TopicsService {
   async archive(topic: Topic): Promise<void> {
     await this.api.patchResource(['topics', topic.topicId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive a topic.
    */
@@ -238,12 +243,14 @@ export class TopicsService {
     const topics: Topic[] = await this.api.getResource(['topics', topic.topicId, 'related']);
     return topics.map(x => new Topic(x));
   }
+
   /**
    * Link two topics together.
    */
   async linkByIds(topicA: string, topicB: string): Promise<void> {
     await this.api.postResource(['topics', topicA, 'related', topicB]);
   }
+
   /**
    * Unlink two topics together.
    */

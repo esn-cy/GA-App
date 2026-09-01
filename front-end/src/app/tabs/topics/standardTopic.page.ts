@@ -48,6 +48,7 @@ export class StandardTopicPage {
     private _drafts: UserDraftsService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -58,6 +59,7 @@ export class StandardTopicPage {
       this.loading.hide();
     }
   }
+
   private async loadResources(): Promise<void> {
     this.topic = await this._topics.getById(this.topicId);
     [, this.relatedTopics, this.drafts] = await Promise.all([
@@ -66,6 +68,7 @@ export class StandardTopicPage {
       this._drafts.getQuestionsOfTopic(this.topic)
     ]);
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     this.questions = null;
     this.drafts = null;
@@ -77,6 +80,7 @@ export class StandardTopicPage {
     this.currentQuestion = question;
     if (this.currentQuestion) this.content.scrollToTop(500);
   }
+
   async removeCurrentQuestionFromList(): Promise<void> {
     this.currentQuestion = null;
     await this.filterQuestions(this.searchbar?.value, null, true);
@@ -127,6 +131,7 @@ export class StandardTopicPage {
       if (newQuestionElement) this.content.scrollToPoint(0, newQuestionElement.getBoundingClientRect().top - 100, 500);
     }, 100);
   }
+
   async cancelNewQuestion(): Promise<void> {
     const doCancel = (): void => {
       this.newQuestion = null;
@@ -144,6 +149,7 @@ export class StandardTopicPage {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async sendNewQuestion(): Promise<void> {
     this.errors = new Set(this.newQuestion.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
@@ -180,6 +186,7 @@ export class StandardTopicPage {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -205,6 +212,7 @@ export class StandardTopicPage {
       this.loading.hide();
     }
   }
+
   async deleteDraft(draft: UserDraft): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {

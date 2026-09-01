@@ -48,6 +48,7 @@ export class OpportunityPage {
     private _attachments: PublicAttachmentsService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -58,11 +59,13 @@ export class OpportunityPage {
       this.loading.hide();
     }
   }
+
   private async loadResources(): Promise<void> {
     this.opportunity = await this._opportunities.getById(this.opportunityId);
     this.applications = await this._applications.getListOfopportunity(this.opportunity, { force: true });
     this.userApplication = this.applications.find(x => x.userId === this.app.user.userId);
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     this.opportunity = null;
     this.applications = null;
@@ -90,6 +93,7 @@ export class OpportunityPage {
   browseFilesForInputId(id: string): void {
     document.getElementById(id).click();
   }
+
   async addAttachment({ target }, expectedAttachmentName: string): Promise<void> {
     if (!target?.files.length) return;
 
@@ -114,6 +118,7 @@ export class OpportunityPage {
     // empty the file picker to allow the upload of new files with the same name
     if (target) target.value = null;
   }
+
   removeAttachmentByExpectedName(expectedAttachmentName: string, event?: Event): void {
     if (event) event.stopPropagation();
     this.userApplication.attachments[expectedAttachmentName] = null;
@@ -124,13 +129,16 @@ export class OpportunityPage {
     this.userApplication = new Application({ userId: this.app.user.userId, subject: Subject.fromUser(this.app.user) });
     this.writingApplication = true;
   }
+
   fixUserApplication(): void {
     this.writingApplication = true;
   }
+
   cancelApplication(): void {
     if (!this.userApplication.applicationId) this.userApplication = null;
     this.writingApplication = false;
   }
+
   async sendApplication(): Promise<void> {
     this.errors = new Set(this.userApplication.validate(this.opportunity));
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
@@ -162,9 +170,11 @@ export class OpportunityPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
+
   async withdrawUserApplication(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -207,6 +217,7 @@ export class OpportunityPage {
     else if (status === ApplicationStatuses.REJECTED) return 'danger';
     else return 'medium';
   }
+
   async reviewApplication(application: Application): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ReviewApplicationStandaloneComponent,

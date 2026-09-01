@@ -31,6 +31,7 @@ export class EventPage {
     private _events: GAEventsService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -67,6 +68,7 @@ export class EventPage {
       this.loading.hide();
     }
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -93,6 +95,7 @@ export class EventPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async deleteEvent(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -122,6 +125,7 @@ export class EventPage {
     this.entityBeforeChange = new GAEvent(this.event);
     this.editMode = UXMode.EDIT;
   }
+
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.closePage();
     else {

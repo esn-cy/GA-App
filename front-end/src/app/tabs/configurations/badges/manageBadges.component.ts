@@ -80,6 +80,7 @@ export class ManageBadgesComponent implements OnInit {
     public _badges: BadgesService,
     public app: AppService
   ) {}
+
   ngOnInit(): void {
     this.badge = new Badge(this.badge);
   }

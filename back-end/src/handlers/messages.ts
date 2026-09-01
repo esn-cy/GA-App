@@ -121,6 +121,7 @@ class MessagesRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async markComplete(): Promise<Message> {
     if (this.topic.isArchived()) throw new Error('Topic is archived');
     if (this.message.completedAt) throw new Error('Message is already complete');
@@ -135,6 +136,7 @@ class MessagesRC extends ResourceController {
 
     return this.message;
   }
+
   private async undoComplete(): Promise<Message> {
     if (this.topic.isArchived()) throw new Error('Topic is archived');
     if (!this.galaxyUser.isAdministrator) throw new Error('Unauthorized');

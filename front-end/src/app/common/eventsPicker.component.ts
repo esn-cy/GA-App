@@ -57,6 +57,7 @@ export class EventsPickerComponent implements OnInit {
   events: GAEvent[];
 
   constructor(private _events: GAEventsService) {}
+
   async ngOnInit(): Promise<void> {
     this.events = await this._events.getList();
   }

@@ -123,6 +123,7 @@ export class ApplicationStandaloneComponent {
     else if (status === ApplicationStatuses.REJECTED) return 'danger';
     else return 'medium';
   }
+
   getApplicationLabelByStatus(application: Application, short = false): string {
     const status = application.getStatus();
     let str: string;

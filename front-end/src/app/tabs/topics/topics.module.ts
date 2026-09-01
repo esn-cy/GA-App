@@ -45,4 +45,5 @@ import { QuestionModule } from './questions/question.module';
   ],
   declarations: [TopicsPage, StandardTopicPage, LiveTopicPage, ManageTopicPage]
 })
-export class TopicsModule {}
+export class TopicsModule {
+}

@@ -19,10 +19,10 @@ import { AppService } from '@app/app.service';
 import { VotingService } from './voting.service';
 
 import {
-  VotingMajorityTypes,
-  VotingBallot,
-  VotingSession,
   Voter,
+  VotingBallot,
+  VotingMajorityTypes,
+  VotingSession,
   VotingSessionTypes
 } from '@models/votingSession.model';
 import { VotingTicket } from '@models/votingTicket.model';
@@ -96,9 +96,11 @@ export class ManageVotingSessionPage implements OnDestroy {
     private _voting: VotingService,
     public app: AppService
   ) {}
+
   ngOnDestroy(): void {
     if (this.webSocket) this.webSocket.close();
   }
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -158,6 +160,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       this.loading.hide();
     }
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -168,6 +171,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     if ([PageSections.START, PageSections.IMMEDIATE, PageSections.ROLL_CALL].includes(this.pageSection))
       this.pageSection = PageSections.GENERAL;
   }
+
   async exitEditMode(): Promise<void> {
     const doExit = (): void => {
       if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['voting'], { back: true });
@@ -235,6 +239,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async deleteSession(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -257,6 +262,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async duplicateSession(): Promise<void> {
     const doDuplicate = async (): Promise<void> => {
       try {
@@ -302,6 +308,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, message, inputs, buttons });
     await alert.present();
   }
+
   async removeScrutineerById(userId: string): Promise<void> {
     const index = this.votingSession.scrutineersIds.indexOf(userId);
     if (index !== -1) this.votingSession.scrutineersIds.splice(index, 1);
@@ -332,6 +339,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const actions = await this.actionsCtrl.create({ header, buttons });
     actions.present();
   }
+
   private async addBallotFromTemplate(template: 'blank' | 'yes-no' | 'candidates'): Promise<void> {
     const templates = {
       blank: {},
@@ -348,6 +356,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     };
     await this.manageBallot(new VotingBallot(templates[template]), true);
   }
+
   async manageBallot(ballot: VotingBallot, isNew = false): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ManageBallotStandaloneComponent,
@@ -360,6 +369,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     });
     modal.present();
   }
+
   async removeBallot(ballot: VotingBallot): Promise<void> {
     const doRemove = (): void => {
       const index = this.votingSession.ballots.indexOf(ballot);
@@ -423,6 +433,7 @@ export class ManageVotingSessionPage implements OnDestroy {
 
     if (this.table && !stayInPage) this.table.offset = 0;
   }
+
   calcVotersFooterTotals(): void {
     const votersNames = this.votingSession.voters.map(x => x.name);
     this.numDuplicatedNames = votersNames.length - new Set(votersNames).size;
@@ -449,6 +460,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     });
     modal.present();
   }
+
   async addVoter(): Promise<void> {
     await this.manageVoter(new Voter(null, this.votingSession), true);
   }
@@ -479,6 +491,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const actions = await this.actionsCtrl.create({ header, buttons });
     actions.present();
   }
+
   private async importVoters(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ImportVotersStandaloneComponent,
@@ -491,11 +504,13 @@ export class ManageVotingSessionPage implements OnDestroy {
     });
     modal.present();
   }
+
   private exportVoters(): void {
     const sessionName = this.votingSession.name.replace(/[^\w\s]/g, '');
     const filename = `${sessionName} - ${this.t._('VOTING.VOTERS')}.xlsx`;
     this._voting.downloadVotersSpreadsheet(filename, this.votingSession);
   }
+
   private async removeAllVoters(): Promise<void> {
     const doRemove = (): void => {
       this.votingSession.voters = [];
@@ -526,18 +541,23 @@ export class ManageVotingSessionPage implements OnDestroy {
       )
     );
   }
+
   getVotersDuplicatedIds(): string[] {
     return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.id?.trim()));
   }
+
   getVotersDuplicatedNames(): string[] {
     return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.name?.trim().toLowerCase()));
   }
+
   getVotersDuplicatedEmails(): string[] {
     return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.email?.trim().toLowerCase()));
   }
+
   getNameOfVotersWithoutEmail(): string[] {
     return this.votingSession.voters.filter(x => !x.email).map(x => x.name);
   }
+
   async startSession(): Promise<void> {
     const session = new VotingSession(this.votingSession);
     if (this.votingSession.isForm()) session.startsAt = new Date().toISOString();
@@ -576,6 +596,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       alert.present();
     }
   }
+
   canSessionStart(): boolean {
     this.errors = new Set(this.votingSession.validate(true));
 
@@ -629,6 +650,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async stopSessionPrematurely(): Promise<void> {
     if (!this.votingSession.isInProgress()) return;
 
@@ -653,6 +675,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   private openWebSocketForVotingTicketsStatus(): void {
     if (!this.webSocket.isOpen())
       this.webSocket.open({
@@ -660,23 +683,28 @@ export class ManageVotingSessionPage implements OnDestroy {
         onMessage: message => this.handleMessageFromWebSocket(message)
       });
   }
+
   private handleMessageFromWebSocket(webSocketMessage: WebSocketMessage): void {
     const votingTicket = new VotingTicket(webSocketMessage.item);
     this.votingTickets.find(x => x.voterId === votingTicket.voterId)?.load(votingTicket);
     this.checkWhetherSessionShouldEndEarly();
   }
+
   getNumVotersWhoSignedIn(): number {
     return this.votingTickets?.filter(x => x.signedInAt).length;
   }
+
   getNumVotersWhoVoted(): number {
     return this.votingTickets?.filter(x => x.votedAt).length;
   }
+
   private async checkWhetherSessionShouldEndEarly(): Promise<void> {
     if (!this.votingTickets || !this.votingSession.isInProgress()) return;
     const everyoneVoted = this.votingTickets.filter(x => x.votedAt).length === this.votingSession.voters.length;
     if (everyoneVoted)
       this.votingSession.load(await this._voting.checkWhetherSessionShouldEndEarly(this.votingSession));
   }
+
   async showResults(): Promise<void> {
     if (!this.votingSession.hasEnded() || this.results) return;
     try {
@@ -688,6 +716,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       this.loading.hide();
     }
   }
+
   async publishResults(): Promise<void> {
     const doPublish = async (): Promise<void> => {
       try {
@@ -710,6 +739,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   downloadResults(): void {
     if (!this.results) return;
 
@@ -717,6 +747,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const filename = `${sessionName} - ${this.t._('VOTING.RESULTS')}.xlsx`;
     this._voting.downloadResultsSpreadsheet(filename, this.votingSession, this.results);
   }
+
   downloadVotersAudit(): void {
     if (!this.votingTickets) return;
 
@@ -733,6 +764,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     if (!this.immediateByBallot[bIndex]) this.immediateByBallot[bIndex] = {};
     return this.immediateByBallot[bIndex];
   }
+
   getNumVotersPresentToImmediateBallotByIndex(bIndex: number): number {
     const immediateOfBallot = this.getImmediateOfBallot(bIndex);
     const absentIndex = this.votingSession.ballots[bIndex].options.length + 1;
@@ -740,6 +772,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       x => immediateOfBallot[x.id] !== undefined && Number(immediateOfBallot[x.id]) !== absentIndex
     ).length;
   }
+
   getResultsAndParticipantsFromImmediate(): { results: VotingResults; participantVoters: string[] } {
     const results: VotingResults = [];
     const participantVoters = new Set<string>();
@@ -765,6 +798,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     });
     return { results, participantVoters: Array.from(participantVoters) };
   }
+
   setImmediateFromResults(results: VotingResults): void {
     this.immediateByBallot = [];
     if (!results) return;
@@ -778,6 +812,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       });
     });
   }
+
   async cancelImmediate(): Promise<void> {
     const doCancel = (): void => {
       this.immediateInProgress = false;
@@ -792,6 +827,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
     alert.present();
   }
+
   async saveImmediate(publish = false, nextIndex?: number): Promise<void> {
     const doSave = async (): Promise<void> => {
       try {
@@ -818,8 +854,8 @@ export class ManageVotingSessionPage implements OnDestroy {
     const message = publish
       ? this.t._('VOTING.CANT_CHANGE_PUBLISHED_VOTING')
       : nextIndex !== undefined
-      ? undefined
-      : this.t._('VOTING.YOU_CAN_CHANGE_CONTENTS_STARTING_SESSION_AGAIN');
+        ? undefined
+        : this.t._('VOTING.YOU_CAN_CHANGE_CONTENTS_STARTING_SESSION_AGAIN');
     const buttons = [
       { text: this.t._('COMMON.CANCEL'), role: 'cancel' },
       { text: this.t._(publish ? 'VOTING.PUBLISH_RESULTS' : 'COMMON.SAVE'), handler: doSave }
@@ -835,6 +871,7 @@ export class ManageVotingSessionPage implements OnDestroy {
   getNumVotersPresentToRollCall(): number {
     return this.votingSession.voters.filter(x => this.rollCall[x.id]).length;
   }
+
   getResultsAndParticipantsFromRollCall(): { results: VotingResults; participantVoters: string[] } {
     const increment = 1 / this.votingSession.voters.length;
     // roll calls have a static 1-ballot 1-option in terms of data structure
@@ -848,6 +885,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       });
     return { results, participantVoters };
   }
+
   setRollCallFromParticipantVoters(participantVoters: string[]): void {
     this.rollCall = {};
     if (!participantVoters) return;
@@ -856,6 +894,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       if (voter) this.rollCall[voter.id] = true;
     });
   }
+
   async cancelRollCall(): Promise<void> {
     const doCancel = (): void => {
       this.rollCallInProgress = false;
@@ -870,6 +909,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
     alert.present();
   }
+
   async saveRollCall(publish = false): Promise<void> {
     const doSave = async (): Promise<void> => {
       try {

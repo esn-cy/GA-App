@@ -15,6 +15,7 @@ export class CategoriesPage {
   categories: TopicCategory[];
 
   constructor(private _categories: TopicCategoryService, public app: AppService) {}
+
   async ionViewDidEnter(): Promise<void> {
     this.categories = await this._categories.getList({ force: true, withPagination: true });
   }
@@ -32,6 +33,7 @@ export class CategoriesPage {
   addCategory(): void {
     this.app.goToInTabs(['configurations', 'categories', 'new']);
   }
+
   openCategory(category: TopicCategory): void {
     this.app.goToInTabs(['configurations', 'categories', category.categoryId]);
   }

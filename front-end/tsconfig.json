@@ -4,12 +4,24 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "crypto": ["node_modules/crypto-js"],
-      "@models/*": ["../back-end/src/models/*"],
-      "@env": ["../front-end/src/environments/environment.ts"],
-      "@app/*": ["../front-end/src/app/*"],
-      "@tabs/*": ["../front-end/src/app/tabs/*"],
-      "@common/*": ["../front-end/src/app/common/*"]
+      "crypto": [
+        "node_modules/crypto-js"
+      ],
+      "@models/*": [
+        "../back-end/src/models/*"
+      ],
+      "@env": [
+        "../front-end/src/environments/environment.ts"
+      ],
+      "@app/*": [
+        "../front-end/src/app/*"
+      ],
+      "@tabs/*": [
+        "../front-end/src/app/tabs/*"
+      ],
+      "@common/*": [
+        "../front-end/src/app/common/*"
+      ]
     },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -21,7 +33,10 @@
     "useDefineForClassFields": false,
     "target": "es2022",
     "module": "es2020",
-    "lib": ["es2018", "dom"]
+    "lib": [
+      "es2018",
+      "dom"
+    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -7,12 +7,14 @@
     <ion-row *ngIf="!topic.isArchived()">
       <ion-col *ngIf="answers && !answers.length && question.canUserEdit(topic, app.user)">
         <ion-button color="danger" fill="clear" (click)="deleteQuestion()">
-          {{ 'QUESTIONS.DELETE_QUESTION' | translate }} <ion-icon name="trash-outline" slot="end"></ion-icon>
+          {{ 'QUESTIONS.DELETE_QUESTION' | translate }}
+          <ion-icon name="trash-outline" slot="end"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col class="ion-text-right">
         <ion-button fill="clear" color="medium" (click)="seeQuestionUpvoters($event)">
-          {{ 'QUESTIONS.SEE_UPVOTERS' | translate }} <ion-icon slot="end" icon="eye"></ion-icon>
+          {{ 'QUESTIONS.SEE_UPVOTERS' | translate }}
+          <ion-icon slot="end" icon="eye"></ion-icon>
         </ion-button>
         <ion-button fill="clear" [color]="userUpvoted ? 'medium' : 'ESNgreen'" (click)="upvoteQuestion(!userUpvoted)">
           {{ (userUpvoted ? 'QUESTIONS.CANCEL_UPVOTE_QUESTION' : 'QUESTIONS.UPVOTE_QUESTION') | translate }}
@@ -35,7 +37,8 @@
       >
         <p class="ion-text-right ion-padding-end">
           <ion-button fill="clear" color="medium" (click)="seeAnswerClappers(answer, $event)">
-            {{ 'QUESTIONS.SEE_CLAPPERS' | translate }} <ion-icon slot="end" icon="eye"></ion-icon>
+            {{ 'QUESTIONS.SEE_CLAPPERS' | translate }}
+            <ion-icon slot="end" icon="eye"></ion-icon>
           </ion-button>
           <ion-button
             fill="clear"
@@ -50,7 +53,8 @@
       </app-message-bubble>
       <p class="ion-text-center ion-padding-top" *ngIf="getLastAnswer()?.canUserEdit(topic, app.user)">
         <ion-button color="danger" fill="clear" (click)="deleteLastAnswer()">
-          {{ 'QUESTIONS.DELETE_ANSWER' | translate }} <ion-icon name="trash-outline" slot="end"></ion-icon>
+          {{ 'QUESTIONS.DELETE_ANSWER' | translate }}
+          <ion-icon name="trash-outline" slot="end"></ion-icon>
         </ion-button>
       </p>
 
@@ -61,7 +65,8 @@
       <ion-row class="ion-margin-top" *ngIf="topic.canUserAnswerStandardQuestions(app.user) && !newAnswer">
         <ion-col *ngIf="fromDraft">
           <ion-button expand="block" fill="clear" color="danger" (click)="deleteDraft()">
-            <ion-icon icon="trash" slot="start"></ion-icon> {{ 'DRAFTS.DELETE_DRAFT' | translate }}
+            <ion-icon icon="trash" slot="start"></ion-icon>
+            {{ 'DRAFTS.DELETE_DRAFT' | translate }}
           </ion-button>
         </ion-col>
         <ion-col>
@@ -76,7 +81,8 @@
         <ion-row class="ion-margin">
           <ion-col>
             <ion-button fill="clear" color="dark" (click)="cancelNewAnswer()">
-              {{ 'COMMON.CANCEL' | translate }} <ion-icon icon="close" slot="start"></ion-icon>
+              {{ 'COMMON.CANCEL' | translate }}
+              <ion-icon icon="close" slot="start"></ion-icon>
             </ion-button>
           </ion-col>
           <ion-col class="ion-text-right">
@@ -84,7 +90,8 @@
               {{ 'DRAFTS.SAVE_AS_DRAFT' | translate }}
             </ion-button>
             <ion-button (click)="sendNewAnswer()">
-              {{ 'COMMON.SEND' | translate }} <ion-icon icon="send" slot="end"></ion-icon>
+              {{ 'COMMON.SEND' | translate }}
+              <ion-icon icon="send" slot="end"></ion-icon>
             </ion-button>
           </ion-col>
         </ion-row>

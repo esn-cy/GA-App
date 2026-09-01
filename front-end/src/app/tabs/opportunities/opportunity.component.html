@@ -28,7 +28,9 @@
   <ion-item *ngIf="!opportunity">
     <ion-label>
       <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-      <p><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+      <p>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </p>
     </ion-label>
   </ion-item>
 </ng-container>
@@ -68,9 +70,17 @@
   </ion-row>
   <!-- skeleton -->
   <ion-row class="ion-align-items-center row" *ngIf="!header && !opportunity">
-    <ion-col [sizeLg]="7" [sizeXl]="6"><ion-skeleton-text animated></ion-skeleton-text></ion-col>
-    <ion-col [sizeLg]="3" [sizeXl]="2"><ion-skeleton-text animated></ion-skeleton-text></ion-col>
-    <ion-col [sizeLg]="2"><ion-skeleton-text animated></ion-skeleton-text></ion-col>
-    <ion-col class="ion-hide-xl-down" [sizeLg]="2"><ion-skeleton-text animated></ion-skeleton-text></ion-col>
+    <ion-col [sizeLg]="7" [sizeXl]="6">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </ion-col>
+    <ion-col [sizeLg]="3" [sizeXl]="2">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </ion-col>
+    <ion-col [sizeLg]="2">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </ion-col>
+    <ion-col class="ion-hide-xl-down" [sizeLg]="2">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </ion-col>
   </ion-row>
 </ng-container>

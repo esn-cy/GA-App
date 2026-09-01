@@ -3,7 +3,7 @@ import { IonInfiniteScroll, IonRefresher, IonSearchbar } from '@ionic/angular';
 import { IDEAActionSheetController, IDEATranslationsService } from '@idea-ionic/common';
 
 import { AppService } from '@app/app.service';
-import { TopicsService, TopicsSortBy, TopicsFilterByStatus } from './topics.service';
+import { TopicsFilterByStatus, TopicsService, TopicsSortBy } from './topics.service';
 import { TopicCategoryService } from '../configurations/categories/categories.service';
 import { GAEventsService } from '../configurations/events/events.service';
 
@@ -47,16 +47,20 @@ export class TopicsPage implements OnInit {
     private _events: GAEventsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     await this.loadResources();
   }
+
   ionViewDidEnter(): void {
     this.filter(null, null, true);
   }
+
   private async loadResources(): Promise<void> {
     this.topics = await this._topics.getActiveList({ force: true, withPagination: true });
     [this.categories, this.events] = await Promise.all([this._categories.getList(), this._events.getList()]);
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     this.topics = null;
     await this.loadResources();
@@ -85,6 +89,7 @@ export class TopicsPage implements OnInit {
   openTopic(topic: Topic): void {
     this.app.goToInTabs(['topics', topic.topicId, topic.type === TopicTypes.LIVE ? 'live' : 'standard']);
   }
+
   async addTopic(): Promise<void> {
     const header = this.t._('TOPICS.CHOOSE_TYPE');
     const buttons = [

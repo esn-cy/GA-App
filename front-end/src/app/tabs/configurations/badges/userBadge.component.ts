@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, PopoverController } from '@ionic/angular';
 import { IDEATranslationsModule, IDEATranslationsService } from '@idea-ionic/common';
@@ -85,10 +85,10 @@ export class UserBadgeComponent implements OnInit {
 
     this.badge = Badge.isBuiltIn(this.userBadge.badge)
       ? new Badge({
-          badgeId: this.userBadge.badge,
-          name: this._t._('BADGES.BUILT_IN_BADGES.'.concat(this.userBadge.badge)),
-          description: this._t._('BADGES.BUILT_IN_BADGES_I.'.concat(this.userBadge.badge))
-        })
+        badgeId: this.userBadge.badge,
+        name: this._t._('BADGES.BUILT_IN_BADGES.'.concat(this.userBadge.badge)),
+        description: this._t._('BADGES.BUILT_IN_BADGES_I.'.concat(this.userBadge.badge))
+      })
       : this._badges.getDetailOfUserBadge(this.userBadge);
     if (!this.badge) this.badge = new Badge({ badgeId: 'NOT_FOUND', name: this._t._('COMMON.NOT_FOUND') });
   }

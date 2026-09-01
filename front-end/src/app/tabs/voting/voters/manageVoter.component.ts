@@ -116,6 +116,7 @@ export class ManageVoterStandaloneComponent implements OnInit {
     private _voting: VotingService,
     public app: AppService
   ) {}
+
   ngOnInit(): void {
     this.voter = new Voter(this.voter, this.votingSession);
   }
@@ -129,10 +130,12 @@ export class ManageVoterStandaloneComponent implements OnInit {
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
     this.modalCtrl.dismiss(this.voter);
   }
+
   removeVoter(): void {
     this.voter.id = 'DELETE';
     this.modalCtrl.dismiss(this.voter);
   }
+
   close(): void {
     this.modalCtrl.dismiss();
   }
@@ -159,6 +162,7 @@ export class ManageVoterStandaloneComponent implements OnInit {
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
     await alert.present();
   }
+
   async showVotingSecret(): Promise<void> {
     try {
       await this.loading.show();

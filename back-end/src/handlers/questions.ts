@@ -187,6 +187,7 @@ class Questions extends ResourceController {
     });
     return answersToQuestion.length > 0;
   }
+
   private async updateCountersOfTopic(numOfQuestionsInTopic: number): Promise<void> {
     try {
       await ddb.update({

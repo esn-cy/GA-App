@@ -30,6 +30,7 @@ export class VotingArchivePage implements OnInit {
     private _events: GAEventsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     this.events = await this._events.getList({ all: true });
   }

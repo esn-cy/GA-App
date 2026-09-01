@@ -22,8 +22,10 @@
       <ion-item lines="none" color="ideaToolbar" class="ion-hide-md-down">
         <ion-select interface="popover" [(ngModel)]="sortBy" (ionChange)="filter(searchbar.value)">
           <ion-select-option *ngFor="let sortBy of OpportunitiesSortBy | keyvalue" [value]="sortBy.key">
-            {{ 'OPPORTUNITIES.SORT_BY' | translate }} {{ ('OPPORTUNITIES.SORT_BY_OPTIONS.' + sortBy.key) | translate |
-            lowercase }}
+            {{ 'OPPORTUNITIES.SORT_BY' | translate }} {{
+              ('OPPORTUNITIES.SORT_BY_OPTIONS.' + sortBy.key) | translate |
+                lowercase
+            }}
           </ion-select-option>
         </ion-select>
       </ion-item>

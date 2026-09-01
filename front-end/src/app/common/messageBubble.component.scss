@@ -9,10 +9,12 @@ div.bubble {
   border: var(--ion-border-color);
   border-radius: 22px;
   padding: 16px;
+
   div {
     padding: 8px 16px;
   }
 }
+
 div.bubble:before {
   content: ' ';
   position: absolute;
@@ -30,6 +32,7 @@ div.bubble.bubbleSender {
   --bubble-bg-color: rgba(var(--ion-color-ESNgreen-rgb), 0.1);
   margin: 8px 16px 8px 42px;
 }
+
 div.bubble.bubbleSender:before {
   left: auto;
   right: -20px;

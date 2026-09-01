@@ -16,7 +16,7 @@ const FIRST_YEAR_FOR_DEADLINES = 2023;
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, DeadlineComponent, ManageDeadlineComponent],
+  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, DeadlineComponent],
   selector: 'app-dealines',
   template: `
     <ion-header class="ion-no-border">
@@ -100,6 +100,7 @@ export class DeadlinesComponent implements OnInit {
     private _deadlines: DeadlinesService,
     public app: AppService
   ) {}
+
   ngOnInit(): void {
     this.years = this.app.getYearsSince(FIRST_YEAR_FOR_DEADLINES);
   }
@@ -120,6 +121,7 @@ export class DeadlinesComponent implements OnInit {
   async addDeadline(): Promise<void> {
     await this.editDeadline(new Deadline());
   }
+
   async editDeadline(deadline: Deadline): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ManageDeadlineComponent,

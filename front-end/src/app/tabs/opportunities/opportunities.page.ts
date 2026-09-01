@@ -30,15 +30,19 @@ export class OpportunitiesPage implements OnInit {
     private _opportunities: OpportunitiesService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     await this.loadResources();
   }
+
   ionViewDidEnter(): void {
     this.filter(null, null, true);
   }
+
   private async loadResources(): Promise<void> {
     this.opportunities = await this._opportunities.getActiveList({ force: true, withPagination: true });
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     this.opportunities = null;
     await this.loadResources();
@@ -65,6 +69,7 @@ export class OpportunitiesPage implements OnInit {
   openOpportunity(opportunity: Opportunity): void {
     this.app.goToInTabs(['opportunities', opportunity.opportunityId]);
   }
+
   addOpportunity(): void {
     this.app.goToInTabs(['opportunities', 'new', 'manage']);
   }

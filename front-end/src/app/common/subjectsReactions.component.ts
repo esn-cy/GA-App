@@ -27,6 +27,7 @@ export class SubjectsReactionsComponent implements AfterViewInit {
   color: string;
 
   constructor(private popoverCtrl: PopoverController, public app: AppService) {}
+
   async ngAfterViewInit(): Promise<void> {
     if (this.subjectsPromise) this.subjects = await this.subjectsPromise;
     this.showSpinner = false;
@@ -39,6 +40,7 @@ export class SubjectsReactionsComponent implements AfterViewInit {
     if (this.reaction === 'clap') return '/assets/icons/clap.svg';
     if (this.reaction === 'appreciation') return 'heart';
   }
+
   private getColor(): string {
     if (this.reaction === 'upvote') return 'ESNgreen';
     if (this.reaction === 'clap') return 'ESNpink';

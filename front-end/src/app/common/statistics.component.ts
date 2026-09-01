@@ -7,7 +7,7 @@ import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from 
 import { AppService } from '@app/app.service';
 import { StatisticsService } from './statistics.service';
 
-import { StatisticEntityTypes, Statistic, StatisticGranularities } from '@models/statistic.model';
+import { Statistic, StatisticEntityTypes, StatisticGranularities } from '@models/statistic.model';
 
 @Component({
   selector: 'app-statistics-button',
@@ -109,9 +109,11 @@ export class StatisticsComponent implements OnInit {
     private _statistics: StatisticsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     await this.loadStatisticAndBuildChart();
   }
+
   async loadStatisticAndBuildChart(): Promise<void> {
     try {
       await this.loading.show();
@@ -129,6 +131,7 @@ export class StatisticsComponent implements OnInit {
     }
     this.buildChart();
   }
+
   buildChart(): void {
     this.chart?.destroy();
 
@@ -140,8 +143,8 @@ export class StatisticsComponent implements OnInit {
         this.granularity === StatisticGranularities.HOURLY
           ? `HH':00', d MMM yy`
           : this.granularity === StatisticGranularities.DAILY
-          ? 'd MMM yy'
-          : 'MMM YYYY'
+            ? 'd MMM yy'
+            : 'MMM YYYY'
       )
     );
 

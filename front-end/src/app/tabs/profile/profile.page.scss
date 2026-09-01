@@ -19,12 +19,14 @@ p.version {
 ion-item.noBadges ion-label {
   font-size: 0.9em;
 }
+
 ion-grid.badgesGrid {
   ion-img {
     margin: 0 auto;
     width: 100px;
     height: 100px;
   }
+
   ion-skeleton-text {
     margin: 0 auto;
     border-radius: 50%;

@@ -71,10 +71,12 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
   @ViewChild('dateTime') dateTime: ElementRef;
 
   constructor(public app: AppService) {}
+
   async ngOnInit(): Promise<void> {
     this.timezone = this.timezone ?? this.app.configurations.timezone;
     this.initialValue = this.utcToZonedTimeString(this.date);
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     // fix the date if the linked timezone changes
     if (changes.timezone?.currentValue && this.dateTime) {
@@ -87,6 +89,7 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
   utcToZonedTimeString(isoString: epochISOString): string {
     return formatInTimeZone(isoString, this.timezone, "yyyy-MM-dd'T'HH:mm");
   }
+
   zonedTimeStringToUTC(dateLocale: string): epochISOString {
     return zonedTimeToUtc(new Date(dateLocale), this.timezone).toISOString();
   }

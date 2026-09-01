@@ -37,7 +37,8 @@
         <ion-card-header [class.fieldHasError]="hasFieldAnError('submission['+ bIndex + ']')">
           <ion-card-title>{{ ballot.text }}</ion-card-title>
           <ion-card-subtitle class="tappable" [id]="'majorityTypeInfo-' + bIndex">
-            {{ 'VOTING.MAJORITY_TYPES.' + ballot.majorityType | translate }} <ion-icon icon="information" />
+            {{ 'VOTING.MAJORITY_TYPES.' + ballot.majorityType | translate }}
+            <ion-icon icon="information" />
           </ion-card-subtitle>
           <ion-popover [trigger]="'majorityTypeInfo-' + bIndex" triggerAction="click">
             <ng-template>

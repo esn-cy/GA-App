@@ -139,6 +139,7 @@ class VoteRC extends ResourceController {
       this.logger.warn('Voting confirmation failed to send', error, { votingTicket });
     }
   }
+
   private async sendVotingConfirmationToVoter(ticket: VotingTicket): Promise<void> {
     const template = `notify-voting-confirmation-${STAGE}`;
     const templateData = { user: ticket.voterName, title: this.votingSession.name };

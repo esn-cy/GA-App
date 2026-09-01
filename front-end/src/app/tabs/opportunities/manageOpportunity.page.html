@@ -18,18 +18,19 @@
       </ion-button>
     </p>
     <ion-list-header>
-      <ion-label><h2>{{ 'OPPORTUNITIES.ATTRIBUTES' | translate }}</h2> </ion-label>
+      <ion-label><h2>{{ 'OPPORTUNITIES.ATTRIBUTES' | translate }}</h2></ion-label>
     </ion-list-header>
     <ion-item [class.fieldHasError]="hasFieldAnError('name')">
       <ion-label position="stacked">
-        {{ 'OPPORTUNITIES.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
+        {{ 'OPPORTUNITIES.NAME' | translate }}
+        <ion-text class="obligatoryDot"></ion-text>
       </ion-label>
       <ion-input [(ngModel)]="opportunity.name" [disabled]="!editMode"></ion-input>
     </ion-item>
     <ion-list-header>
       <ion-label>
         <h2>{{ 'OPPORTUNITIES.PUBLISHING_OPTIONS' | translate }}</h2>
-        <p>{{ 'OPPORTUNITIES.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone} }}</p>
+        <p>{{ 'OPPORTUNITIES.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone } }}</p>
       </ion-label>
     </ion-list-header>
     <ion-radio-group [(ngModel)]="publishingOption" (ionBlur)="handleChangeOfPublishingOption()">
@@ -48,7 +49,7 @@
     <ion-list-header>
       <ion-label>
         <h2>{{ 'OPPORTUNITIES.DEADLINES' | translate }}</h2>
-        <p>{{ 'OPPORTUNITIES.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone} }}</p>
+        <p>{{ 'OPPORTUNITIES.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone } }}</p>
       </ion-label>
     </ion-list-header>
     <ion-item>

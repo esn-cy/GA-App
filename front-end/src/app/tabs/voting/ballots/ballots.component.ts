@@ -10,7 +10,7 @@ import { BallotVotesDetailStandaloneComponent } from './ballotVotesDetail.compon
 
 import { AppService } from '@app/app.service';
 
-import { VotingMajorityTypes, VotingSession, VotingBallot } from '@models/votingSession.model';
+import { VotingBallot, VotingMajorityTypes, VotingSession } from '@models/votingSession.model';
 import { VotingResults } from '@models/votingResult.model';
 
 @Component({
@@ -158,6 +158,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
   chartCanvasBaseId: string;
 
   constructor(private popoverCtrl: PopoverController, private t: IDEATranslationsService, public app: AppService) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.results || changes.raw) {
       this.charts.forEach(chart => chart?.destroy());
@@ -167,6 +168,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       setTimeout((): void => this.buildCharts(), 300);
     }
   }
+
   ngOnDestroy(): void {
     this.charts.forEach(chart => chart?.destroy());
   }
@@ -186,6 +188,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
     if (!this.raw) return options;
     return [...options, this.t._('VOTING.ABSTAIN'), this.t._('VOTING.ABSENT')];
   }
+
   getResultOfBallotOptionBasedOnRaw(bIndex: number, oIndex: number): number {
     if (this.raw) return this.results[bIndex][oIndex].value;
     const oResults = Object.values(this.results[bIndex]);
@@ -193,6 +196,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
     const totNoAbstainAndAbsent = oResultsNoAbstainAndAbsent.reduce((tot, acc): number => (tot += acc.value), 0);
     return totNoAbstainAndAbsent > 0 ? this.results[bIndex][oIndex].value / totNoAbstainAndAbsent : 0;
   }
+
   getWinningBallotOptionIndex(bIndex: number): number | -1 {
     const oResults = Object.values(this.results[bIndex]);
     const oResultsNoAbstainAndAbsent = oResults.slice(0, oResults.length - 2);
@@ -207,7 +211,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       (_, oIndex): boolean =>
         oIndex !== winnerOptionIndex &&
         this.getResultOfBallotOptionBasedOnRaw(bIndex, oIndex) ===
-          this.getResultOfBallotOptionBasedOnRaw(bIndex, winnerOptionIndex)
+        this.getResultOfBallotOptionBasedOnRaw(bIndex, winnerOptionIndex)
     );
     if (moreWinningResultsWithSameValue) return -1;
 

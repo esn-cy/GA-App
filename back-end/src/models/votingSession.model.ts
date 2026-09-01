@@ -211,12 +211,14 @@ export class VotingSession extends Resource {
   hasStarted(): boolean {
     return this.startsAt && this.startsAt < new Date().toISOString();
   }
+
   /**
    * Whether the voting session has started and ended.
    */
   hasEnded(): boolean {
     return this.hasStarted() && this.endsAt < new Date().toISOString();
   }
+
   /**
    * Whether the voting session is in progress (started but not ended).
    */
@@ -258,6 +260,7 @@ export class VotingSession extends Resource {
   getSortedVoters(): Voter[] {
     return this.voters.sort((a, b): number => a.name.localeCompare(b.name));
   }
+
   /**
    * Get the voters who didn't vote (absent).
    * Note: either a voter is present for all the ballots or they are absents for all the ballots.

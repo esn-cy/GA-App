@@ -20,6 +20,7 @@ export class ConfigurationsService {
   async update(configurations: Configurations): Promise<Configurations> {
     return new Configurations(await this.api.putResource('configurations', { body: configurations }));
   }
+
   /**
    * Ban a user by its ID.
    */
@@ -37,6 +38,7 @@ export class ConfigurationsService {
     const action = 'SET_EMAIL_TEMPLATE';
     await this.api.patchResource('configurations', { body: { action, template, subject, content } });
   }
+
   /**
    * Reset the email template.
    */
@@ -44,6 +46,7 @@ export class ConfigurationsService {
     const action = 'RESET_EMAIL_TEMPLATE';
     await this.api.patchResource('configurations', { body: { action, template } });
   }
+
   /**
    * Get the email template.
    */
@@ -51,6 +54,7 @@ export class ConfigurationsService {
     const action = 'GET_EMAIL_TEMPLATE';
     return await this.api.patchResource('configurations', { body: { action, template } });
   }
+
   /**
    * Test the email template.
    */

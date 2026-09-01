@@ -24,6 +24,7 @@ class ScheduledOps extends GenericController {
       this.done(new HandledError('ERROR IN SCHEDULED OPS'));
     }
   }
+
   private async closeTopicsWithPastDeadline(): Promise<void> {
     const now = new Date().toISOString();
     const topics = await ddb.scan({ TableName: DDB_TABLES.topics, IndexName: 'topicId-willCloseAt-index' });
@@ -42,6 +43,7 @@ class ScheduledOps extends GenericController {
       }
     }
   }
+
   private async closeOpportunitiesWithPastDeadline(): Promise<void> {
     const now = new Date().toISOString();
     const opportunities = await ddb.scan({

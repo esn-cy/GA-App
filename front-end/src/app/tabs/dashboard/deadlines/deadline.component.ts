@@ -95,6 +95,7 @@ export class DeadlineComponent {
     if (isTomorrow(date)) return 'warning';
     else return 'light';
   }
+
   getDeadlineLabel(): string {
     const date = new Date(this.deadline.at);
     if (isToday(date)) return this.t._('DEADLINES.TODAY');

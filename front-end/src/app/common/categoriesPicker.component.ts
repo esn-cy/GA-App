@@ -59,6 +59,7 @@ export class CategoriesPickerComponent implements OnInit {
   categories: TopicCategoryAttached[];
 
   constructor(private _categories: TopicCategoryService) {}
+
   async ngOnInit(): Promise<void> {
     this.categories = await this._categories.getList();
   }

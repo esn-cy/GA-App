@@ -140,6 +140,7 @@ class AnswersClaps extends ResourceController {
       return 0;
     }
   }
+
   private async getNumAnswersClappedByUser(): Promise<number> {
     try {
       const claps = await ddb.query({

@@ -2,7 +2,7 @@ import { Resource } from 'idea-toolbox';
 
 import { cleanESNAccountsIdForURL } from './utils';
 
-import { User, getUserOrigin } from './user.model';
+import { getUserOrigin, User } from './user.model';
 import { UsersOriginDisplayOptions } from './configurations.model';
 
 /**

@@ -1,4 +1,4 @@
-import { Resource, epochISOString } from 'idea-toolbox';
+import { epochISOString, Resource } from 'idea-toolbox';
 
 /**
  * The voting ticket of a voter in a sessions.

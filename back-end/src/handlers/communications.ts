@@ -117,6 +117,7 @@ class Communications extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async manageArchive(archive: boolean): Promise<Communication> {
     if (!(this.galaxyUser.isAdministrator || this.galaxyUser.canManageDashboard))
       throw new HandledError('Unauthorized');

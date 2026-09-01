@@ -11,7 +11,9 @@ import { UsefulLink } from '@models/usefulLink.model';
   selector: 'app-useful-link',
   template: `
     <ion-item [color]="color" *ngIf="!link">
-      <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+      <ion-label>
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-label>
     </ion-item>
     <ion-item [color]="color" *ngIf="link" [button]="button" (click)="select.emit()">
       <ion-icon slot="start" icon="link" color="primary" size="small"></ion-icon>

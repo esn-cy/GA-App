@@ -36,6 +36,7 @@ export class ArchivePage implements OnInit {
     private _events: GAEventsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     [this.categories, this.events] = await Promise.all([
       this._categories.getList({ all: true }),

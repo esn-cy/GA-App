@@ -45,6 +45,7 @@ export class ConfigurationsPage implements OnInit {
     public _badges: BadgesService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     this.configurations = await this._configurations.get();
     this.filterBadges(null, null, true);
@@ -53,15 +54,19 @@ export class ConfigurationsPage implements OnInit {
   addAdministrator(): void {
     this.addUserToList('administratorsIds', 'ADD_ADMINISTRATOR');
   }
+
   addOpportunitiesManager(): void {
     this.addUserToList('opportunitiesManagersIds', 'ADD_OPPORTUNITIES_MANAGER');
   }
+
   addDashboardManager(): void {
     this.addUserToList('dashboardManagersIds', 'ADD_DASHBOARD_MANAGER');
   }
+
   addBannedUser(): void {
     this.addUserToList('bannedUsersIds', 'ADD_BANNED_USER');
   }
+
   private async addUserToList(listKey: string, translationKey: string): Promise<void> {
     const doAdd = async ({ userId }): Promise<void> => {
       if (!userId) return;
@@ -85,15 +90,19 @@ export class ConfigurationsPage implements OnInit {
   removeAdministratorById(userId: string): void {
     this.removeUserFromListById(userId, 'administratorsIds');
   }
+
   removeOpportunitiesManagerById(userId: string): void {
     this.removeUserFromListById(userId, 'opportunitiesManagersIds');
   }
+
   removeDashboardManagerById(userId: string): void {
     this.removeUserFromListById(userId, 'dashboardManagersIds');
   }
+
   removeBannedUserById(userId: string): void {
     this.removeUserFromListById(userId, 'bannedUsersIds');
   }
+
   private async removeUserFromListById(userId: string, listKey: string): Promise<void> {
     const doRemove = async (): Promise<void> => {
       const newConfigurations = new Configurations(this.configurations);
@@ -145,6 +154,7 @@ export class ConfigurationsPage implements OnInit {
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
     await alert.present();
   }
+
   async changeAppSubtitle(): Promise<void> {
     const header = this.t._('CONFIGURATIONS.APP_SUBTITLE');
     const inputs: any[] = [{ name: 'appSubtitle', type: 'text', value: this.configurations.appSubtitle }];
@@ -161,6 +171,7 @@ export class ConfigurationsPage implements OnInit {
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
     await alert.present();
   }
+
   async changeSupportEmail(): Promise<void> {
     const header = this.t._('CONFIGURATIONS.SUPPORT_EMAIL');
     const inputs: any[] = [{ name: 'supportEmail', type: 'text', value: this.configurations.supportEmail }];
@@ -177,6 +188,7 @@ export class ConfigurationsPage implements OnInit {
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
     await alert.present();
   }
+
   async uploadAppLogo({ target }, darkMode = false): Promise<void> {
     const file = target.files[0];
     if (!file) return;
@@ -195,6 +207,7 @@ export class ConfigurationsPage implements OnInit {
       this.loading.hide();
     }
   }
+
   async resetAppLogo(darkMode = false): Promise<void> {
     const doReset = async (): Promise<void> => {
       const newConfigurations = new Configurations(this.configurations);
@@ -211,21 +224,25 @@ export class ConfigurationsPage implements OnInit {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async setVisibilityQATopicsFeature(show: boolean): Promise<void> {
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideQATopics = !show;
     await this.updateConfigurations(newConfigurations);
   }
+
   async setVisibilityOpportunitiesFeature(show: boolean): Promise<void> {
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideOpportunities = !show;
     await this.updateConfigurations(newConfigurations);
   }
+
   async setVisibilityVotingFeature(show: boolean): Promise<void> {
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideVoting = !show;
     await this.updateConfigurations(newConfigurations);
   }
+
   async setVisibilityBadgesFeature(show: boolean): Promise<void> {
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideBadges = !show;
@@ -240,13 +257,16 @@ export class ConfigurationsPage implements OnInit {
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }
+
   async openBadgesModal(): Promise<void> {
     const modal = await this.modalCtrl.create({ component: GiveBadgesComponent });
     await modal.present();
   }
+
   async addCustomBadge(): Promise<void> {
     await this.manageCustomBadge(new Badge());
   }
+
   async manageCustomBadge(badge: Badge): Promise<void> {
     const componentProps = { badge };
     const modal = await this.modalCtrl.create({ component: ManageBadgesComponent, componentProps });

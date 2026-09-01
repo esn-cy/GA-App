@@ -55,6 +55,7 @@ export class QuestionComponent implements OnChanges {
     private _drafts: UserDraftsService,
     public app: AppService
   ) {}
+
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.question?.currentValue)
       [this.answers, this.userUpvoted, this.userClapped, this.fromDraft] = await Promise.all([
@@ -80,6 +81,7 @@ export class QuestionComponent implements OnChanges {
       this.message.error('COMMON.OPERATION_FAILED');
     }
   }
+
   async clapAnswer(clap: boolean, answer: Answer): Promise<void> {
     try {
       this.userClapped[answer.answerId] = clap;
@@ -123,6 +125,7 @@ export class QuestionComponent implements OnChanges {
     this.newAnswer = new Answer({ creator: Subject.fromUser(this.app.user), questionId: this.question.questionId });
     if (this.fromDraft) this.newAnswer.text = this.fromDraft.text;
   }
+
   async cancelNewAnswer(): Promise<void> {
     if (!this.newAnswer.text) {
       this.newAnswer = null;
@@ -138,6 +141,7 @@ export class QuestionComponent implements OnChanges {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async sendNewAnswer(): Promise<void> {
     this.errors = new Set(this.newAnswer.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
@@ -174,6 +178,7 @@ export class QuestionComponent implements OnChanges {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -195,6 +200,7 @@ export class QuestionComponent implements OnChanges {
       this.loading.hide();
     }
   }
+
   async deleteDraft(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -221,6 +227,7 @@ export class QuestionComponent implements OnChanges {
   getLastAnswer(): Answer {
     return this.answers?.length ? this.answers[this.answers.length - 1] : null;
   }
+
   async deleteLastAnswer(): Promise<void> {
     const lastAnswer = this.getLastAnswer();
     if (!lastAnswer) return;

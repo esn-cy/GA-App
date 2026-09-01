@@ -51,6 +51,7 @@ export class ManageTopicPage {
     private _media: MediaService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     if (!this.app.user.isAdministrator) return this.app.closePage('COMMON.UNAUTHORIZED');
 
@@ -108,6 +109,7 @@ export class ManageTopicPage {
   shouldResetDeadlineForQuestions(): void {
     if (!this.hasDeadlineForQuestions) this.topic.willCloseAt = null;
   }
+
   shouldResetDeadlineForAnswers(): void {
     if (!this.hasDeadlineForAnswers) this.topic.acceptAnswersUntil = null;
   }
@@ -115,9 +117,11 @@ export class ManageTopicPage {
   addSubject(): void {
     this.topic.subjects.push(new Subject({ type: SubjectTypes.USER }));
   }
+
   removeSubject(subject: Subject): void {
     this.topic.subjects.splice(this.topic.subjects.indexOf(subject), 1);
   }
+
   addFirstSubjectWithUserData(): void {
     if (this.topic.subjects.length) return;
     this.topic.subjects.push(Subject.fromUser(this.app.user));
@@ -156,9 +160,11 @@ export class ManageTopicPage {
       this.loading.hide();
     }
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
+
   private async handleChangesInRelated(): Promise<void> {
     const checkedTopics = this.relatedTopicsChecks.filter(x => x.checked).map(x => String(x.value));
     const toRemove = this.relatedTopics.filter(x => !checkedTopics.includes(x.topicId)).map(x => x.topicId);
@@ -207,6 +213,7 @@ export class ManageTopicPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async archiveTopic(archive = true): Promise<void> {
     const doArchive = async (): Promise<void> => {
       try {
@@ -231,6 +238,7 @@ export class ManageTopicPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async deleteTopic(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -254,6 +262,7 @@ export class ManageTopicPage {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async duplicateTopic(): Promise<void> {
     const doDuplicate = async (): Promise<void> => {
       try {
@@ -287,6 +296,7 @@ export class ManageTopicPage {
     this.entityBeforeChange = new Topic(this.topic);
     this.editMode = UXMode.EDIT;
   }
+
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['topics'], { back: true });
     else {
@@ -296,6 +306,7 @@ export class ManageTopicPage {
       this.setUIHelpersForComplexFields();
     }
   }
+
   private setUIHelpersForComplexFields(): void {
     this.hasDeadlineForQuestions = !!this.topic.willCloseAt;
     this.hasDeadlineForAnswers = !!this.topic.acceptAnswersUntil;
@@ -308,6 +319,7 @@ export class ManageTopicPage {
   browseImagesForElementId(elementId: string): void {
     document.getElementById(elementId).click();
   }
+
   async uploadImageForSubject(subject: Subject, { target }): Promise<void> {
     const file = target.files[0];
     if (!file) return;

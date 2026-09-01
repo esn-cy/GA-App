@@ -115,6 +115,7 @@ export class GiveBadgesComponent implements OnInit {
     public _badges: BadgesService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     this.badges = await this._badges.getList();
   }

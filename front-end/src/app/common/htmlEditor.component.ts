@@ -1,6 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SecurityContext,
+  SimpleChanges
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { SecurityContext } from '@angular/core';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { docsSoap } from 'docs-soap';
 
@@ -58,9 +66,11 @@ export class HTMLEditorComponent implements OnInit, OnChanges {
   sanitizedHtml: string;
 
   constructor(private sanitizer: DomSanitizer) {}
+
   ngOnInit(): void {
     this.text = this.content;
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.editMode) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.content);
   }

@@ -92,6 +92,7 @@ class ConfigurationsRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private getSESTemplateName(emailTemplate: EmailTemplates): string {
     switch (emailTemplate) {
       case EmailTemplates.QUESTIONS:
@@ -110,6 +111,7 @@ class ConfigurationsRC extends ResourceController {
         throw new HandledError("Template doesn't exist");
     }
   }
+
   private async getEmailTemplate(emailTemplate: EmailTemplates): Promise<{ subject: string; content: string }> {
     const templateName = this.getSESTemplateName(emailTemplate);
     try {
@@ -121,6 +123,7 @@ class ConfigurationsRC extends ResourceController {
       return { subject: template.Subject, content: template.Html };
     }
   }
+
   private async setEmailTemplate(emailTemplate: EmailTemplates, subject: string, content: string): Promise<void> {
     if (!subject) throw new HandledError('Missing subject');
     if (!content) throw new HandledError('Missing content');
@@ -128,6 +131,7 @@ class ConfigurationsRC extends ResourceController {
     const templateName = this.getSESTemplateName(emailTemplate);
     await ses.setTemplate(`${templateName}-${STAGE}`, subject, content, true);
   }
+
   private async testEmailTemplate(emailTemplate: EmailTemplates): Promise<void> {
     const toAddresses = [this.galaxyUser.email];
     const templateName = this.getSESTemplateName(emailTemplate);
@@ -153,6 +157,7 @@ class ConfigurationsRC extends ResourceController {
       throw new HandledError('Sending failed');
     }
   }
+
   private async resetEmailTemplate(emailTemplate: EmailTemplates): Promise<void> {
     const templateName = this.getSESTemplateName(emailTemplate);
     const content = await s3.getObjectAsText({

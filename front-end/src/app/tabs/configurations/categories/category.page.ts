@@ -32,6 +32,7 @@ export class CategoryPage {
     private _categories: TopicCategoryService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -68,6 +69,7 @@ export class CategoryPage {
       this.loading.hide();
     }
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -94,6 +96,7 @@ export class CategoryPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async deleteCategory(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -123,6 +126,7 @@ export class CategoryPage {
     this.entityBeforeChange = new TopicCategory(this.category);
     this.editMode = UXMode.EDIT;
   }
+
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.closePage();
     else {

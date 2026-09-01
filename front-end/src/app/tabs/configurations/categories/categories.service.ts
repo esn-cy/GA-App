@@ -29,6 +29,7 @@ export class TopicCategoryService {
     const categories: TopicCategory[] = await this.api.getResource('categories', { params });
     this.categories = categories.map(x => new TopicCategory(x));
   }
+
   /**
    * Get (and optionally filter) the list of categories.
    * Note: it's a slice of the array.
@@ -93,6 +94,7 @@ export class TopicCategoryService {
   async archive(category: TopicCategory): Promise<void> {
     await this.api.patchResource(['categories', category.categoryId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive a category.
    */

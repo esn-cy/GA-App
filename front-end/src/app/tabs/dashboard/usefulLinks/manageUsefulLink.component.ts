@@ -102,6 +102,7 @@ export class ManageUsefulLinkComponent {
       this.loading.hide();
     }
   }
+
   close(): void {
     this.modalCtrl.dismiss();
   }

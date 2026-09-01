@@ -7,11 +7,14 @@ ion-card.votingSessionCard {
 
   ion-card-header {
     padding-bottom: 0;
+
     ion-card-title {
       margin-top: 6px;
     }
+
     p.badges {
       margin-bottom: 0;
+
       ion-badge {
         margin-right: 6px;
       }
@@ -20,8 +23,10 @@ ion-card.votingSessionCard {
 
   ion-accordion div[slot='content'] {
     background-color: var(--ion-color-white);
+
     ion-item {
       --min-height: 32px;
+
       ion-label {
         margin: 0;
       }

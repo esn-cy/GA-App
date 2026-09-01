@@ -151,7 +151,8 @@
       <ion-col [size]="12" [sizeLg]="6" *ngIf="currentQuestion">
         <p *ngIf="!app.isInMobileMode()">
           <ion-button color="medium" fill="clear" (click)="selectQuestion(null)">
-            <ion-icon slot="start" name="close"></ion-icon> {{ 'COMMON.CLOSE' | translate }}
+            <ion-icon slot="start" name="close"></ion-icon>
+            {{ 'COMMON.CLOSE' | translate }}
           </ion-button>
         </p>
         <app-question
@@ -184,7 +185,8 @@
           <ion-row class="ion-margin">
             <ion-col>
               <ion-button fill="clear" color="dark" (click)="cancelNewQuestion()">
-                {{ 'COMMON.CANCEL' | translate }} <ion-icon icon="close" slot="start"></ion-icon>
+                {{ 'COMMON.CANCEL' | translate }}
+                <ion-icon icon="close" slot="start"></ion-icon>
               </ion-button>
             </ion-col>
             <ion-col class="ion-text-right">
@@ -192,7 +194,8 @@
                 {{ 'DRAFTS.SAVE_AS_DRAFT' | translate }}
               </ion-button>
               <ion-button (click)="sendNewQuestion()">
-                {{ 'COMMON.SEND' | translate }} <ion-icon icon="send" slot="end"></ion-icon>
+                {{ 'COMMON.SEND' | translate }}
+                <ion-icon icon="send" slot="end"></ion-icon>
               </ion-button>
             </ion-col>
           </ion-row>

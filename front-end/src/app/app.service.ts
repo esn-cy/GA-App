@@ -51,6 +51,7 @@ export class AppService {
   ) {
     this.darkMode = this.respondToColorSchemePreferenceChanges();
   }
+
   private respondToColorSchemePreferenceChanges(): boolean {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => (this.darkMode = e.matches));
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -62,6 +63,7 @@ export class AppService {
   isDeveloperMode(): boolean {
     return env.debug;
   }
+
   /**
    * Open an alert to get the token for running requests against this project's API.
    */
@@ -77,6 +79,7 @@ export class AppService {
   isInMobileMode(): boolean {
     return this.platform.width() < 992;
   }
+
   /**
    * Whether the current color scheme preference is set to dark.
    */
@@ -90,6 +93,7 @@ export class AppService {
   reloadApp(): void {
     window.location.assign('');
   }
+
   /**
    * Navigate to a page by its path.
    */
@@ -98,12 +102,14 @@ export class AppService {
     else if (options.root) this.navCtrl.navigateRoot(path, options);
     else this.navCtrl.navigateForward(path, options);
   }
+
   /**
    * Navigate to a page in the tabs routing by its path.
    */
   goToInTabs(path: string[], options: { back?: boolean; root?: boolean; queryParams?: Params } = {}): void {
     this.goTo(['t', ...path], options);
   }
+
   /**
    * Close the current page and navigate back, optionally displaying an error message.
    */
@@ -122,6 +128,7 @@ export class AppService {
   getImageURLByURI(imageURI: string): string {
     return THUMBNAILS_BASE_URL.concat(imageURI, '.png');
   }
+
   /**
    * Load a fallback URL when an avatar is missing.
    */
@@ -129,6 +136,7 @@ export class AppService {
     const fallbackURL = star ? ESN_STAR_FALLBACK_URL : AVATAR_FALLBACK_URL;
     if (targetImg && targetImg.src !== fallbackURL) targetImg.src = AVATAR_FALLBACK_URL;
   }
+
   /**
    * Get the URL to the fallback avatar's image.
    */
@@ -189,6 +197,7 @@ export class AppService {
     const windowName = this.platform.is('ios') ? '_parent' : '_blank';
     await Browser.open({ url, windowName });
   }
+
   /**
    * Open a user profile on ESN Accounts by its ID.
    */

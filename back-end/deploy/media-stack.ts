@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import * as S3 from 'aws-cdk-lib/aws-s3';

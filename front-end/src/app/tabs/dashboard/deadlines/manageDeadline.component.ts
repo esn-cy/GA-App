@@ -157,6 +157,7 @@ export class ManageDeadlineComponent {
       this.loading.hide();
     }
   }
+
   close(): void {
     this.modalCtrl.dismiss();
   }

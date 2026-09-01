@@ -124,6 +124,7 @@ class OpportunitiesRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async manageStatus(open: boolean): Promise<Opportunity> {
     if (!this.opportunity.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -133,6 +134,7 @@ class OpportunitiesRC extends ResourceController {
     await ddb.put({ TableName: DDB_TABLES.opportunities, Item: this.opportunity });
     return this.opportunity;
   }
+
   private async manageArchive(archive: boolean): Promise<Opportunity> {
     if (!this.opportunity.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 

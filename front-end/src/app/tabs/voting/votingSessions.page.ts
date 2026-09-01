@@ -32,18 +32,22 @@ export class VotingSessionsPage implements OnInit {
     private _events: GAEventsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     await this.loadResources();
   }
+
   ionViewDidEnter(): void {
     this.filter(null, null, true);
   }
+
   private async loadResources(): Promise<void> {
     [this.votingSessions, this.events] = await Promise.all([
       this._voting.getActiveList({ force: true, withPagination: true }),
       this._events.getList()
     ]);
   }
+
   async handleRefresh(refresh: IonRefresher): Promise<void> {
     this.votingSessions = null;
     await this.loadResources();
@@ -70,6 +74,7 @@ export class VotingSessionsPage implements OnInit {
   goToVotingSession(votingSession: VotingSession): void {
     this.app.goToInTabs(['voting', votingSession.sessionId]);
   }
+
   async addVotingSession(): Promise<void> {
     const header = this.t._('VOTING.CHOOSE_TYPE');
     const buttons = [

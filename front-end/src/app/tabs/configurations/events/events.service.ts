@@ -29,6 +29,7 @@ export class GAEventsService {
     const events: GAEvent[] = await this.api.getResource('events', { params });
     this.events = events.map(x => new GAEvent(x));
   }
+
   /**
    * Get (and optionally filter) the list of events.
    * Note: it's a slice of the array.
@@ -93,6 +94,7 @@ export class GAEventsService {
   async archive(event: GAEvent): Promise<void> {
     await this.api.patchResource(['events', event.eventId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive an event.
    */

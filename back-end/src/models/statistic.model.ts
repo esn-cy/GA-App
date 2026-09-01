@@ -28,20 +28,25 @@ export class StatisticEntry extends Resource {
   static getPK(entityType: StatisticEntityTypes, entityId?: string): string {
     return [entityType, entityId].filter(x => x).join('###');
   }
+
   static getSK(userId: string): string {
     return [StatisticEntry.generateTimestamp(), StatisticEntry.getHashOfString(userId)].join('###');
   }
+
   static generateTimestamp(input?: string | number | Date, addHours = 0): string {
     const d = input ? new Date(input) : new Date();
     d.setHours(d.getHours() + addHours);
     return d.toISOString().slice(0, 13);
   }
+
   static getTimestamp(entry: StatisticEntry): string {
     return entry.SK.split('###')[0];
   }
+
   static getUserHash(entry: StatisticEntry): string {
     return entry.SK.split('###')[1];
   }
+
   private static getHashOfString(s: string): string {
     return s
       .split('')

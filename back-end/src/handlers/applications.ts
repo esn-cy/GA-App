@@ -102,6 +102,7 @@ class ApplicationsRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async getSignedURLToUploadAttachment(): Promise<SignedURL> {
     const attachmentId = await ddb.IUNID(ATTACHMENTS_PREFIX);
 
@@ -173,6 +174,7 @@ class ApplicationsRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async getSignedURLToDownloadAttachmentByExpectedName(expectedName: string): Promise<SignedURL> {
     const attachment = this.application.attachments[expectedName];
     if (!attachment || !attachment.attachmentId.startsWith(ATTACHMENTS_PREFIX)) throw new HandledError('Not found');
@@ -184,6 +186,7 @@ class ApplicationsRC extends ResourceController {
     const filename = attachment.name.concat('.', attachment.format);
     return await s3.signedURLGet(S3_BUCKET_MEDIA, key, { filename });
   }
+
   private async reviewApplication(approve: boolean, message: string): Promise<Application> {
     if (this.opportunity.isArchived()) throw new HandledError('Opportunity is archived');
     if (!this.opportunity.canUserManage(this.galaxyUser)) throw new Error('Unauthorized');
@@ -213,6 +216,7 @@ class ApplicationsRC extends ResourceController {
 
     return this.application;
   }
+
   private async sendNotificationToApplicantUser(approved: boolean, message: string): Promise<void> {
     const { email } = this.application.subject;
     if (!email) return;

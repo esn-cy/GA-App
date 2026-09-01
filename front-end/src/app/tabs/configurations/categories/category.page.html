@@ -9,13 +9,15 @@
   <ion-list class="aList maxWidthContainer" [lines]="editMode ? 'full': 'none'" *ngIf="category">
     <ion-item [class.fieldHasError]="hasFieldAnError('name')">
       <ion-label position="stacked">
-        {{ 'CATEGORIES.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
+        {{ 'CATEGORIES.NAME' | translate }}
+        <ion-text class="obligatoryDot"></ion-text>
       </ion-label>
       <ion-input [(ngModel)]="category.name" [disabled]="!editMode"></ion-input>
     </ion-item>
     <ion-item [class.fieldHasError]="hasFieldAnError('color')">
       <ion-label position="stacked">
-        {{ 'CATEGORIES.COLOR' | translate }} <ion-text class="obligatoryDot"></ion-text>
+        {{ 'CATEGORIES.COLOR' | translate }}
+        <ion-text class="obligatoryDot"></ion-text>
       </ion-label>
       <ion-select interface="popover" [(ngModel)]="category.color" [disabled]="!editMode">
         <ion-select-option *ngFor="let color of colors">{{ color }}</ion-select-option>

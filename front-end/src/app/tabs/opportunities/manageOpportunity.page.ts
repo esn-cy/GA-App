@@ -36,6 +36,7 @@ export class ManageOpportunityPage {
     private _opportunities: OpportunitiesService,
     public app: AppService
   ) {}
+
   async ionViewWillEnter(): Promise<void> {
     try {
       await this.loading.show();
@@ -82,9 +83,11 @@ export class ManageOpportunityPage {
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
     alert.present();
   }
+
   removeExpectedAttachment(expectedAttachment: OpportunityApplicationAttachment): void {
     this.opportunity.expectedAttachments.splice(this.opportunity.expectedAttachments.indexOf(expectedAttachment), 1);
   }
+
   reorderExpectedAttachments({ detail }): void {
     this.opportunity.expectedAttachments = detail.complete(this.opportunity.expectedAttachments);
   }
@@ -108,6 +111,7 @@ export class ManageOpportunityPage {
     const alert = await this.alertCtrl.create({ header, message, inputs, buttons });
     await alert.present();
   }
+
   async removeOpportunityManagerById(userId: string): Promise<void> {
     const index = this.opportunity.additionalManagersIds.indexOf(userId);
     if (index !== -1) this.opportunity.additionalManagersIds.splice(index, 1);
@@ -132,6 +136,7 @@ export class ManageOpportunityPage {
       this.loading.hide();
     }
   }
+
   hasFieldAnError(field: string): boolean {
     return this.errors.has(field);
   }
@@ -158,6 +163,7 @@ export class ManageOpportunityPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async archiveOpportunity(archive = true): Promise<void> {
     const doArchive = async (): Promise<void> => {
       try {
@@ -180,6 +186,7 @@ export class ManageOpportunityPage {
     const alert = await this.alertCtrl.create({ header, buttons });
     alert.present();
   }
+
   async deleteOpportunity(): Promise<void> {
     const doDelete = async (): Promise<void> => {
       try {
@@ -202,6 +209,7 @@ export class ManageOpportunityPage {
     const alert = await this.alertCtrl.create({ header, message, buttons });
     alert.present();
   }
+
   async duplicateOpportunity(): Promise<void> {
     const doDuplicate = async (): Promise<void> => {
       try {
@@ -234,6 +242,7 @@ export class ManageOpportunityPage {
     this.entityBeforeChange = new Opportunity(this.opportunity);
     this.editMode = UXMode.EDIT;
   }
+
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['opportunities'], { back: true });
     else {
@@ -243,6 +252,7 @@ export class ManageOpportunityPage {
       this.setUIHelpersForComplexFields();
     }
   }
+
   private setUIHelpersForComplexFields(): void {
     this.hasDeadline = !!this.opportunity.willCloseAt;
     if (this.opportunity.publishedSince) {

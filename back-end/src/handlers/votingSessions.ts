@@ -172,6 +172,7 @@ class VotingSessionsRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async startVotingSession(endsAt: epochISOString, timezone: string): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -224,6 +225,7 @@ class VotingSessionsRC extends ResourceController {
 
     return this.votingSession;
   }
+
   private async sendVotingTicketToVoter(ticket: VotingTicket, email = ticket.voterEmail): Promise<void> {
     const template = `notify-voting-instructions-${STAGE}`;
     const templateData = {
@@ -235,6 +237,7 @@ class VotingSessionsRC extends ResourceController {
     const sesConfig = { ...SES_CONFIG, sourceName: appTitle };
     await ses.sendTemplatedEmail({ toAddresses: [email], template, templateData }, sesConfig);
   }
+
   private async getVotingSessionTicketsStatus(): Promise<VotingTicket[]> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -249,6 +252,7 @@ class VotingSessionsRC extends ResourceController {
     votingTickets.forEach(x => delete x.token); // for security reasons, we don't expose the token
     return votingTickets;
   }
+
   private async extendEndOfVotingSession(endsAt: epochISOString, timezone: string): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -268,6 +272,7 @@ class VotingSessionsRC extends ResourceController {
     });
     return this.votingSession;
   }
+
   private async stopVotingSessionPrematurely(): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -282,6 +287,7 @@ class VotingSessionsRC extends ResourceController {
     });
     return this.votingSession;
   }
+
   private async resendVotingLinkToVoter(voterId: string, email: string): Promise<void> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -292,6 +298,7 @@ class VotingSessionsRC extends ResourceController {
     );
     await this.sendVotingTicketToVoter(votingTicket, email);
   }
+
   private async getVotingTokenOfVoter(voterId: string): Promise<VotingTicket> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -301,6 +308,7 @@ class VotingSessionsRC extends ResourceController {
       await ddb.get({ TableName: DDB_TABLES.votingTickets, Key: { sessionId: this.votingSession.sessionId, voterId } })
     );
   }
+
   private async checkWhetherSessionShouldEndEarly(): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -326,6 +334,7 @@ class VotingSessionsRC extends ResourceController {
     });
     return this.votingSession;
   }
+
   private async getFormVotingResults(): Promise<VotingResults> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
@@ -364,6 +373,7 @@ class VotingSessionsRC extends ResourceController {
 
     return votingResults;
   }
+
   private async publishFormVotingResults(): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
     if (!this.votingSession.isForm()) throw new HandledError('Session is immediate');
@@ -381,6 +391,7 @@ class VotingSessionsRC extends ResourceController {
 
     return this.votingSession;
   }
+
   private async setImmediateVotingResults(
     results: VotingResults,
     participantVoters: string[],
@@ -406,6 +417,7 @@ class VotingSessionsRC extends ResourceController {
 
     return this.votingSession;
   }
+
   private async manageArchive(archive: boolean): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 

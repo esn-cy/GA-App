@@ -16,7 +16,8 @@ export class QuestionsService {
    */
   MAX_PAGE_SIZE = 24;
 
-  constructor(private api: IDEAApiService, private app: AppService) {}
+  constructor(private api: IDEAApiService, private app: AppService) {
+  }
 
   /**
    * Load the questions in a topic from the back-end.
@@ -25,6 +26,7 @@ export class QuestionsService {
     const questions: Question[] = await this.api.getResource(['topics', topic.topicId, 'questions']);
     this.questions = questions.map(x => new Question(x));
   }
+
   /**
    * Get (and optionally filter) the list of questions in a topic.
    * Note: it's a slice of the array.
@@ -97,6 +99,7 @@ export class QuestionsService {
     const path = ['topics', topic.topicId, 'questions', question.questionId, 'upvotes'];
     await this.api.postResource(path);
   }
+
   /**
    * Cancel the upvote to a question.
    */
@@ -104,6 +107,7 @@ export class QuestionsService {
     const path = ['topics', topic.topicId, 'questions', question.questionId, 'upvotes'];
     await this.api.deleteResource(path);
   }
+
   /**
    * Whether the current user upvoted the question.
    */
@@ -112,6 +116,7 @@ export class QuestionsService {
     const { upvoted } = await this.api.getResource(path);
     return upvoted;
   }
+
   /**
    * Get the users who upvoted the question (latest first).
    */
@@ -120,6 +125,7 @@ export class QuestionsService {
     const subjects: Subject[] = await this.api.getResource(path);
     return subjects.map(x => new Subject(x));
   }
+
   /**
    * Get the answers (to the question) for which the user clapped.
    */

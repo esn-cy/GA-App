@@ -126,6 +126,7 @@ export class ReviewApplicationStandaloneComponent implements OnInit {
     private _topics: TopicsService,
     public app: AppService
   ) {}
+
   ngOnInit(): void {
     this.reviewMessage = this.application.reviewMessage;
   }

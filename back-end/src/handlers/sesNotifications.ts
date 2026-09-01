@@ -3,7 +3,7 @@
 ///
 
 import { SNSEventRecord } from 'aws-lambda';
-import { GenericController, DynamoDB } from 'idea-aws';
+import { DynamoDB, GenericController } from 'idea-aws';
 
 ///
 /// CONSTANTS, ENVIRONMENT VARIABLES, HANDLER
@@ -53,6 +53,7 @@ class HandleSESNotifications extends GenericController {
       }
     }
   }
+
   private parseSNSMessage(snsRecord: SNSEventRecord): any {
     const messageStr = snsRecord?.Sns?.Message;
     if (!messageStr) return null;
@@ -68,6 +69,7 @@ class HandleSESNotifications extends GenericController {
     const emailsToBlock = (bounce?.bouncedRecipients ?? []).map(x => x.emailAddress);
     for (const email of emailsToBlock) await this.putEmailInBlockList(email);
   }
+
   private async putEmailInBlockList(email: string): Promise<void> {
     const expiresAt = Math.floor(Date.now() / 1000 + BOUNCES_NUM_DAYS_IN_BLOCK_LIST * 86400);
     const emailInBlockList: EmailInBlockList = { email, expiresAt };

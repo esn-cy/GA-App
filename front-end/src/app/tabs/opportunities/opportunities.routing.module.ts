@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { OpportunitiesPage } from './opportunities.page';
 import { OpportunityPage } from './opportunity.page';

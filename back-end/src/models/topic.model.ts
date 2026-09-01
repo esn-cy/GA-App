@@ -177,6 +177,7 @@ export class Topic extends Resource {
     if (!this.rolesAbleToInteract.length) return true;
     return User.isAllowedBasedOnRoles(user, this.rolesAbleToInteract);
   }
+
   /**
    * Whether the user is allowed to answer questions on the topic.
    * Only for `TopicTypes.STANDARD`.
@@ -204,6 +205,7 @@ export class Topic extends Resource {
     if (this.isArchived()) return true;
     return !!this.closedAt || (this.willCloseAt && this.willCloseAt < new Date().toISOString());
   }
+
   /**
    * Whether the topic is archived.
    */

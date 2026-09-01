@@ -23,6 +23,7 @@ export class OpportunitiesService {
     const opportunities: Opportunity[] = await this.api.getResource('opportunities');
     this.opportunities = opportunities.map(x => new Opportunity(x));
   }
+
   /**
    * Get (and optionally filter) the list of active opportunities.
    * Note: it's a slice of the array.
@@ -93,6 +94,7 @@ export class OpportunitiesService {
     const opportunities: Opportunity[] = await this.api.getResource('opportunities', { params });
     this.archivedOpportunities = opportunities.map(x => new Opportunity(x));
   }
+
   /**
    * Get (and optionally filter) the list of archived opportunities.
    * Note: it's a slice of the array.
@@ -171,6 +173,7 @@ export class OpportunitiesService {
   async open(opportunity: Opportunity): Promise<void> {
     await this.api.patchResource(['opportunities', opportunity.opportunityId], { body: { action: 'OPEN' } });
   }
+
   /**
    * Close an opportunity.
    */
@@ -184,6 +187,7 @@ export class OpportunitiesService {
   async archive(opportunity: Opportunity): Promise<void> {
     await this.api.patchResource(['opportunities', opportunity.opportunityId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive an opportunity.
    */

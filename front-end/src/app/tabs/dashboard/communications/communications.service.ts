@@ -26,6 +26,7 @@ export class CommunicationsService {
     const communications: Communication[] = await this.api.getResource('communications', { params });
     this.communications = communications.map(x => new Communication(x));
   }
+
   /**
    * Get (and optionally filter) the list of communications.
    * Note: it's a slice of the array.
@@ -95,6 +96,7 @@ export class CommunicationsService {
   async archive(communication: Communication): Promise<void> {
     await this.api.patchResource(['communications', communication.communicationId], { body: { action: 'ARCHIVE' } });
   }
+
   /**
    * Unarchive a communication.
    */

@@ -93,6 +93,7 @@ class TopicCategories extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async manageArchive(archive: boolean): Promise<TopicCategory> {
     if (!this.galaxyUser.isAdministrator) throw new HandledError('Unauthorized');
 

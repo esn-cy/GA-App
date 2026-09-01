@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 import { IDEATranslationsService } from '@idea-ionic/common';
 
@@ -28,6 +28,7 @@ export class ProfilePage implements OnInit {
   async ngOnInit(): Promise<void> {
     await this._badges.getList();
   }
+
   async ionViewDidEnter(): Promise<void> {
     this.userBadges = await this._badges.getListOfUserById(this._app.user.userId);
   }

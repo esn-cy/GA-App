@@ -124,6 +124,7 @@ export class Opportunity extends Resource {
     if (this.isArchived()) return true;
     return !!this.closedAt || (this.willCloseAt && this.willCloseAt < new Date().toISOString());
   }
+
   /**
    * Whether the opportunity is archived.
    */

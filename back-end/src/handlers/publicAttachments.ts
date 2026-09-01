@@ -43,6 +43,7 @@ class PublicAttachmentsRC extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async getSignedURLToUploadAttachment(): Promise<SignedURL> {
     const attachmentId = await ddb.IUNID(ATTACHMENTS_PREFIX);
 
@@ -52,6 +53,7 @@ class PublicAttachmentsRC extends ResourceController {
 
     return signedURL;
   }
+
   private async getSignedURLToDownloadAttachment(): Promise<SignedURL> {
     const { attachmentId, filename } = this.body;
     if (!attachmentId) throw new HandledError('Missing attachment ID');

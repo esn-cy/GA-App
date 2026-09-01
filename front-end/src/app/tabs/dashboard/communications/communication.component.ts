@@ -18,8 +18,12 @@ import { Communication } from '@models/communication.model';
         <ion-card-subtitle>
           <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
         </ion-card-subtitle>
-        <ion-card-title><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></ion-card-title>
-        <ion-card-subtitle><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-card-subtitle>
+        <ion-card-title>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-card-title>
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </ion-card-subtitle>
       </ion-card-header>
     </ion-card>
     <ion-card *ngIf="communication" [color]="color" [button]="button" (click)="select.emit()">
@@ -30,12 +34,14 @@ import { Communication } from '@models/communication.model';
           <ion-text color="medium" style="font-weight: 600">
             {{ communication.event?.name }}
           </ion-text>
-          <ion-text *ngIf="communication.event"> - </ion-text>
+          <ion-text *ngIf="communication.event"> -</ion-text>
           {{ communication.name }}
         </ion-card-title>
         <ion-card-subtitle>{{ communication.brief }}</ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content><ng-content></ng-content></ion-card-content>
+      <ion-card-content>
+        <ng-content></ng-content>
+      </ion-card-content>
     </ion-card>
   `,
   styles: [

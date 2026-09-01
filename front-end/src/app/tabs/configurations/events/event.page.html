@@ -9,7 +9,8 @@
   <ion-list class="aList maxWidthContainer" [lines]="editMode ? 'full': 'none'" *ngIf="event">
     <ion-item [class.fieldHasError]="hasFieldAnError('name')">
       <ion-label position="stacked">
-        {{ 'EVENTS.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
+        {{ 'EVENTS.NAME' | translate }}
+        <ion-text class="obligatoryDot"></ion-text>
       </ion-label>
       <ion-input [(ngModel)]="event.name" [disabled]="!editMode"></ion-input>
     </ion-item>

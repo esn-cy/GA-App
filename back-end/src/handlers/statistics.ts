@@ -118,6 +118,7 @@ class StatisticsRC extends ResourceController {
 
     return statistic;
   }
+
   private buildTimePointsBasedOnGranularity(
     sinceDate: string,
     toDate: string,

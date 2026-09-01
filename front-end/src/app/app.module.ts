@@ -8,9 +8,9 @@ import { AppRoutingModule } from './app.routing.module';
 
 import { registerLocaleData } from '@angular/common';
 import localeIt from '@angular/common/locales/it';
-registerLocaleData(localeIt, 'it');
+import { IDEAActionSheetModule, IDEATranslationsModule } from '@idea-ionic/common';
 
-import { IDEATranslationsModule, IDEAActionSheetModule } from '@idea-ionic/common';
+registerLocaleData(localeIt, 'it');
 
 @NgModule({
   declarations: [AppComponent],

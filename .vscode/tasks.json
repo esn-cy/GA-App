@@ -5,7 +5,10 @@
       "id": "environment",
       "description": "The environment you target",
       "type": "pickString",
-      "options": ["dev", "prod"],
+      "options": [
+        "dev",
+        "prod"
+      ],
       "default": "dev"
     }
   ],
@@ -14,9 +17,13 @@
       "label": "Deploy a back-end environment",
       "type": "shell",
       "command": "./deploy.sh",
-      "args": ["${input:environment}"],
+      "args": [
+        "${input:environment}"
+      ],
       "group": "build",
-      "options": { "cwd": "back-end" },
+      "options": {
+        "cwd": "back-end"
+      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -27,7 +34,9 @@
       "type": "shell",
       "command": "./deploy.sh quick",
       "group": "build",
-      "options": { "cwd": "back-end" },
+      "options": {
+        "cwd": "back-end"
+      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -38,7 +47,9 @@
       "type": "shell",
       "command": "npm run logs",
       "group": "build",
-      "options": { "cwd": "back-end" },
+      "options": {
+        "cwd": "back-end"
+      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -48,9 +59,13 @@
       "label": "Release a front-end environment",
       "type": "shell",
       "command": "./release.sh",
-      "args": ["${input:environment}"],
+      "args": [
+        "${input:environment}"
+      ],
       "group": "build",
-      "options": { "cwd": "front-end" },
+      "options": {
+        "cwd": "front-end"
+      },
       "presentation": {
         "reveal": "always",
         "panel": "new"

@@ -178,7 +178,9 @@
         <ion-button (click)="addAdministrator()">{{ 'COMMON.ADD' | translate }}</ion-button>
       </ion-list-header>
       <ion-item *ngIf="!configurations">
-        <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-item *ngFor="let administratorId of configurations?.administratorsIds">
         <ion-label>{{ administratorId }}</ion-label>
@@ -203,7 +205,9 @@
         <ion-button (click)="addOpportunitiesManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
       </ion-list-header>
       <ion-item *ngIf="!configurations">
-        <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-item
         class="noElements"
@@ -228,7 +232,9 @@
         <ion-button (click)="addDashboardManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
       </ion-list-header>
       <ion-item *ngIf="!configurations">
-        <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-item
         class="noElements"
@@ -254,7 +260,9 @@
         <ion-button (click)="addBannedUser()">{{ 'COMMON.ADD' | translate }}</ion-button>
       </ion-list-header>
       <ion-item *ngIf="!configurations">
-        <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-item class="noElements" *ngIf="configurations?.bannedUsersIds && !configurations.bannedUsersIds.length">
         <ion-label>{{ 'CONFIGURATIONS.NO_BANNED_USERS' | translate }}</ion-label>
@@ -283,7 +291,7 @@
         </ion-label>
       </ion-item>
       <ion-item button detail (click)="openTemplateEmailModal(EmailTemplates.ANSWERS)">
-        <ion-label class="ion-text-wrap"> {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.ANSWERS' | translate }} </ion-label>
+        <ion-label class="ion-text-wrap"> {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.ANSWERS' | translate }}</ion-label>
       </ion-item>
       <ion-item button detail (click)="openTemplateEmailModal(EmailTemplates.APPLICATION_APPROVED)">
         <ion-label class="ion-text-wrap">
@@ -326,7 +334,9 @@
       </ion-list-header>
       <ion-searchbar #badgesSearchbar (ionInput)="filterBadges($event.target.value)" />
       <ion-item *ngIf="!badges">
-        <ion-label><ion-skeleton-text animated /></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated />
+        </ion-label>
       </ion-item>
       <ion-item class="noElements" *ngIf="badges && !badges.length">
         <ion-label>{{ 'BADGES.NO_CUSTOM_BADGES_FOUND' | translate }}</ion-label>

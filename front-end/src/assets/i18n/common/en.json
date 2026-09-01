@@ -113,7 +113,14 @@
       "SECTION_NAME_HINT": "The name to identify the section",
       "TYPE": "Type"
     },
-    "DURATION": { "HH": "hh", "HOURS": "Hours", "MINUTES": "Minutes", "MM": "mm", "SECONDS": "Seconds", "SS": "ss" },
+    "DURATION": {
+      "HH": "hh",
+      "HOURS": "Hours",
+      "MINUTES": "Minutes",
+      "MM": "mm",
+      "SECONDS": "Seconds",
+      "SS": "ss"
+    },
     "ECHO": {
       "ACCOUNT_CONFIRMED": "Account confirmed: you can now sign-in.",
       "EMAIL_CHANGED": "Email address successfully updated. You now have to sign-in again.",
@@ -173,12 +180,18 @@
       "NUM_ELEMENTS_": "{{num}} elements in the list",
       "SAVE_AND_CLOSE": "Save and close"
     },
-    "LOADING": { "PLEASE_WAIT": "Please wait..." },
+    "LOADING": {
+      "PLEASE_WAIT": "Please wait..."
+    },
     "MDE": {
       "CLOSE_WITHOUT_SAVING": "Close without saving",
       "SAVE_AND_CLOSE": "Save and close",
       "TITLE": "Markdown editor",
-      "TOOLBAR": { "BOLD": "Bold", "ITALIC": "Italic", "STRIKE": "Strike" },
+      "TOOLBAR": {
+        "BOLD": "Bold",
+        "ITALIC": "Italic",
+        "STRIKE": "Strike"
+      },
       "VARIABLES": "Variables"
     },
     "OFFLINE": {
@@ -259,7 +272,12 @@
       "TAP_TO_FILTER": "Tap to filter"
     },
     "SENTIMENT": {
-      "RESULT": { "MIXED": "Mixed", "NEGATIVE": "Negative", "NEUTRAL": "Neutral", "POSITIVE": "Positive" },
+      "RESULT": {
+        "MIXED": "Mixed",
+        "NEGATIVE": "Negative",
+        "NEUTRAL": "Neutral",
+        "POSITIVE": "Positive"
+      },
       "RESULT_HINT": "We detected a generally {{sentiment}} sentiment from the text"
     },
     "SIGNATURE": {

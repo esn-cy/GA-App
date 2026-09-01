@@ -1,10 +1,13 @@
 ion-tabs ion-tab-bar {
   --border: 0;
+
   ion-tab-button {
     border-bottom: 2px solid transparent;
   }
+
   ion-tab-button.tab-selected {
     border-bottom-color: white;
+
     ion-label {
       font-weight: bold;
     }
@@ -15,10 +18,12 @@ ion-tabs.desktopTabs {
   ion-tab-bar {
     justify-content: start;
   }
+
   ion-tab-button {
     flex: none;
     min-width: 100px;
   }
+
   ion-img {
     height: 35px;
     max-width: 60px;

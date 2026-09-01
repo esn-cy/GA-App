@@ -29,6 +29,7 @@ export class ArchivePage implements OnInit {
     private _opportunities: OpportunitiesService,
     public app: AppService
   ) {}
+
   ngOnInit(): void {
     this.years = this.app.getYearsSince(FIRST_YEAR_FOR_ARCHIVE);
   }

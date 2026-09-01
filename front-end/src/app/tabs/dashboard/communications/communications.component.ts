@@ -22,8 +22,7 @@ const FIRST_YEAR_FOR_COMMUNICATIONS = 2023;
     FormsModule,
     IonicModule,
     IDEATranslationsModule,
-    DateTimezonePipe,
-    ManageCommunicationComponent
+    DateTimezonePipe
   ],
   selector: 'app-communications',
   template: `
@@ -103,6 +102,7 @@ export class CommunicationsComponent implements OnInit {
     private _communications: CommunicationsService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     this.years = this.app.getYearsSince(FIRST_YEAR_FOR_COMMUNICATIONS);
     await this.loadListOfYear(this.filterByYear);

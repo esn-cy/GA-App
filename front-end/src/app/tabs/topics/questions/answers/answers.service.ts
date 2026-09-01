@@ -26,6 +26,7 @@ export class AnswersService {
     const answers: Answer[] = await this.api.getResource(path);
     this.answers = answers.map(x => new Answer(x));
   }
+
   /**
    * Get (and optionally filter) the list of answers to a question.
    * Note: it's a slice of the array.
@@ -106,6 +107,7 @@ export class AnswersService {
     const path = ['topics', question.topicId, 'questions', question.questionId, 'answers', answer.answerId, 'claps'];
     await this.api.postResource(path);
   }
+
   /**
    * Cancel the clap to an answer.
    */
@@ -113,6 +115,7 @@ export class AnswersService {
     const path = ['topics', question.topicId, 'questions', question.questionId, 'answers', answer.answerId, 'claps'];
     await this.api.deleteResource(path);
   }
+
   /**
    * Whether the current user clapped an answer.
    */
@@ -130,6 +133,7 @@ export class AnswersService {
     const { clapped } = await this.api.getResource(path);
     return clapped;
   }
+
   /**
    * Get the users who clapped the answer (latest first).
    */

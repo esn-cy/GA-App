@@ -35,6 +35,7 @@ export class EmailTemplateComponent implements OnInit {
     private _configurations: ConfigurationsService,
     private app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     const { subject, content } = await this.getTemplate();
     this.subject = subject;
@@ -72,6 +73,7 @@ export class EmailTemplateComponent implements OnInit {
   browseHTMLFile(): void {
     document.getElementById('htmlFileInput')?.click();
   }
+
   async loadTemplateFromFile(inputEl: HTMLInputElement): Promise<void> {
     if (!inputEl?.files?.length) return;
     const file = inputEl.files[0];
@@ -109,6 +111,7 @@ export class EmailTemplateComponent implements OnInit {
     const { content } = await this.getTemplate();
     this.app.downloadDataAsFile(content, 'text/html', this.template.concat('.html'));
   }
+
   async getTemplate(): Promise<{ subject: string; content: string }> {
     try {
       await this.loading.show();

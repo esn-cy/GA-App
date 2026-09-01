@@ -1,6 +1,8 @@
 {
   "editor.tabSize": 2,
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "editor.wordWrapColumn": 120,
   "editor.wordWrap": "bounded",
   "files.eol": "\n",

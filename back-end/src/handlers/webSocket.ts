@@ -58,6 +58,7 @@ class WebSocketApiController extends GenericController {
       this.callback(null, { statusCode: 400 });
     }
   }
+
   private async connect(
     connectionId: string,
     type: WebSocketConnectionTypes,
@@ -72,10 +73,12 @@ class WebSocketApiController extends GenericController {
     this.logger.debug('Opening connection', { connection });
     await ddb.put({ TableName: DDB_CONNECTIONS_TABLE, Item: connection });
   }
+
   private async disconnect(connectionId: string): Promise<void> {
     this.logger.debug('Closing connection', { connectionId });
     await ddb.delete({ TableName: DDB_CONNECTIONS_TABLE, Key: { connectionId } });
   }
+
   private async mockupInfo(connectionId: string): Promise<void> {
     this.logger.debug('Mockup message', { connectionId });
     const response = 'Active connection '.concat(connectionId);
@@ -125,6 +128,7 @@ class WebSocketStreamController extends StreamController {
         .catch(err => this.logger.warn('Failed delivery to connection', err, { connection, message: webSocketMessage }))
     );
   }
+
   private mapDDBTableStreamIntoSocketMessage(record: DynamoDBRecord): WebSocketMessage {
     const action: 'INSERT' | 'MODIFY' | 'REMOVE' = record.eventName;
     const tableName = record.eventSourceARN.split('/')[1];

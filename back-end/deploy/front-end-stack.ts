@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as S3 from 'aws-cdk-lib/aws-s3';
 import * as IAM from 'aws-cdk-lib/aws-iam';
@@ -6,7 +7,6 @@ import * as CloudFront from 'aws-cdk-lib/aws-cloudfront';
 import * as ACM from 'aws-cdk-lib/aws-certificatemanager';
 import * as Route53 from 'aws-cdk-lib/aws-route53';
 import * as Route53Targets from 'aws-cdk-lib/aws-route53-targets';
-import { RemovalPolicy } from 'aws-cdk-lib';
 
 export interface FrontEndProps extends cdk.StackProps {
   project: string;
@@ -38,10 +38,10 @@ export class FrontEndStack extends cdk.Stack {
     const certificate = props.certificateARN
       ? ACM.Certificate.fromCertificateArn(this, 'CloudFrontCertificate', props.certificateARN)
       : new ACM.DnsValidatedCertificate(this, 'Certificate', {
-          domainName: props.domain,
-          hostedZone: zone,
-          region: 'us-east-1'
-        });
+        domainName: props.domain,
+        hostedZone: zone,
+        region: 'us-east-1'
+      });
 
     const frontEndDistributionOAI = new CloudFront.OriginAccessIdentity(this, 'DistributionOAI', {
       comment: `OAI for https://${props.domain}`

@@ -6,10 +6,10 @@ import { IDEAStack } from './idea-stack';
 import { MediaStack } from './media-stack';
 import { ApiDomainStack } from './api-domain-stack';
 import { SESStack } from './ses-stack';
-import { ResourceController, ApiStack, DDBTable } from './api-stack';
+import { ApiStack, DDBTable, ResourceController } from './api-stack';
 import { FrontEndStack } from './front-end-stack';
 
-import { parameters, stages, Stage } from './environments';
+import { parameters, Stage, stages } from './environments';
 
 //
 // RESOURCES

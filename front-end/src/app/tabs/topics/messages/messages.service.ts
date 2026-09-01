@@ -25,6 +25,7 @@ export class MessagesService {
     const messages: Message[] = await this.api.getResource(['topics', topic.topicId, 'messages']);
     this.messages = messages.map(x => new Message(x));
   }
+
   /**
    * Get (and optionally filter) the list of messages in a live topic.
    * Note: it's a slice of the array.
@@ -99,6 +100,7 @@ export class MessagesService {
     const path = ['topics', topic.topicId, 'messages'];
     return new Message(await this.api.postResource(path, { body: message }));
   }
+
   /**
    * Insert a message in a topic anonymously.
    */
@@ -115,6 +117,7 @@ export class MessagesService {
     const path = ['topics', topic.topicId, 'messages', message.messageId, 'upvotes'];
     await this.api.postResource(path);
   }
+
   /**
    * Cancel the upvote to a message.
    */
@@ -122,6 +125,7 @@ export class MessagesService {
     const path = ['topics', topic.topicId, 'messages', message.messageId, 'upvotes'];
     await this.api.deleteResource(path);
   }
+
   /**
    * Whether the current user upvoted the message.
    */
@@ -130,6 +134,7 @@ export class MessagesService {
     const { upvoted } = await this.api.getResource(path);
     return upvoted;
   }
+
   /**
    * Get the users who upvoted the message (latest first).
    */
@@ -147,6 +152,7 @@ export class MessagesService {
     const body = { action: 'MARK_COMPLETE' };
     return new Message(await this.api.patchResource(path, { body }));
   }
+
   /**
    * Undo the status "complete" of a message.
    */
@@ -170,6 +176,7 @@ export class MessagesService {
   webSocketAdd(message: Message): void {
     this.messages.push(message);
   }
+
   /**
    * Update a message signaled from a web socket update.
    */
@@ -177,6 +184,7 @@ export class MessagesService {
     const index = this.messages.findIndex(x => x.messageId === message.messageId);
     if (index !== -1) this.messages[index] = message;
   }
+
   /**
    * Remove a message signaled from a web socket update.
    */

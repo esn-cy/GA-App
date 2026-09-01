@@ -30,6 +30,7 @@ export class BadgesService {
     const badges: UserBadge[] = await this.api.getResource('badges');
     this.badges = badges.map(b => new Badge(b));
   }
+
   /**
    * Get the list of (custom) badges.
    * Note: it's a slice of the array.
@@ -65,24 +66,28 @@ export class BadgesService {
 
     return filteredList;
   }
+
   /**
    * Get a badge by its id.
    */
   async getById(badge: string): Promise<Badge> {
     return new Badge(await this.api.getResource(['badges', badge]));
   }
+
   /**
    * Add a badge.
    */
   async insert(badge: Badge): Promise<Badge> {
     return new Badge(await this.api.postResource(['badges'], { body: badge }));
   }
+
   /**
    * Edit a badge.
    */
   async update(badge: Badge): Promise<Badge> {
     return new Badge(await this.api.putResource(['badges', badge.badgeId], { body: badge }));
   }
+
   /**
    * Delete a badge.
    */
@@ -102,12 +107,14 @@ export class BadgesService {
     const badges: UserBadge[] = await this.api.getResource('usersBadges', { params });
     return badges.map(x => new UserBadge(x));
   }
+
   /**
    * Get a user badge by its id and mark it as seen.
    */
   async markUserBadgeAsSeen(badge: string): Promise<UserBadge> {
     return new UserBadge(await this.api.getResource(['usersBadges', badge]));
   }
+
   /**
    * Remove a badge from a user.
    */
@@ -115,6 +122,7 @@ export class BadgesService {
     const params = { userId };
     await this.api.deleteResource(['usersBadges', badge], { params });
   }
+
   /**
    * Add a badge to a user.
    */
@@ -133,6 +141,7 @@ export class BadgesService {
   getDetailOfUserBadge(userBadge: UserBadge): Badge | null {
     return this.badges?.find(x => x.badgeId === userBadge.badge) ?? null;
   }
+
   /**
    * Get the image of a user badge.
    */
@@ -141,6 +150,7 @@ export class BadgesService {
     const badge = this.getDetailOfUserBadge(userBadge);
     return badge ? badge.imageURL : BADGE_NOT_FOUND_URL;
   }
+
   /**
    * Load a fallback URL when a badge is missing.
    */

@@ -142,6 +142,7 @@ class Topics extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async insertFromApplication(
     opportunity: Opportunity,
     application: Application,
@@ -223,6 +224,7 @@ class Topics extends ResourceController {
         throw new HandledError('Unsupported action');
     }
   }
+
   private async manageStatus(open: boolean): Promise<Topic> {
     if (!this.galaxyUser.isAdministrator) throw new HandledError('Unauthorized');
 
@@ -232,6 +234,7 @@ class Topics extends ResourceController {
     await ddb.put({ TableName: DDB_TABLES.topics, Item: this.topic });
     return this.topic;
   }
+
   private async manageArchive(archive: boolean): Promise<Topic> {
     if (!this.galaxyUser.isAdministrator) throw new HandledError('Unauthorized');
 
@@ -243,6 +246,7 @@ class Topics extends ResourceController {
     await ddb.put({ TableName: DDB_TABLES.topics, Item: this.topic });
     return this.topic;
   }
+
   private async getMessagesIdsUpvotedByUser(): Promise<string[]> {
     const messagesUpvoted = await ddb.query({
       TableName: DDB_TABLES.messagesUpvotes,

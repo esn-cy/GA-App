@@ -21,6 +21,7 @@ export class UsefulLinksService {
     const usefulLinks: UsefulLink[] = await this.api.getResource('usefulLinks');
     this.usefulLinks = usefulLinks.map(x => new UsefulLink(x));
   }
+
   /**
    * Get (and optionally filter) the list of useful links.
    * Note: it's a slice of the array.

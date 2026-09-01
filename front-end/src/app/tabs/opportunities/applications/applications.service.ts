@@ -23,6 +23,7 @@ export class ApplicationsService {
     const applications: Application[] = await this.api.getResource(path);
     this.applications = applications.map(x => new Application(x));
   }
+
   /**
    * Get (and optionally filter) the list of applications to an opportunity.
    * Note: it's a slice of the array.

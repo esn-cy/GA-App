@@ -167,12 +167,14 @@
               <ion-row class="ion-margin">
                 <ion-col>
                   <ion-button fill="clear" [color]="app.isInDarkMode() ? 'dark' : 'white'" (click)="cancelNewMessage()">
-                    {{ 'COMMON.CANCEL' | translate }} <ion-icon icon="close" slot="start"></ion-icon>
+                    {{ 'COMMON.CANCEL' | translate }}
+                    <ion-icon icon="close" slot="start"></ion-icon>
                   </ion-button>
                 </ion-col>
                 <ion-col class="ion-text-right">
                   <ion-button fill="clear" [color]="app.isInDarkMode() ? 'dark' : 'white'" (click)="sendNewMessage()">
-                    {{ 'COMMON.SEND' | translate }} <ion-icon icon="send" slot="end"></ion-icon>
+                    {{ 'COMMON.SEND' | translate }}
+                    <ion-icon icon="send" slot="end"></ion-icon>
                   </ion-button>
                 </ion-col>
               </ion-row>
@@ -233,7 +235,9 @@
                 </ion-col>
               </ion-row>
               <ion-item *ngIf="!questions">
-                <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+                <ion-label>
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-label>
               </ion-item>
               <ion-item class="noElements" *ngIf="questions && !questions.length">
                 <ion-label>{{ 'MESSAGES.NO_MESSAGES' | translate }}</ion-label>
@@ -251,7 +255,8 @@
                         <ion-icon icon="checkmark-done" class="ion-padding-end" *ngIf="question.completedAt" />
                         <ion-text *ngIf="question.creator">
                           <b>{{ question.creator.name }}</b> - {{
-                          question.creator.getOrigin(app.configurations.usersOriginDisplay) }}
+                            question.creator.getOrigin(app.configurations.usersOriginDisplay)
+                          }}
                         </ion-text>
                         <i *ngIf="!question.creator">{{ 'MESSAGES.ANONYMOUS' | translate }}</i>
                       </ion-card-title>
@@ -340,7 +345,9 @@
                 </ion-col>
               </ion-row>
               <ion-item *ngIf="!appreciations">
-                <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+                <ion-label>
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-label>
               </ion-item>
               <ion-item class="noElements" *ngIf="appreciations && !appreciations.length">
                 <ion-label>{{ 'MESSAGES.NO_MESSAGES' | translate }}</ion-label>
@@ -358,7 +365,8 @@
                         <ion-icon icon="checkmark-done" class="ion-padding-end" *ngIf="appreciation.completedAt" />
                         <ion-text *ngIf="appreciation.creator">
                           <b>{{ appreciation.creator.name }}</b> - {{
-                          appreciation.creator.getOrigin(app.configurations.usersOriginDisplay) }}
+                            appreciation.creator.getOrigin(app.configurations.usersOriginDisplay)
+                          }}
                         </ion-text>
                         <i *ngIf="!appreciation.creator">{{ 'MESSAGES.ANONYMOUS' | translate }}</i>
                       </ion-card-title>

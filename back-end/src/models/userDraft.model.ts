@@ -1,4 +1,4 @@
-import { Resource, epochISOString } from 'idea-toolbox';
+import { epochISOString, Resource } from 'idea-toolbox';
 import { Question } from './question.model';
 import { Answer } from './answer.model';
 
@@ -54,6 +54,7 @@ export class UserDraft extends Resource {
         text: question.text
       });
   }
+
   /**
    * Create the draft for an answer.
    */

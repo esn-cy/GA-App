@@ -17,6 +17,7 @@ export class UserDraftsService {
     const drafts: UserDraft[] = await this.api.getResource('drafts', { params });
     return drafts.map(x => new UserDraft(x));
   }
+
   /**
    * Get the user's drafted answer for a question.
    */

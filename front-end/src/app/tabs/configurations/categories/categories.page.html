@@ -23,7 +23,9 @@
       <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
     </ion-item>
     <ion-item *ngIf="!categories">
-      <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+      <ion-label>
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-label>
     </ion-item>
     <ion-item *ngFor="let category of categories" button (click)="openCategory(category)">
       <ion-label>{{ category.name }}</ion-label>

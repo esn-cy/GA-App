@@ -88,6 +88,7 @@ export class ManageBallotStandaloneComponent implements OnInit {
   MajorityTypes = VotingMajorityTypes;
 
   constructor(private modalCtrl: ModalController, private message: IDEAMessageService, public app: AppService) {}
+
   ngOnInit(): void {
     this.ballot = new VotingBallot(this.ballot);
   }
@@ -99,12 +100,15 @@ export class ManageBallotStandaloneComponent implements OnInit {
   addOption(): void {
     this.ballot.options.push('');
   }
+
   handleOptionsReorder({ detail }): void {
     this.ballot.options = detail.complete(this.ballot.options);
   }
+
   removeOptionByIndex(index: number): void {
     this.ballot.options.splice(index, 1);
   }
+
   trackByIndex(index: number): number {
     return index;
   }
@@ -116,6 +120,7 @@ export class ManageBallotStandaloneComponent implements OnInit {
     this.ballot.options = this.ballot.options.filter(x => x?.trim());
     this.modalCtrl.dismiss(this.ballot);
   }
+
   close(): void {
     this.modalCtrl.dismiss();
   }

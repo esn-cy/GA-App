@@ -9,8 +9,10 @@ ion-card.topicCard {
     ion-card-title {
       margin-top: 6px;
     }
+
     p.badges {
       margin-bottom: 0;
+
       ion-badge {
         margin-right: 6px;
       }
@@ -21,24 +23,30 @@ ion-card.topicCard {
     ion-list-header ion-label h2 {
       margin-bottom: 0;
     }
+
     app-subject.single {
       --app-subject-avatar-size: 100px;
     }
+
     ion-item.importantDate {
       ion-label {
         font-size: 0.9em;
         font-weight: 500;
+
         p {
           font-size: 0.8em;
           font-weight: 500;
         }
+
         p:nth-of-type(2) {
           font-weight: 300;
         }
       }
     }
+
     ion-item.attachment {
       font-size: 1.1em;
+
       ion-icon[slot='start'] {
         margin-right: 16px;
       }
@@ -56,9 +64,11 @@ ion-card.newMessageCard {
     box-shadow: none;
     border-radius: 0;
   }
+
   ion-item:not([color='white']) {
     --padding-start: 8px;
   }
+
   ion-item[color='white'] {
     border-radius: 4px;
   }
@@ -72,13 +82,16 @@ ion-list.messagesList {
   ion-list-header {
     margin-top: 8px;
   }
+
   ion-card.messageCard {
     ion-card-header {
       padding-top: 12px;
       padding-bottom: 0;
+
       ion-card-title {
         font-size: 1em;
       }
+
       ion-button {
         --padding-top: 0;
         --padding-bottom: 0;
@@ -87,16 +100,20 @@ ion-list.messagesList {
         margin: 0 12px 0 0;
       }
     }
+
     ion-card-content {
       padding-bottom: 16px;
     }
   }
+
   ion-card.messageCard.author {
     border-left: 4px solid var(--ion-color-primary);
   }
+
   ion-card.messageCard.complete {
     opacity: 0.6;
   }
+
   .messagesFilters {
     ion-item {
       font-size: 0.85em;

@@ -26,6 +26,7 @@ export class DeadlinesService {
     const deadlines: Deadline[] = await this.api.getResource('deadlines', { params });
     this.deadlines = deadlines.map(x => new Deadline(x));
   }
+
   /**
    * Get (and optionally filter) the list of deadlines.
    * Note: it's a slice of the array.

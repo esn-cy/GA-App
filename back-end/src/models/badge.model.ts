@@ -48,6 +48,7 @@ export class Badge extends Resource {
   static isBuiltIn(badgeId: string): boolean {
     return Object.keys(BuiltInBadges).includes(badgeId);
   }
+
   /**
    * Whether the current badge is built-in or custom.
    */

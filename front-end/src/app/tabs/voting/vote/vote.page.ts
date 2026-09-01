@@ -43,6 +43,7 @@ export class VotePage implements OnInit {
     private _voting: VotingService,
     public app: AppService
   ) {}
+
   async ngOnInit(): Promise<void> {
     try {
       await this.loading.show();
