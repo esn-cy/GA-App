@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { GAEventAttached } from './event.model';
 
@@ -25,7 +25,7 @@ export class Communication extends Resource {
   /**
    * The date (and time) of the communication.
    */
-  date: epochISOString;
+  date: ISOString;
   /**
    * The URL to the communication's image (if any).
    */
@@ -37,7 +37,7 @@ export class Communication extends Resource {
   /**
    * The timestamp when the communication was archived (if so).
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
 
   load(x: any): void {
     super.load(x);

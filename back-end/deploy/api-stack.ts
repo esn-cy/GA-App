@@ -4,12 +4,11 @@ import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import * as Logs from 'aws-cdk-lib/aws-logs';
 import * as IAM from 'aws-cdk-lib/aws-iam';
-import * as ApiGw from 'aws-cdk-lib/aws-apigatewayv2';
-import * as ApiGwAlpha from '@aws-cdk/aws-apigatewayv2-alpha';
-import * as ApiGwAlphaIntegrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import * as ApiGwAlphaAuthorizers from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import * as ApiGateway from 'aws-cdk-lib/aws-apigatewayv2';
+import * as ApiGatewayIntegrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as ApiGatewayAuthorizers from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import * as DDB from 'aws-cdk-lib/aws-dynamodb';
 import * as S3 from 'aws-cdk-lib/aws-s3';
 import * as S3Deployment from 'aws-cdk-lib/aws-s3-deployment';
@@ -47,20 +46,11 @@ export interface DDBTable {
   expiresAtField?: string;
 }
 
-const defaultLambdaFnProps: NodejsFunctionProps = {
-  runtime: Lambda.Runtime.NODEJS_18_X,
-  architecture: Lambda.Architecture.ARM_64,
-  timeout: Duration.seconds(30),
-  memorySize: 1024,
-  bundling: { minify: true, sourceMap: true },
-  environment: { NODE_OPTIONS: '--enable-source-maps' },
-  logRetention: RetentionDays.TWO_WEEKS,
-  logFormat: Lambda.LogFormat.JSON
-};
-
 const defaultDDBTableProps: DDB.TableProps | any = {
   billingMode: DDB.BillingMode.PAY_PER_REQUEST,
-  pointInTimeRecovery: true
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true
+  }
 };
 
 export class ApiStack extends cdk.Stack {
@@ -68,6 +58,20 @@ export class ApiStack extends cdk.Stack {
     super(scope, id, props);
     this.init(scope, id, props);
   }
+
+  private defaultLambdaFnProps: NodejsFunctionProps = {
+    runtime: Lambda.Runtime.NODEJS_24_X,
+    architecture: Lambda.Architecture.ARM_64,
+    timeout: Duration.seconds(30),
+    memorySize: 1024,
+    bundling: { minify: true, sourceMap: true },
+    environment: { NODE_OPTIONS: '--enable-source-maps' },
+    logGroup: new Logs.LogGroup(this, 'FunctionLogGroup', {
+      retention: Logs.RetentionDays.TWO_WEEKS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    }),
+    loggingFormat: Lambda.LoggingFormat.JSON
+  };
 
   private async init(_: Construct, id: string, props: ApiProps): Promise<void> {
     const { api } = await this.createAPIAndStage({
@@ -81,7 +85,6 @@ export class ApiStack extends cdk.Stack {
     const { lambdaFunctions } = this.createLambdaFunctionsAndLinkThemToAPI({
       api,
       resourceControllers: props.resourceControllers,
-      defaultLambdaFnProps,
       project: props.project,
       stage: props.stage,
       lambdaLogLevel: props.lambdaLogLevel,
@@ -92,7 +95,6 @@ export class ApiStack extends cdk.Stack {
       project: props.project,
       stage: props.stage,
       apiDomain: props.webSocketApiDomain,
-      defaultLambdaFnProps,
       defaultDDBTableProps,
       authorizerLambdaFn: lambdaFunctions['auth']
     });
@@ -158,7 +160,7 @@ export class ApiStack extends cdk.Stack {
     apiDefinitionFile: string;
     apiDomain: string;
   }): Promise<{ api: cdk.aws_apigatewayv2.CfnApi }> {
-    const api = new ApiGw.CfnApi(this, 'HttpApi');
+    const api = new ApiGateway.CfnApi(this, 'HttpApi');
 
     // parse the OpenAPI (Swagger) definition, to integrate it with AWS resources
     const apiDefinition: any = await SwaggerParser.dereference(params.apiDefinitionFile);
@@ -175,13 +177,13 @@ export class ApiStack extends cdk.Stack {
     // note: it's important to set it here and not earlier, so we are sure all the attributes have been already set
     api.body = apiDefinition;
 
-    const apiStage = new ApiGw.CfnStage(this, 'HttpApiDefaultStage', {
+    const apiStage = new ApiGateway.CfnStage(this, 'HttpApiDefaultStage', {
       apiId: api.ref,
       stageName: '$default',
       autoDeploy: true
     });
 
-    new ApiGw.CfnApiMapping(this, 'HttpApiMapping', {
+    new ApiGateway.CfnApiMapping(this, 'HttpApiMapping', {
       domainName: params.apiDomain,
       apiId: api.ref,
       apiMappingKey: params.stage,
@@ -195,7 +197,6 @@ export class ApiStack extends cdk.Stack {
     project: string;
     stage: string;
     resourceControllers: ResourceController[];
-    defaultLambdaFnProps: NodejsFunctionProps;
     api: cdk.aws_apigatewayv2.CfnApi;
     lambdaLogLevel: 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
     appDomain: string;
@@ -214,10 +215,10 @@ export class ApiStack extends cdk.Stack {
     params.resourceControllers.forEach(resource => {
       const lambdaFnName = params.project.concat('_', params.stage, '_', resource.name);
       const lambdaFn = new NodejsFunction(this, resource.name.concat('Function'), {
-        ...params.defaultLambdaFnProps,
+        ...this.defaultLambdaFnProps,
         functionName: lambdaFnName,
         entry: `./src/handlers/${resource.name}.ts`,
-        applicationLogLevel: params.lambdaLogLevel
+        applicationLogLevelV2: Lambda.ApplicationLogLevel[params.lambdaLogLevel]
       });
 
       // link the Lambda function to the Resource Controller's paths (if any)
@@ -392,11 +393,10 @@ export class ApiStack extends cdk.Stack {
     project: string;
     stage: string;
     apiDomain: string;
-    defaultLambdaFnProps: NodejsFunctionProps;
     defaultDDBTableProps: DDB.TableProps;
     authorizerLambdaFn?: NodejsFunction;
   }): Promise<{
-    webSocketApi: ApiGwAlpha.WebSocketApi;
+    webSocketApi: ApiGateway.WebSocketApi;
     ddbTableConnections: DDB.Table;
     lambdaFnWebSocket: NodejsFunction;
   }> {
@@ -415,7 +415,7 @@ export class ApiStack extends cdk.Stack {
     });
 
     const lambdaFnWebSocket = new NodejsFunction(this, 'WebSocketFunction', {
-      ...params.defaultLambdaFnProps,
+      ...this.defaultLambdaFnProps,
       functionName: params.project.concat('_', params.stage, '_webSocket'),
       entry: './src/handlers/webSocket.ts'
     });
@@ -423,22 +423,22 @@ export class ApiStack extends cdk.Stack {
     lambdaFnWebSocket.addEnvironment('DDB_CONNECTIONS_TABLE', ddbTableConnections.tableName);
 
     const authorizer = params.authorizerLambdaFn
-      ? new ApiGwAlphaAuthorizers.WebSocketLambdaAuthorizer('WebSocketApiAuthorizer', params.authorizerLambdaFn, {
+      ? new ApiGatewayAuthorizers.WebSocketLambdaAuthorizer('WebSocketApiAuthorizer', params.authorizerLambdaFn, {
         identitySource: ['route.request.querystring.authorization']
       })
       : undefined;
 
-    const webSocketApi = new ApiGwAlpha.WebSocketApi(this, 'WebSocketApi', {
+    const webSocketApi = new ApiGateway.WebSocketApi(this, 'WebSocketApi', {
       apiName: params.project.concat('-', params.stage, '-socket'),
       connectRouteOptions: {
-        integration: new ApiGwAlphaIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket),
+        integration: new ApiGatewayIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket),
         authorizer
       },
       disconnectRouteOptions: {
-        integration: new ApiGwAlphaIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket)
+        integration: new ApiGatewayIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket)
       },
       defaultRouteOptions: {
-        integration: new ApiGwAlphaIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket),
+        integration: new ApiGatewayIntegrations.WebSocketLambdaIntegration('WSConnectIntegration', lambdaFnWebSocket),
         returnResponse: true
       }
     });
@@ -449,15 +449,15 @@ export class ApiStack extends cdk.Stack {
     );
     webSocketApi.grantManageConnections(lambdaFnWebSocket);
 
-    const webSocketApiStage = new ApiGwAlpha.WebSocketStage(this, 'WebSocketApiDefaultStage', {
+    const webSocketApiStage = new ApiGateway.WebSocketStage(this, 'WebSocketApiDefaultStage', {
       webSocketApi,
       stageName: '$default',
       autoDeploy: true
     });
 
-    const webSocketApiStageCfn = webSocketApiStage.node.defaultChild as ApiGw.CfnStage;
+    const webSocketApiStageCfn = webSocketApiStage.node.defaultChild as ApiGateway.CfnStage;
 
-    new ApiGw.CfnApiMapping(this, 'WebSocketApiMapping', {
+    new ApiGateway.CfnApiMapping(this, 'WebSocketApiMapping', {
       domainName: params.apiDomain,
       apiId: webSocketApi.apiId,
       apiMappingKey: params.stage,

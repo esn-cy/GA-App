@@ -26,12 +26,12 @@ then
   echo -e "${C}\t - prod:     deploy the production back-end environment${NC}"
   echo -e "${C}Second parameter: Lambda function's handler name${NC}"
   echo -e "${C}\t (only if the first parameter is 'quick')${NC}"
-  exit -1
+  exit 1
 fi
 if [ "${ACTION}" != "quick" ] && [ "${ACTION}" != "dev" ] && [ "${ACTION}" != "prod" ]
 then
    >&2 echo -e "${C}The first parameter is the ACTION: quick|dev|prod${NC}"
-  exit -1
+  exit 1
 fi
 
 # run the deploy-quick script with AWS CDK and exit
@@ -56,4 +56,4 @@ npm run compile 1>/dev/null
 
 # build and deploy with AWS CDK
 echo -e "${C}Deploying CDK stacks...${NC}"
-npm run deploy -- --context stage=${ACTION} --all --require-approval never --profile ${AWS_PROFILE}
+npm run deploy -- --context stage="${ACTION}" --all --require-approval never --profile ${AWS_PROFILE}

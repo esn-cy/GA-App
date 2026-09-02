@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { GAEventAttached } from './event.model';
 import { User } from './user.model';
@@ -35,11 +35,11 @@ export class VotingSession extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
   /**
    * The timestamp since the voting session is considered published.
    * If not set, it's a draft; drafts are displayed only to administrators.
@@ -64,12 +64,12 @@ export class VotingSession extends Resource {
    * The timestamp when the voting session started. If not set, or in the future, the session hasn't started yet.
    * Only form-like sessions have a start and an end.
    */
-  startsAt: epochISOString | null;
+  startsAt: ISOString | null;
   /**
    * The timestamp of end of the voting session. If set and past, the voting session has ended.
    * Only form-like sessions have a start and an end.
    */
-  endsAt: epochISOString | null;
+  endsAt: ISOString | null;
   /**
    * A timezone for the timestamps of start and end of the voting session.
    */
@@ -90,7 +90,7 @@ export class VotingSession extends Resource {
   /**
    * The timestamp when the voting session was archived.
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
 
   load(x: any): void {
     super.load(x);
@@ -238,7 +238,7 @@ export class VotingSession extends Resource {
    */
   getTotWeights(): number {
     if (!this.isWeighted) return this.voters.length;
-    else return this.voters.reduce((tot, acc): number => (tot += acc.voteWeight), 0);
+    else return this.voters.reduce((tot, acc): number => (tot + acc.voteWeight), 0);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 /**
  * The voting ticket of a voter in a sessions.
@@ -32,11 +32,11 @@ export class VotingTicket extends Resource {
   /**
    * The timestamp when the token has been used to start voting.
    */
-  signedInAt?: epochISOString;
+  signedInAt?: ISOString;
   /**
    * The timestamp when the vote has been submitted.
    */
-  votedAt?: epochISOString;
+  votedAt?: ISOString;
   /**
    * The user agent of the device used at the time of the voting. Used for fraud detection.
    */

@@ -251,7 +251,7 @@ const createApp = async (): Promise<void> => {
   }
 
   //
-  // GENERIC RESOURCES (they don't depend by the stage)
+  // GENERIC RESOURCES (they don't depend on the stage)
   //
 
   new IDEAStack(app, `idea-resources`);
@@ -297,10 +297,10 @@ const createApp = async (): Promise<void> => {
     lambdaLogLevel: STAGE_VARIABLES.logLevel ?? 'INFO',
     appDomain: STAGE_VARIABLES.domain
   });
-  apiStack.addDependency(mediaStack);
-  apiStack.addDependency(apiDomainStack);
-  apiStack.addDependency(webSocketApiDomainStack);
-  apiStack.addDependency(sesStack);
+  apiStack.addStackDependency(mediaStack);
+  apiStack.addStackDependency(apiDomainStack);
+  apiStack.addStackDependency(webSocketApiDomainStack);
+  apiStack.addStackDependency(sesStack);
 
   new FrontEndStack(app, `${parameters.project}-${STAGE}-front-end`, {
     env,

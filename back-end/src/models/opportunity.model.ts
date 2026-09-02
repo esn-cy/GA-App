@@ -1,4 +1,4 @@
-import { Attachment, epochISOString, Resource } from 'idea-toolbox';
+import { Attachment, ISOString, Resource } from 'idea-toolbox';
 
 import { User } from './user.model';
 
@@ -21,7 +21,7 @@ export class Opportunity extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The creation year. To use in indexes for archive queries.
    */
@@ -29,7 +29,7 @@ export class Opportunity extends Resource {
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
   /**
    * The timestamp since when the opportunity is considered published.
    * If not set, it's a draft; drafts are displayed only to administrators.
@@ -39,15 +39,15 @@ export class Opportunity extends Resource {
   /**
    * The timestamp when the opportunity will close. Note: it's a sparse index for queries.
    */
-  willCloseAt?: epochISOString;
+  willCloseAt?: ISOString;
   /**
-   * The timestamp when the opportunity was closed. A opportunity which is closed cannot accept new applications.
+   * The timestamp when the opportunity was closed. AN opportunity which is closed cannot accept new applications.
    */
-  closedAt?: epochISOString;
+  closedAt?: ISOString;
   /**
-   * The timestamp when the opportunity was archived. A opportunity archived is also closed.
+   * The timestamp when the opportunity was archived. AN opportunity archived is also closed.
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
   /**
    * The attachments to the opportunity.
    */

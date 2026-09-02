@@ -1,4 +1,4 @@
-import { Attachment, epochISOString, Resource } from 'idea-toolbox';
+import { Attachment, ISOString, Resource } from 'idea-toolbox';
 
 import { Opportunity } from './opportunity.model';
 import { Subject } from './subject.model';
@@ -30,11 +30,11 @@ export class Application extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
   /**
    * The attachments to the application, based on the expected attachments.
    */
@@ -42,11 +42,11 @@ export class Application extends Resource {
   /**
    * The timestamp when the application was approved by a manager (if so).
    */
-  approvedAt?: epochISOString;
+  approvedAt?: ISOString;
   /**
    * The timestamp when the application was rejected by a manager (if so).
    */
-  rejectedAt?: epochISOString;
+  rejectedAt?: ISOString;
   /**
    * A message left together with the review (approval/rejection).
    */

@@ -40,6 +40,9 @@ back-end/cdk.context.json
 back-end/output-config.json
 back-end/src/**/*.js
 back-end/src/**/*.js.map
+back-end/deploy/**/*.js
+back-end/deploy/**/*.map
+back-end/tsconfig.tsbuildinfo
 front-end/.angular/cache
 
 .idea

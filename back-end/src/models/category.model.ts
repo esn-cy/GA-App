@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 /**
  * A category to classify topics.
@@ -13,13 +13,13 @@ export class TopicCategory extends Resource {
    */
   name: string;
   /**
-   * The color associated to the category.
+   * The colour associated to the category.
    */
   color: string;
   /**
    * The timestamp when the topic was archived.
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
 
   load(x: any): void {
     super.load(x);
@@ -56,7 +56,7 @@ export class TopicCategoryAttached extends Resource {
    */
   name: string;
   /**
-   * The color associated to the category.
+   * The colour associated to the category.
    */
   color: string;
 
@@ -69,7 +69,7 @@ export class TopicCategoryAttached extends Resource {
 }
 
 /**
- * The possible colors for a category.
+ * The possible colours for a category.
  */
 export const CATEGORY_COLORS = [
   'ESNcyan',

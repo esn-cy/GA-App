@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 import { Question } from './question.model';
 import { Answer } from './answer.model';
 
@@ -13,7 +13,7 @@ export class UserDraft extends Resource {
   /**
    * The ID of the draft, which equals its timestamp of creation.
    */
-  draftId: epochISOString;
+  draftId: ISOString;
   /**
    * The type of draft.
    */

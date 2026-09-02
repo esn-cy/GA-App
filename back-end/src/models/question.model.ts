@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { Subject } from './subject.model';
 import { Topic } from './topic.model';
@@ -32,11 +32,11 @@ export class Question extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
   /**
    * The total number of answers to the question.
    */
@@ -114,7 +114,7 @@ export class QuestionUpvote extends Resource {
    * The timestamp of creation of the upvote.
    * Note: older data may not have this field.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
 
   load(x: any): void {
     super.load(x);

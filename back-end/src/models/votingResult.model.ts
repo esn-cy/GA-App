@@ -11,7 +11,7 @@ export class VotingResultForBallotOption extends Resource {
    */
   sessionId: string;
   /**
-   * The concatenation (`_`) of the ballot's index and the options's index.
+   * The concatenation (`_`) of the ballot's index and the options' index.
    */
   ballotOption: string;
   /**

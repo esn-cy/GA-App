@@ -1,7 +1,7 @@
 import { Resource } from 'idea-toolbox';
 
 /**
- * An entry for statistics of interfactions in the app.
+ * An entry for statistics of interactions in the app.
  */
 export class StatisticEntry extends Resource {
   /**

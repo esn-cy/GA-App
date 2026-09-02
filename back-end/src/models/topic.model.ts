@@ -1,4 +1,4 @@
-import { Attachment, epochISOString, Resource } from 'idea-toolbox';
+import { Attachment, ISOString, Resource } from 'idea-toolbox';
 
 import { TopicCategoryAttached } from './category.model';
 import { GAEventAttached } from './event.model';
@@ -40,11 +40,11 @@ export class Topic extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
   /**
    * The timestamp since when the topic is considered published.
    * If not set, it's a draft; drafts are displayed only to administrators.
@@ -54,16 +54,16 @@ export class Topic extends Resource {
   /**
    * The timestamp when the topic will close. Note: it's a sparse index for queries.
    */
-  willCloseAt?: epochISOString;
+  willCloseAt?: ISOString;
   /**
    * The timestamp when the topic was closed. A topic which is closed cannot accept new interactions.
    * Note: `TopicTypes.LIVE` topics are closed when they are created and opened when needed.
    */
-  closedAt?: epochISOString;
+  closedAt?: ISOString;
   /**
    * The timestamp when the topic was archived. A topic archived is also closed.
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
   /**
    * The attachments to the topic.
    */
@@ -84,7 +84,7 @@ export class Topic extends Resource {
    * If not set, answers can be created until the topic is archived.
    * Only for `TopicTypes.STANDARD`.
    */
-  acceptAnswersUntil?: epochISOString;
+  acceptAnswersUntil?: ISOString;
 
   /**
    * Whether messages (`MessageTypes.QUESTION`) for this topic must be signed.
@@ -97,10 +97,10 @@ export class Topic extends Resource {
    */
   appreciations?: boolean;
   /**
-   * The timestamp when the topic should be live. It's a reference date for sortings, but not used as a mechanism.
+   * The timestamp when the topic should be live. It's a reference date for sorting, but not used as a mechanism.
    * Only for `TopicTypes.LIVE`.
    */
-  shouldBeLiveAt?: epochISOString;
+  shouldBeLiveAt?: ISOString;
 
   load(x: any): void {
     super.load(x);

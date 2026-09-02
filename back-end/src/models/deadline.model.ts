@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { GAEventAttached } from './event.model';
 
@@ -17,7 +17,7 @@ export class Deadline extends Resource {
   /**
    * The date and time for the deadline.
    */
-  at: epochISOString;
+  at: ISOString;
   /**
    * The event to which the deadline refers to (if any).
    */
@@ -31,7 +31,7 @@ export class Deadline extends Resource {
    */
   action: string | null;
   /**
-   * A color to help users visually understand the kind of action related to the deadline (if any).
+   * A colour to help users visually understand the kind of action related to the deadline (if any).
    */
   actionColor: string | null;
 

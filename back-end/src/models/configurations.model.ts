@@ -3,7 +3,7 @@ import { Resource } from 'idea-toolbox';
 export const DEFAULT_TIMEZONE = 'Europe/Brussels';
 
 /**
- * The platform's configuations.
+ * The platform's configurations.
  */
 export class Configurations extends Resource {
   static PK = '1';
@@ -26,7 +26,7 @@ export class Configurations extends Resource {
   opportunitiesManagersIds: string[];
   /**
    * The IDs of the users banned; these users won't be able to add new contents (questions, messages, etc.).
-   * Note: it's not a data model by itself becase we hope this list will always stay empty/short.
+   * Note: it's not a data model by itself because we hope this list will always stay empty/short.
    */
   bannedUsersIds: string[];
 

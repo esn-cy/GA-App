@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { Topic } from './topic.model';
 import { Subject } from './subject.model';
@@ -30,21 +30,21 @@ export class Message extends Resource {
    */
   text: string;
   /**
-   * The creator of the message or `null`, if anonymus.
+   * The creator of the message or `null`, if anonymous.
    */
   creator: Subject | null;
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The number of upvotes for the message.
    */
   numOfUpvotes: number;
   /**
-   * The timestamp when the messages was marked as completed.
+   * The timestamp when the messages were marked as completed.
    */
-  completedAt?: epochISOString;
+  completedAt?: ISOString;
 
   static getPK(userId: string): string {
     return [new Date().toISOString(), userId].join('_');
@@ -107,7 +107,7 @@ export class MessageUpvote extends Resource {
   /**
    * The timestamp of creation of the upvote.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
 
   load(x: any): void {
     super.load(x);
@@ -146,7 +146,7 @@ export class QuestionUpvote extends Resource {
   /**
    * The timestamp of creation of the upvote.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
 
   load(x: any): void {
     super.load(x);

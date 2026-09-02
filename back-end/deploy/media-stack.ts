@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import * as Logs from 'aws-cdk-lib/aws-logs';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import * as S3 from 'aws-cdk-lib/aws-s3';
 import * as S3N from 'aws-cdk-lib/aws-s3-notifications';
@@ -105,7 +105,7 @@ const createThumbnailer = (scope: Construct, s3BucketIDEALambdaFn: S3.Bucket | c
   const thumbnailerFn = new Lambda.Function(scope, THUMBNAILER_KEY, {
     description: 'Convert an S3 uploaded media into a thumbnail',
     architecture: Lambda.Architecture.X86_64,
-    runtime: Lambda.Runtime.NODEJS_18_X,
+    runtime: Lambda.Runtime.NODEJS_24_X,
     memorySize: 1536,
     timeout: Duration.seconds(10),
     code: Lambda.Code.fromBucket(s3BucketIDEALambdaFn, 'fn-thumbnailer.zip'),
@@ -117,44 +117,48 @@ const createThumbnailer = (scope: Construct, s3BucketIDEALambdaFn: S3.Bucket | c
       THUMB_WIDTH: '600'
     },
     layers: [ghostScriptLayer, imageMagickLayer],
-    logRetention: RetentionDays.TWO_WEEKS
+    logGroup: new Logs.LogGroup(scope, 'ThumbnailerLogGroup', {
+      retention: Logs.RetentionDays.TWO_WEEKS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    })
   });
   const thumbnailerFnProdVersion = new Lambda.Version(scope, THUMBNAILER_KEY.concat('ProdVersion'), {
     lambda: thumbnailerFn,
     description: 'Production version'
   });
-  const thumbnailerFnProdAlias = new Lambda.Alias(scope, THUMBNAILER_KEY.concat('ProdAlias'), {
+  return new Lambda.Alias(scope, THUMBNAILER_KEY.concat('ProdAlias'), {
     version: thumbnailerFnProdVersion,
     aliasName: 'prod',
     description: 'Production alias'
   });
-
-  return thumbnailerFnProdAlias;
 };
 
 const createHTMLToPDFLambdaFunctions = (
   scope: Construct,
   s3BucketIDEALambdaFn: S3.Bucket | cdk.aws_s3.IBucket
 ): Lambda.Alias[] => {
-  const chromiumPuppetteerLayer = new Lambda.LayerVersion(scope, 'ChromiumPuppetteerLayer', {
-    description: 'Chromium and Puppetteer',
+  const chromiumPuppeteerLayer = new Lambda.LayerVersion(scope, 'ChromiumPuppeteerLayer', {
+    description: 'Chromium and Puppeteer',
     layerVersionName: 'idea_chromium_puppetter',
     code: Lambda.Code.fromBucket(s3BucketIDEALambdaFn, 'layer-chromium-puppetteer.zip')
   });
 
   const lambdaFnOptions = {
     architecture: Lambda.Architecture.X86_64,
-    runtime: Lambda.Runtime.NODEJS_18_X,
+    runtime: Lambda.Runtime.NODEJS_24_X,
     memorySize: 1536,
     timeout: Duration.seconds(20),
     handler: 'index.handler',
-    layers: [chromiumPuppetteerLayer],
-    logRetention: RetentionDays.TWO_WEEKS
+    layers: [chromiumPuppeteerLayer]
   };
 
   const HTML_TO_PDF_KEY = 'HTMLToPDFFn';
   const htmlToPDFFn = new Lambda.Function(scope, HTML_TO_PDF_KEY, {
     ...lambdaFnOptions,
+    logGroup: new Logs.LogGroup(scope, 'HTMLToPDFLogGroup', {
+      retention: Logs.RetentionDays.TWO_WEEKS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    }),
     description: 'Create a PDF from an HTML source',
     functionName: 'idea_html2pdf',
     code: Lambda.Code.fromBucket(s3BucketIDEALambdaFn, 'fn-html2pdf.zip')
@@ -172,6 +176,10 @@ const createHTMLToPDFLambdaFunctions = (
   const HTML_TO_PDF_VIA_S3_KEY = 'HTMLToPDFViaS3Fn';
   const htmlToPDFFViaS3BFn = new Lambda.Function(scope, HTML_TO_PDF_VIA_S3_KEY, {
     ...lambdaFnOptions,
+    logGroup: new Logs.LogGroup(scope, 'HTMLToPDFViaS3LogGroup', {
+      retention: Logs.RetentionDays.TWO_WEEKS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    }),
     description: 'Create a PDF from an HTML source and offer the result via S3 bucket',
     functionName: 'idea_html2pdf_viaS3Bucket',
     code: Lambda.Code.fromBucket(s3BucketIDEALambdaFn, 'fn-html2pdf_viaS3Bucket.zip')
@@ -210,7 +218,7 @@ const createCloudFrontDistributionForMediaBucket = (
 
   const mediaDistribution = new CloudFront.Distribution(scope, 'MediaDistribution', {
     defaultBehavior: {
-      origin: new CloudFrontOrigins.S3Origin(mediaBucket, {
+      origin: CloudFrontOrigins.S3BucketOrigin.withOriginAccessIdentity(mediaBucket, {
         originAccessIdentity: mediaDistributionOAI,
         originPath: '/thumbnails'
       }),

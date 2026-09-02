@@ -6,7 +6,7 @@ import { getUserOrigin, User } from './user.model';
 import { UsersOriginDisplayOptions } from './configurations.model';
 
 /**
- * A user subject to a topic, a questio, an answer, etc..
+ * A user subject to a topic, a question, an answer, etc.
  */
 export class Subject extends Resource {
   /**

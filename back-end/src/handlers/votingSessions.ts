@@ -3,7 +3,7 @@
 ///
 
 import { DynamoDB, HandledError, ResourceController, SES } from 'idea-aws';
-import { epochISOString } from 'idea-toolbox';
+import { ISOString } from 'idea-toolbox';
 
 import { GAEventAttached } from '../models/event.model';
 import { VotingSession } from '../models/votingSession.model';
@@ -36,7 +36,7 @@ const SES_CONFIG = {
 };
 const ses = new SES();
 
-export const handler = (ev: any, _: any, cb: any): Promise<void> => new VotingSessionsRC(ev, cb).handleRequest();
+export const handler = (ev: any): Promise<any> => new VotingSessionsRC(ev).handleRequest();
 
 ///
 /// RESOURCE CONTROLLER
@@ -46,8 +46,8 @@ class VotingSessionsRC extends ResourceController {
   galaxyUser: User;
   votingSession: VotingSession;
 
-  constructor(event: any, callback: any) {
-    super(event, callback, { resourceId: 'sessionId' });
+  constructor(event: any) {
+    super(event, { resourceId: 'sessionId' });
     this.galaxyUser = new User(event.requestContext.authorizer.lambda.user);
   }
 
@@ -173,7 +173,7 @@ class VotingSessionsRC extends ResourceController {
     }
   }
 
-  private async startVotingSession(endsAt: epochISOString, timezone: string): Promise<VotingSession> {
+  private async startVotingSession(endsAt: ISOString, timezone: string): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
     if (!this.votingSession.isForm()) throw new HandledError('Voting session is immediate');
@@ -217,7 +217,7 @@ class VotingSessionsRC extends ResourceController {
       try {
         if (votingTicket.voterEmail) await this.sendVotingTicketToVoter(votingTicket);
       } catch (error) {
-        // it's ok if one email is not sent/received: we can send it again
+        // it's OK if one email is not sent/received: we can send it again
         this.logger.warn('Voting ticket failed to send', error, { votingTicket });
         // possible improvement: manage bounces with SES? #53
       }
@@ -253,7 +253,7 @@ class VotingSessionsRC extends ResourceController {
     return votingTickets;
   }
 
-  private async extendEndOfVotingSession(endsAt: epochISOString, timezone: string): Promise<VotingSession> {
+  private async extendEndOfVotingSession(endsAt: ISOString, timezone: string): Promise<VotingSession> {
     if (!this.votingSession.canUserManage(this.galaxyUser)) throw new HandledError('Unauthorized');
 
     if (!this.votingSession.isInProgress()) throw new HandledError("Session isn't in progress");
@@ -362,7 +362,7 @@ class VotingSessionsRC extends ResourceController {
       if (!this.votingSession.isSecret()) votingResults[bIndex][oIndex].voters = x.voters ?? [];
     });
     votingResults.forEach(ballotResult => {
-      const totValue = ballotResult.reduce((tot, acc): number => (tot += acc.value), 0);
+      const totValue = ballotResult.reduce((tot, acc): number => (tot + acc.value), 0);
       const absent: { value: number; voters?: string[] } = { value: 1 - totValue };
       if (!this.votingSession.isSecret()) {
         const votersPresent = new Set(this.votingSession.participantVoters);

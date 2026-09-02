@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 import { Subject } from './subject.model';
 import { Topic } from './topic.model';
@@ -27,11 +27,11 @@ export class Answer extends Resource {
   /**
    * The timestamp of creation.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
   /**
    * The timestamp of last update.
    */
-  updatedAt?: epochISOString;
+  updatedAt?: ISOString;
 
   load(x: any): void {
     super.load(x);
@@ -95,7 +95,7 @@ export class AnswerClap extends Resource {
    * The timestamp of creation of the clap.
    * Note: older data may not have this field.
    */
-  createdAt: epochISOString;
+  createdAt: ISOString;
 
   load(x: any): void {
     super.load(x);

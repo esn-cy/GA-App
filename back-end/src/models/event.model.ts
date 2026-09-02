@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 /**
  * An event for which a topic is discussed or an entity is linked to.
@@ -16,7 +16,7 @@ export class GAEvent extends Resource {
   /**
    * The timestamp when the topic was archived.
    */
-  archivedAt?: epochISOString;
+  archivedAt?: ISOString;
 
   load(x: any): void {
     super.load(x);

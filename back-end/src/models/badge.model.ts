@@ -1,4 +1,4 @@
-import { epochISOString, Resource } from 'idea-toolbox';
+import { ISOString, Resource } from 'idea-toolbox';
 
 /**
  * A badge earnable in the platform.
@@ -97,11 +97,11 @@ export class UserBadge extends Resource {
   /**
    * When the badge was earned.
    */
-  earnedAt: epochISOString;
+  earnedAt: ISOString;
   /**
    * Whether and when the badge was first seen.
    */
-  firstSeenAt?: epochISOString;
+  firstSeenAt?: ISOString;
 
   load(x: any): void {
     super.load(x);

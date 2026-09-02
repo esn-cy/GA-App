@@ -25,6 +25,8 @@
       "aws",
       "aws-cn"
     ],
-    "@aws-cdk/core:suppressTemplateIndentation": true
+    "@aws-cdk/core:suppressTemplateIndentation": true,
+    "Construct-Annotations::@aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified": true,
+    "Construct-Annotations::@aws-cdk/core:crossStackReferencesDefaultStrong": true
   }
 }
