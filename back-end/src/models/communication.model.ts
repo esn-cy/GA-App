@@ -61,7 +61,7 @@ export class Communication extends Resource {
     const e = super.validate();
     if (this.iE(this.name)) e.push('name');
     if (this.iE(this.content)) e.push('content');
-    if (this.iE(this.date, 'date')) e.push('date');
+    if (this.iE(this.date, 'datetime')) e.push('date');
     return e;
   }
 

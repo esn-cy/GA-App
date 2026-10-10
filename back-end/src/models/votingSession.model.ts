@@ -158,7 +158,7 @@ export class VotingSession extends Resource {
     if (this.voters.length > 1000) e.push('voters');
 
     if (checkIfReady || this.startsAt) {
-      if (this.iE(this.publishedSince, 'date') || this.publishedSince > new Date().toISOString())
+      if (this.iE(this.publishedSince, 'datetime') || this.publishedSince > new Date().toISOString())
         e.push('publishedSince');
       if (this.type !== VotingSessionTypes.ROLL_CALL && this.iE(this.ballots)) e.push('ballots');
       if (this.iE(this.voters)) e.push('voters');
@@ -169,7 +169,7 @@ export class VotingSession extends Resource {
       if (this.startsAt) {
         const tenMinutes = new Date();
         tenMinutes.setMinutes(tenMinutes.getMinutes() + 10);
-        if (this.iE(this.endsAt, 'date') || this.startsAt > this.endsAt || tenMinutes.toISOString() > this.endsAt)
+        if (this.iE(this.endsAt, 'datetime') || this.startsAt > this.endsAt || tenMinutes.toISOString() > this.endsAt)
           e.push('endsAt');
         if (this.iE(this.timezone)) e.push('timezone');
       }

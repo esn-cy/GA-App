@@ -2,7 +2,7 @@ import { Component, HostListener, Input, OnDestroy, ViewChild } from '@angular/c
 import { Location } from '@angular/common';
 import { ColumnMode, DatatableComponent, SelectionType, TableColumn } from '@swimlane/ngx-datatable';
 import { AlertController, IonAccordionGroup, IonSearchbar, ModalController } from '@ionic/angular';
-import { epochISOString } from 'idea-toolbox';
+import { ISOString } from 'idea-toolbox';
 import {
   IDEAActionSheetController,
   IDEALoadingService,
@@ -70,7 +70,7 @@ export class ManageVotingSessionPage implements OnDestroy {
 
   sessionReady = false;
   timezones = (Intl as any).supportedValuesOf('timeZone');
-  extendDurationAt: epochISOString;
+  extendDurationAt: ISOString;
   extendDurationTimezone: string;
 
   votingTickets: VotingTicket[];

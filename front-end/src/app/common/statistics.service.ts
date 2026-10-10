@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { addDays } from 'date-fns/esm';
-import { epochISOString } from 'idea-toolbox';
+import { addDays } from 'date-fns';
+import { ISOString } from 'idea-toolbox';
 import { IDEAApiService } from '@idea-ionic/common';
 
 import { Statistic, StatisticEntityTypes, StatisticGranularities } from '@models/statistic.model';
@@ -13,8 +13,8 @@ export class StatisticsService {
    * Get the statistics for a time window of an entity (type or ID).
    */
   async getInTimeWindowOfEntity(options: {
-    since: epochISOString;
-    to: epochISOString;
+    since: ISOString;
+    to: ISOString;
     granularity: StatisticGranularities;
     entityType: StatisticEntityTypes;
     entityId?: string;

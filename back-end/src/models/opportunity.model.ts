@@ -104,8 +104,8 @@ export class Opportunity extends Resource {
   validate(): string[] {
     const e = super.validate();
     if (this.iE(this.name)) e.push('name');
-    if (this.publishedSince && this.iE(this.publishedSince, 'date')) e.push('publishedSince');
-    if (this.willCloseAt && (this.iE(this.willCloseAt, 'date') || this.willCloseAt < new Date().toISOString()))
+    if (this.publishedSince && this.iE(this.publishedSince, 'datetime')) e.push('publishedSince');
+    if (this.willCloseAt && (this.iE(this.willCloseAt, 'datetime') || this.willCloseAt < new Date().toISOString()))
       e.push('willCloseAt');
     return e;
   }

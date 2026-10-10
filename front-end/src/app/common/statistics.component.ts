@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { addDays } from 'date-fns/esm';
+import { addDays } from 'date-fns';
 import Chart from 'chart.js/auto';
 import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from '@idea-ionic/common';
 

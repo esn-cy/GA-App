@@ -12,8 +12,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
-import { epochISOString } from 'idea-toolbox';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
+import { ISOString } from 'idea-toolbox';
 
 import { AppService } from '@app/app.service';
 
@@ -38,8 +38,8 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
   /**
    * The date to manage.
    */
-  @Input() date: epochISOString;
-  @Output() dateChange = new EventEmitter<epochISOString>();
+  @Input() date: ISOString;
+  @Output() dateChange = new EventEmitter<ISOString>();
   /**
    * The timezone to consider.
    * Fallback to the default value set in the configurations.
@@ -66,7 +66,7 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
    */
   @Input() obligatory = false;
 
-  initialValue: epochISOString;
+  initialValue: ISOString;
 
   @ViewChild('dateTime') dateTime: ElementRef;
 
@@ -86,11 +86,11 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
     }
   }
 
-  utcToZonedTimeString(isoString: epochISOString): string {
+  utcToZonedTimeString(isoString: ISOString): string {
     return formatInTimeZone(isoString, this.timezone, "yyyy-MM-dd'T'HH:mm");
   }
 
-  zonedTimeStringToUTC(dateLocale: string): epochISOString {
-    return zonedTimeToUtc(new Date(dateLocale), this.timezone).toISOString();
+  zonedTimeStringToUTC(dateLocale: string): ISOString {
+    return fromZonedTime(dateLocale, this.timezone).toISOString();
   }
 }

@@ -154,14 +154,14 @@ export class Topic extends Resource {
     if (this.iE(this.category?.categoryId)) e.push('category');
     if (this.type === TopicTypes.STANDARD && this.iE(this.subjects)) e.push('subjects');
     this.subjects.forEach((s, index): void => s.validate().forEach(ea => e.push(`subjects[${index}].${ea}`)));
-    if (this.publishedSince && this.iE(this.publishedSince, 'date')) e.push('publishedSince');
-    if (this.willCloseAt && (this.iE(this.willCloseAt, 'date') || this.willCloseAt < new Date().toISOString()))
+    if (this.publishedSince && this.iE(this.publishedSince, 'datetime')) e.push('publishedSince');
+    if (this.willCloseAt && (this.iE(this.willCloseAt, 'datetime') || this.willCloseAt < new Date().toISOString()))
       e.push('willCloseAt');
 
     if (this.type === TopicTypes.STANDARD) {
       if (
         this.acceptAnswersUntil &&
-        (this.iE(this.acceptAnswersUntil, 'date') || (this.willCloseAt && this.acceptAnswersUntil < this.willCloseAt))
+        (this.iE(this.acceptAnswersUntil, 'datetime') || (this.willCloseAt && this.acceptAnswersUntil < this.willCloseAt))
       )
         e.push('acceptAnswersUntil');
     }

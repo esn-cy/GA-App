@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { AlertController, IonContent, IonInfiniteScroll, IonRefresher, IonSearchbar } from '@ionic/angular';
-import { Attachment, epochISOString } from 'idea-toolbox';
+import { Attachment, ISOString } from 'idea-toolbox';
 import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from '@idea-ionic/common';
 
 import { AppService } from '@app/app.service';
@@ -240,7 +240,7 @@ export class StandardTopicPage {
     this.app.goToInTabs(['topics', topic.topicId, topic.type === TopicTypes.LIVE ? 'live' : 'standard']);
   }
 
-  isPast(dateString: epochISOString): boolean {
+  isPast(dateString: ISOString): boolean {
     return dateString < new Date().toISOString();
   }
 }
