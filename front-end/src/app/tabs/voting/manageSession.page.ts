@@ -55,9 +55,9 @@ export class ManageVotingSessionPage implements OnDestroy {
   @ViewChild('votersTable') table: DatatableComponent | undefined;
 
   col: TableColumn[] = [];
-  selectionType = 'single';
+  selectionType = 'single' as const;
   trackByProp: keyof Voter = 'id';
-  columnMode = 'force';
+  columnMode = 'force' as const;
   limit = 10;
   rowHeight = 42;
   headerHeight = 56;

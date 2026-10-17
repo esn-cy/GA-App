@@ -173,6 +173,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
   chartColors = CHART_COLORS;
 
   chartCanvasBaseId!: string;
+  private chartTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(private popoverCtrl: PopoverController, private t: IDEATranslationsService, public app: AppService) {}
 
@@ -182,11 +183,13 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       this.charts = [];
       // we need to continue refresh the canvas ID because sometimes the chart's canvas doesn't update
       this.chartCanvasBaseId = 'chartBallot-'.concat(Date.now().toString(), '-');
-      setTimeout((): void => this.buildCharts(), 300);
+      clearTimeout(this.chartTimeout);
+      this.chartTimeout = setTimeout((): void => this.buildCharts(), 300);
     }
   }
 
   ngOnDestroy(): void {
+    clearTimeout(this.chartTimeout);
     this.charts.forEach(chart => chart?.destroy());
   }
 
@@ -255,6 +258,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       );
 
       const chartCanvas = document.getElementById(this.chartCanvasBaseId + bIndex) as HTMLCanvasElement;
+      if (!chartCanvas) return;
       this.charts[bIndex] = new Chart(chartCanvas, {
         type: 'doughnut',
         data: { labels, datasets: [{ data, backgroundColor: this.chartColors }] },

@@ -170,6 +170,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     const chartCanvas = document.getElementById('theChart') as HTMLCanvasElement;
+    if (!chartCanvas) return;
     this.chart = new Chart(chartCanvas, {
       type: this.chartType,
       data: { labels, datasets },

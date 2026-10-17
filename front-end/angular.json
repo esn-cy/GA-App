@@ -112,32 +112,45 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "buildTarget": "app:build",
             "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "styles": [],
-            "scripts": [],
-            "assets": [
-              {
-                "glob": "favicon.ico",
-                "input": "src/",
-                "output": "/"
-              },
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              }
+            "runner": "vitest",
+            "setupFiles": [
+              "tests/test-setup.ts"
+            ],
+            "include": [
+              "../tests/**/*.spec.ts"
+            ],
+            "codeCoverageExclude": [
+              "**/*.spec.ts",
+              "**/*.module.ts",
+              "**/*.routing.module.ts",
+              "**/*.map",
+              "**/*.svg",
+              "**/*.scss",
+              "**/*.css",
+              "**/*.html",
+              "**/*.woff",
+              "**/*.woff2",
+              "**/*.ttf",
+              "**/*.eot",
+              "**/media/**",
+              "**/assets/**",
+              "src/environments/**",
+              "src/polyfills.ts",
+              "tests/**",
+              "src/zone-flags.ts",
+              "src/main.ts",
+              "src/app/icons.ts"
+            ],
+            "codeCoverageReporters": [
+              "text",
+              "html",
+              "lcov",
+              "json-summary"
             ]
-          },
-          "configurations": {
-            "ci": {
-              "progress": false,
-              "watch": false
-            }
           }
         },
         "lint": {

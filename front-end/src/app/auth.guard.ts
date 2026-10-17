@@ -43,8 +43,6 @@ export const authGuard: CanActivateFn = async (): Promise<boolean> => {
   // MAIN
   //
 
-  if (app.authReady) return true;
-
   await platform.ready();
   await storage.ready();
 
