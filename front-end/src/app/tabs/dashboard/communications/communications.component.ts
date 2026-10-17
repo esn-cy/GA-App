@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { IDEAMessageService, IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEAMessageService, IDEATranslatePipe } from '@idea-ionic/common';
 
 import { ManageCommunicationComponent } from './manageCommunication.component';
 import { CommunicationDetailComponent } from './communicationDetail.component';
@@ -16,12 +16,11 @@ import { Communication } from '@models/communication.model';
 const FIRST_YEAR_FOR_COMMUNICATIONS = 2023;
 
 @Component({
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     DateTimezonePipe
   ],
   selector: 'app-communications',
@@ -47,35 +46,49 @@ const FIRST_YEAR_FOR_COMMUNICATIONS = 2023;
             <ion-select
               interface="popover"
               labelPlacement="end"
+              [attr.aria-label]="'COMMON.YEAR' | translate"
               [(ngModel)]="filterByYear"
               (ionChange)="loadListOfYear(filterByYear)"
             >
-              <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+              @for (year of years; track year) {
+                <ion-select-option [value]="year">{{ year }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
-        <ion-item class="noElements" *ngIf="communications && !communications.length">
-          <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
-        </ion-item>
-        <ion-item *ngIf="!communications">
-          <ion-label><ion-skeleton-text [animated]="true" /></ion-label>
-        </ion-item>
-        <ion-item [button]="true" *ngFor="let communication of communications" (click)="openCommunication(communication)">
-          <ion-label class="ion-text-wrap">
-            <p *ngIf="communication.event">{{ communication.event.name }}</p>
-            {{ communication.name }}
-          </ion-label>
-          <ion-note slot="end">{{ communication.date | dateTz }}</ion-note>
-          <ion-button
-            slot="end"
-            color="ESNgreen"
-            fill="clear"
-            *ngIf="app.user.isAdministrator"
-            (click)="editCommunication(communication, $event)"
-          >
-            <ion-icon slot="icon-only" icon="pencil" />
-          </ion-button>
-        </ion-item>
+        @if (communications && !communications.length) {
+          <ion-item class="noElements">
+            <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
+          </ion-item>
+        }
+        @if (!communications) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true" />
+            </ion-label>
+          </ion-item>
+        }
+        @for (communication of communications; track communication.communicationId) {
+          <ion-item [button]="true" (click)="openCommunication(communication)">
+            <ion-label class="ion-text-wrap">
+              @if (communication.event) {
+                <p>{{ communication.event.name }}</p>
+              }
+              {{ communication.name }}
+            </ion-label>
+            <ion-note slot="end">{{ communication.date | dateTz }}</ion-note>
+            @if (app.user.isAdministrator) {
+              <ion-button
+                slot="end"
+                color="ESNgreen"
+                fill="clear"
+                (click)="editCommunication(communication, $event)"
+              >
+                <ion-icon slot="icon-only" icon="pencil" />
+              </ion-button>
+            }
+          </ion-item>
+        }
       </ion-list>
     </ion-content>
   `,

@@ -1,9 +1,13 @@
-<div class="bubble" *ngIf="text" [class.bubbleSender]="isSender">
-  <app-subject color="transparent" lines="none" [subject]="creator"></app-subject>
-  <div class="internalPSpacing" [innerHtml]="sanitizedHtml"></div>
-</div>
+@if (text) {
+  <div class="bubble" [class.bubbleSender]="isSender">
+    <app-subject color="transparent" lines="none" [subject]="creator"></app-subject>
+    <div class="internalPSpacing" [innerHtml]="sanitizedHtml"></div>
+  </div>
+}
 <ng-content></ng-content>
 <!--skeleton-->
-<div class="bubble" *ngIf="!text" [class.bubbleSender]="isSender">
-  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-</div>
+@if (!text) {
+  <div class="bubble" [class.bubbleSender]="isSender">
+    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+  </div>
+}

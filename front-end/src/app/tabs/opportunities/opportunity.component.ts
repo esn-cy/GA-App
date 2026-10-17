@@ -8,7 +8,8 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 @Component({
   selector: 'app-opportunity',
   templateUrl: 'opportunity.component.html',
-  styleUrls: ['opportunity.component.scss']
+  styleUrls: ['opportunity.component.scss'],
+  standalone: false
 })
 export class OpportunityComponent {
   /**

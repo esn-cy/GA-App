@@ -10,7 +10,8 @@ import { Voter, VotingSession, VotingSessionTypes } from '@models/votingSession.
 @Component({
   selector: 'voting-session',
   templateUrl: 'votingSession.page.html',
-  styleUrls: ['votingSession.page.scss']
+  styleUrls: ['votingSession.page.scss'],
+  standalone: false
 })
 export class VotingSessionPage {
   @Input({ required: true }) sessionId!: string;

@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Component, Input } from '@angular/core';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -19,8 +19,7 @@ import { CommunicationsService } from './communications.service';
 import { Communication } from '@models/communication.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, HTMLEditorModule, EventsPickerComponent],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe, HTMLEditorModule, EventsPickerComponent],
   selector: 'app-manage-communication',
   template: `
     <ion-header class="ion-no-border">
@@ -41,20 +40,26 @@ import { Communication } from '@models/communication.model';
     <ion-content [class.ion-padding]="!app.isInMobileMode()">
       <ion-list class="aList" lines="full">
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
-          <ion-label position="stacked">
-            {{ 'COMMUNICATIONS.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
-          </ion-label>
-          <ion-input [(ngModel)]="communication.name"></ion-input>
+          <ion-input labelPlacement="stacked" [(ngModel)]="communication.name">
+            <div slot="label">
+              {{ 'COMMUNICATIONS.NAME' | translate }}
+              <ion-text class="obligatoryDot"></ion-text>
+            </div>
+          </ion-input>
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('brief')">
-          <ion-label position="stacked">
-            {{ 'COMMUNICATIONS.BRIEF' | translate }}
-          </ion-label>
-          <ion-input [(ngModel)]="communication.brief"></ion-input>
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'COMMUNICATIONS.BRIEF' | translate"
+            [(ngModel)]="communication.brief"
+          ></ion-input>
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('imageURL')">
-          <ion-label position="stacked">{{ 'COMMUNICATIONS.IMAGE_URL' | translate }}</ion-label>
-          <ion-input [(ngModel)]="communication.imageURL"></ion-input>
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'COMMUNICATIONS.IMAGE_URL' | translate"
+            [(ngModel)]="communication.imageURL"
+          ></ion-input>
           <input type="file" accept="image/*" style="display: none" id="upload-image" (change)="uploadImage($event)" />
           <ion-button
             slot="end"
@@ -77,21 +82,23 @@ import { Communication } from '@models/communication.model';
           </ion-label>
         </ion-list-header>
         <app-html-editor [(content)]="communication.content" [editMode]="true"></app-html-editor>
-        <ion-row class="ion-padding-top" *ngIf="communication.communicationId">
-          <ion-col>
-            <ion-button color="medium" (click)="duplicateCommunication()">
-              {{ 'COMMON.DUPLICATE' | translate }}
-            </ion-button>
-          </ion-col>
-          <ion-col class="ion-text-center">
-            <ion-button color="warning" (click)="askAndArchive(!communication.isArchived())">
-              {{ (communication.isArchived() ? 'COMMON.UNARCHIVE' : 'COMMON.ARCHIVE') | translate }}
-            </ion-button>
-          </ion-col>
-          <ion-col class="ion-text-right">
-            <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
-          </ion-col>
-        </ion-row>
+        @if (communication.communicationId) {
+          <ion-row class="ion-padding-top">
+            <ion-col>
+              <ion-button color="medium" (click)="duplicateCommunication()">
+                {{ 'COMMON.DUPLICATE' | translate }}
+              </ion-button>
+            </ion-col>
+            <ion-col class="ion-text-center">
+              <ion-button color="warning" (click)="askAndArchive(!communication.isArchived())">
+                {{ (communication.isArchived() ? 'COMMON.UNARCHIVE' : 'COMMON.ARCHIVE') | translate }}
+              </ion-button>
+            </ion-col>
+            <ion-col class="ion-text-right">
+              <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
+            </ion-col>
+          </ion-row>
+        }
       </ion-list>
     </ion-content>
   `

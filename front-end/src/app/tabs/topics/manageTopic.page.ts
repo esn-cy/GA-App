@@ -15,7 +15,8 @@ import { UserRoles } from '@models/user.model';
 @Component({
   selector: 'manage-topic',
   templateUrl: 'manageTopic.page.html',
-  styleUrls: ['manageTopic.page.scss']
+  styleUrls: ['manageTopic.page.scss'],
+  standalone: false
 })
 export class ManageTopicPage {
   @Input() topicId = 'new-standard';

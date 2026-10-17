@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, PopoverController } from '@ionic/angular';
-import { IDEATranslationsModule, IDEATranslationsService } from '@idea-ionic/common';
+import { IDEATranslatePipe, IDEATranslationsService } from '@idea-ionic/common';
 
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 
@@ -11,37 +11,41 @@ import { BadgesService } from './badges.service';
 import { Badge, UserBadge } from '@models/badge.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule, DateTimezonePipe],
+  imports: [CommonModule, IonicModule, IDEATranslatePipe, DateTimezonePipe],
   selector: 'app-user-badge',
   template: `
-    <ion-card color="white" *ngIf="badge && userBadge">
-      <ion-card-header>
-        <ion-card-subtitle *ngIf="!userBadge.firstSeenAt">
-          <ion-item color="primary">
-            <ion-label class="ion-text-wrap ion-text-center">{{ 'BADGES.YOU_EARNED_A_BADGE' | translate }}</ion-label>
-          </ion-item>
-        </ion-card-subtitle>
-        <ion-card-title class="ion-text-center">{{ badge.name }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p class="ion-text-center">{{ badge.description }}</p>
-        <ion-img
-          [src]="_badges.getImageURLOfUserBadge(userBadge)"
-          (ionError)="_badges.fallbackBadgeImage($event?.target)"
-        />
-        <p class="ion-text-center ion-padding-bottom">
-          <ion-badge color="light">
-            {{ 'BADGES.BADGE_EARNED' | translate }}: {{ userBadge.earnedAt | dateTz }}
-          </ion-badge>
-        </p>
-        <p class="ion-text-center">
-          <ion-button fill="clear" color="medium" (click)="close()">
-            {{ 'COMMON.CLOSE' | translate }}
-          </ion-button>
-        </p>
-      </ion-card-content>
-    </ion-card>
+    @if (badge && userBadge) {
+      <ion-card color="white">
+        <ion-card-header>
+          @if (!userBadge.firstSeenAt) {
+            <ion-card-subtitle>
+              <ion-item color="primary">
+                <ion-label class="ion-text-wrap ion-text-center">{{ 'BADGES.YOU_EARNED_A_BADGE' | translate }}
+                </ion-label>
+              </ion-item>
+            </ion-card-subtitle>
+          }
+          <ion-card-title class="ion-text-center">{{ badge.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="ion-text-center">{{ badge.description }}</p>
+          <ion-img
+            [src]="_badges.getImageURLOfUserBadge(userBadge)"
+            (ionError)="_badges.fallbackBadgeImage($event?.target)"
+          />
+          <p class="ion-text-center ion-padding-bottom">
+            <ion-badge color="light">
+              {{ 'BADGES.BADGE_EARNED' | translate }}: {{ userBadge.earnedAt | dateTz }}
+            </ion-badge>
+          </p>
+          <p class="ion-text-center">
+            <ion-button fill="clear" color="medium" (click)="close()">
+              {{ 'COMMON.CLOSE' | translate }}
+            </ion-button>
+          </p>
+        </ion-card-content>
+      </ion-card>
+    }
   `,
   styles: [
     `

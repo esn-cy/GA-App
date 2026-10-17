@@ -15,7 +15,8 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 @Component({
   selector: 'topics',
   templateUrl: 'topics.page.html',
-  styleUrls: ['topics.page.scss']
+  styleUrls: ['topics.page.scss'],
+  standalone: false
 })
 export class TopicsPage implements OnInit {
   topics: Topic[] | undefined;
@@ -23,16 +24,16 @@ export class TopicsPage implements OnInit {
   @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
   categories: TopicCategory[] | undefined;
-  filterByCategory: string | undefined;
+  filterByCategory: string | null = null;
 
   events: GAEvent[] | undefined;
-  filterByEvent: string | undefined;
+  filterByEvent: string | null = null;
 
-  filterByStatus: TopicsFilterByStatus | undefined;
+  filterByStatus: TopicsFilterByStatus | null = null;
   Statuses = TopicsFilterByStatus;
 
   TopicTypes = TopicTypes;
-  filterByType: TopicTypes | undefined;
+  filterByType: TopicTypes | null = null;
 
   sortBy: TopicsSortBy = TopicsSortBy.CREATED_DATE_DESC;
   TopicsSortBy = TopicsSortBy;
@@ -74,10 +75,10 @@ export class TopicsPage implements OnInit {
     this.topics = await this._topics.getActiveList({
       force,
       search,
-      categoryId: this.filterByCategory,
-      eventId: this.filterByEvent,
-      status: this.filterByStatus,
-      type: this.filterByType,
+      categoryId: this.filterByCategory ?? undefined,
+      eventId: this.filterByEvent ?? undefined,
+      status: this.filterByStatus ?? undefined,
+      type: this.filterByType ?? undefined,
       withPagination: true,
       startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy

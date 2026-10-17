@@ -23,15 +23,15 @@
         "../front-end/src/app/common/*"
       ]
     },
+    "esModuleInterop": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
     "ignoreDeprecations": "6.0",
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "useDefineForClassFields": false,
     "target": "es2022",

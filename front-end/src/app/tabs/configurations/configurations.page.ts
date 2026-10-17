@@ -17,7 +17,8 @@ import { Badge } from '@models/badge.model';
 @Component({
   selector: 'configurations',
   templateUrl: 'configurations.page.html',
-  styleUrls: ['configurations.page.scss']
+  styleUrls: ['configurations.page.scss'],
+  standalone: false
 })
 export class ConfigurationsPage implements OnInit {
   configurations: Configurations | undefined;

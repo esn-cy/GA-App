@@ -1,10 +1,12 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="ideaToolbar" *ngIf="app.isInMobileMode()">
-    <ion-buttons slot="start">
-      <ion-img [src]="app.getIcon(true)"></ion-img>
-    </ion-buttons>
-    <ion-title>{{ 'TABS.OPPORTUNITIES' | translate }}</ion-title>
-  </ion-toolbar>
+  @if (app.isInMobileMode()) {
+    <ion-toolbar color="ideaToolbar">
+      <ion-buttons slot="start">
+        <ion-img [src]="app.getIcon(true)"></ion-img>
+      </ion-buttons>
+      <ion-title>{{ 'TABS.OPPORTUNITIES' | translate }}</ion-title>
+    </ion-toolbar>
+  }
   <ion-toolbar class="filtersBar" color="ideaToolbar">
     <ion-searchbar
       #searchbar
@@ -13,65 +15,90 @@
     ></ion-searchbar>
     <ion-buttons slot="end">
       <ion-item lines="none" color="ideaToolbar" class="ion-hide-lg-down">
-        <ion-select interface="popover" [(ngModel)]="filterByStatus" (ionChange)="filter(searchbar.value ?? undefined)">
-          <ion-select-option [value]="undefined">{{ 'OPPORTUNITIES.ALL_STATUSES' | translate }}</ion-select-option>
+        <ion-select interface="popover" [attr.aria-label]="'OPPORTUNITIES.ALL_STATUSES' | translate"
+                    [(ngModel)]="filterByStatus" (ionChange)="filter(searchbar.value ?? undefined)">
+          <ion-select-option [value]="null">{{ 'OPPORTUNITIES.ALL_STATUSES' | translate }}</ion-select-option>
           <ion-select-option [value]="true">{{ 'OPPORTUNITIES.STATUSES.OPEN' | translate }}</ion-select-option>
           <ion-select-option [value]="false">{{ 'OPPORTUNITIES.STATUSES.CLOSED' | translate }}</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item lines="none" color="ideaToolbar" class="ion-hide-md-down">
-        <ion-select interface="popover" [(ngModel)]="sortBy" (ionChange)="filter(searchbar.value ?? undefined)">
-          <ion-select-option *ngFor="let sortBy of OpportunitiesSortBy | keyvalue" [value]="sortBy.key">
-            {{ 'OPPORTUNITIES.SORT_BY' | translate }} {{
+        <ion-select interface="popover" [attr.aria-label]="'OPPORTUNITIES.SORT_BY' | translate" [(ngModel)]="sortBy"
+                    (ionChange)="filter(searchbar.value ?? undefined)">
+          @for (sortBy of OpportunitiesSortBy | keyvalue; track sortBy.key) {
+            <ion-select-option [value]="sortBy.key">
+              {{ 'OPPORTUNITIES.SORT_BY' | translate }} {{
               ('OPPORTUNITIES.SORT_BY_OPTIONS.' + sortBy.key) | translate |
                 lowercase
-            }}
-          </ion-select-option>
+              }}
+            </ion-select-option>
+          }
         </ion-select>
       </ion-item>
       <ion-button fill="solid" color="ESNpink" (click)="app.goToInTabs(['opportunities', 'archive'])">
-        <ion-icon icon="archive-outline" slot="icon-only" *ngIf="app.isInMobileMode()"></ion-icon>
-        <ion-text *ngIf="!app.isInMobileMode()">{{ 'ARCHIVE.ARCHIVE' | translate }}</ion-text>
+        @if (app.isInMobileMode()) {
+          <ion-icon icon="archive-outline" slot="icon-only"></ion-icon>
+        }
+        @if (!app.isInMobileMode()) {
+          <ion-text>{{ 'ARCHIVE.ARCHIVE' | translate }}</ion-text>
+        }
       </ion-button>
-      <ion-button fill="solid" color="ESNgreen" *ngIf="app.user.canManageOpportunities" (click)="addOpportunity()">
-        <ion-icon icon="add" slot="icon-only"></ion-icon>
-      </ion-button>
-      <app-statistics-button
-        class="ion-hide-sm-down"
-        *ngIf="app.user.isAdministrator"
-        [entityType]="SET.OPPORTUNITIES"
-        [title]="'TABS.OPPORTUNITIES' | translate"
-        [color]="app.isInDarkMode() ? 'dark' : 'white'"
-      />
+      @if (app.user.canManageOpportunities) {
+        <ion-button fill="solid" color="ESNgreen" (click)="addOpportunity()">
+          <ion-icon icon="add" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
+      @if (app.user.isAdministrator) {
+        <app-statistics-button
+          class="ion-hide-sm-down"
+          [entityType]="SET.OPPORTUNITIES"
+          [title]="'TABS.OPPORTUNITIES' | translate"
+          [color]="app.isInDarkMode() ? 'dark' : 'white'"
+        />
+      }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-refresher slot="fixed" *ngIf="app.isInMobileMode()" (ionRefresh)="handleRefresh($event?.target)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  @if (app.isInMobileMode()) {
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event?.target)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  }
   <ion-list class="aList">
-    <ion-item lines="full" class="ion-text-center noElements" *ngIf="opportunities && !opportunities.length">
-      <ion-label>{{ 'OPPORTUNITIES.NO_ACTIVE_OPPORTUNITIES' | translate }}</ion-label>
-    </ion-item>
-    <ng-container *ngIf="app.isInMobileMode()">
-      <app-opportunity *ngIf="!opportunities" />
-      <app-opportunity
-        *ngFor="let opportunity of opportunities"
-        [opportunity]="opportunity"
-        (select)="openOpportunity(opportunity)"
-      />
-    </ng-container>
-    <ion-grid *ngIf="!app.isInMobileMode()">
-      <app-opportunity *ngIf="!opportunities" [row]="true" />
-      <app-opportunity *ngIf="opportunities?.length" [row]="true" [header]="true" />
-      <app-opportunity
-        *ngFor="let opportunity of opportunities"
-        [opportunity]="opportunity"
-        [row]="true"
-        (select)="openOpportunity(opportunity)"
-      />
-    </ion-grid>
+    @if (opportunities && !opportunities.length) {
+      <ion-item lines="full" class="ion-text-center noElements">
+        <ion-label>{{ 'OPPORTUNITIES.NO_ACTIVE_OPPORTUNITIES' | translate }}</ion-label>
+      </ion-item>
+    }
+    @if (app.isInMobileMode()) {
+      @if (!opportunities) {
+        <app-opportunity />
+      }
+      @for (opportunity of opportunities; track opportunity.opportunityId) {
+        <app-opportunity
+          [opportunity]="opportunity"
+          (select)="openOpportunity(opportunity)"
+        />
+      }
+    }
+    @if (!app.isInMobileMode()) {
+      <ion-grid>
+        @if (!opportunities) {
+          <app-opportunity [row]="true" />
+        }
+        @if (opportunities?.length) {
+          <app-opportunity [row]="true" [header]="true" />
+        }
+        @for (opportunity of opportunities; track opportunity.opportunityId) {
+          <app-opportunity
+            [opportunity]="opportunity"
+            [row]="true"
+            (select)="openOpportunity(opportunity)"
+          />
+        }
+      </ion-grid>
+    }
     <ion-infinite-scroll (ionInfinite)="filter(searchbar.value ?? undefined, $event.target)">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>

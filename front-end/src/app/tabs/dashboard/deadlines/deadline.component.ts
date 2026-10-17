@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { isToday, isTomorrow } from 'date-fns';
-import { IDEATranslationsModule, IDEATranslationsService } from '@idea-ionic/common';
+import { IDEATranslationsService } from '@idea-ionic/common';
 
 import { DateTimezonePipe, formatDateWithLocaleAndTimeZone } from '@common/dateTimezone.pipe';
 
@@ -11,34 +11,47 @@ import { AppService } from '@app/app.service';
 import { Deadline } from '@models/deadline.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule, DateTimezonePipe],
+  imports: [CommonModule, IonicModule, DateTimezonePipe],
   selector: 'app-deadline',
   template: `
-    <ion-item [color]="color" *ngIf="!deadline">
-      <ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
-    </ion-item>
-    <ion-item [color]="color" *ngIf="deadline">
-      <ion-badge slot="start" class="deadlineDate" *ngIf="!app.isInMobileMode()" [color]="getDeadlineColor()">
-        {{ getDeadlineLabel() }}
-      </ion-badge>
-      <ion-label class="ion-text-wrap">
-        <p *ngIf="app.isInMobileMode()">
-          <ion-badge class="deadlineDate mobile" [color]="getDeadlineColor()">{{ getDeadlineLabel() }}</ion-badge>
-        </p>
-        {{ deadline.name }}
-        <p>
-          <ion-text color="medium" style="font-weight: 600">{{ deadline.event?.name }}</ion-text>
-          <span *ngIf="deadline.target && deadline.event"> - </span>
-          {{ deadline.target }}
-        </p>
-      </ion-label>
-      <ion-badge slot="end" mode="ios" *ngIf="deadline.action" [color]="deadline.actionColor ?? undefined">
-        {{ deadline.action }}
-      </ion-badge>
-      <ion-badge class="deadlineTime" slot="end">{{ deadline.at | dateTz : 'time' }}</ion-badge>
-      <ng-content></ng-content>
-    </ion-item>
+    @if (!deadline) {
+      <ion-item [color]="color">
+        <ion-label>
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    }
+    @if (deadline) {
+      <ion-item [color]="color">
+        @if (!app.isInMobileMode()) {
+          <ion-badge slot="start" class="deadlineDate" [color]="getDeadlineColor()">
+            {{ getDeadlineLabel() }}
+          </ion-badge>
+        }
+        <ion-label class="ion-text-wrap">
+          @if (app.isInMobileMode()) {
+            <p>
+              <ion-badge class="deadlineDate mobile" [color]="getDeadlineColor()">{{ getDeadlineLabel() }}</ion-badge>
+            </p>
+          }
+          {{ deadline.name }}
+          <p>
+            <ion-text color="medium" style="font-weight: 600">{{ deadline.event?.name }}</ion-text>
+            @if (deadline.target && deadline.event) {
+              <span> - </span>
+            }
+            {{ deadline.target }}
+          </p>
+        </ion-label>
+        @if (deadline.action) {
+          <ion-badge slot="end" mode="ios" [color]="deadline.actionColor ?? undefined">
+            {{ deadline.action }}
+          </ion-badge>
+        }
+        <ion-badge class="deadlineTime" slot="end">{{ deadline.at | dateTz : 'time' }}</ion-badge>
+        <ng-content></ng-content>
+      </ion-item>
+    }
   `,
   styles: [
     `

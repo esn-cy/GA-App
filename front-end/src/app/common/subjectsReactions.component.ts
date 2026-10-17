@@ -8,7 +8,8 @@ import { Subject } from '@models/subject.model';
 @Component({
   selector: 'app-subject-reactions',
   templateUrl: 'subjectsReactions.component.html',
-  styleUrls: ['subjectsReactions.component.scss']
+  styleUrls: ['subjectsReactions.component.scss'],
+  standalone: false
 })
 export class SubjectsReactionsComponent implements AfterViewInit {
   /**

@@ -1,31 +1,38 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { GAEventsService } from '@tabs/configurations/events/events.service';
 
 import { GAEvent, GAEventAttached } from '@models/event.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-events-picker',
   template: `
     <ion-item [lines]="lines" [color]="color">
-      <ion-label position="stacked">
-        {{ 'EVENTS.EVENT' | translate }} <ion-text class="obligatoryDot" *ngIf="obligatory"></ion-text>
-      </ion-label>
       <ion-select
         interface="popover"
+        labelPlacement="stacked"
         [compareWith]="compareWithEvent"
         [(ngModel)]="event"
         (ngModelChange)="eventChange.emit($event)"
         [disabled]="!editMode || !events"
       >
-        <ion-select-option *ngIf="!obligatory" [value]="undefined"></ion-select-option>
-        <ion-select-option *ngFor="let event of events" [value]="event">{{ event.name }}</ion-select-option>
+        <div slot="label">
+          {{ 'EVENTS.EVENT' | translate }}
+          @if (obligatory) {
+            <ion-text class="obligatoryDot"></ion-text>
+          }
+        </div>
+        @if (!obligatory) {
+          <ion-select-option [value]="null"></ion-select-option>
+        }
+        @for (event of events; track event.eventId) {
+          <ion-select-option [value]="event">{{ event.name }}</ion-select-option>
+        }
       </ion-select>
     </ion-item>
   `,
@@ -35,8 +42,8 @@ export class EventsPickerComponent implements OnInit {
   /**
    * The event picked.
    */
-  @Input() event: GAEventAttached | undefined;
-  @Output() eventChange = new EventEmitter<GAEventAttached | undefined>();
+  @Input() event: GAEventAttached | null | undefined;
+  @Output() eventChange = new EventEmitter<GAEventAttached | null | undefined>();
   /**
    * The colour of the item.
    */

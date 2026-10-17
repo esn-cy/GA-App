@@ -1,12 +1,11 @@
 import { read, utils } from 'xlsx';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
 import { IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEAMessageService,
-  IDEAShowHintButtonModule,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -16,8 +15,7 @@ import { VotingService } from '../voting.service';
 import { ExportableVoter, Voter, VotingSession } from '@models/votingSession.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, IDEAShowHintButtonModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-import-voters',
   template: `
     <ion-header class="ion-no-border">
@@ -63,30 +61,37 @@ import { ExportableVoter, Voter, VotingSession } from '@models/votingSession.mod
             {{ 'VOTING.CHOOSE_FILE_FOR_IMPORT' | translate }} <ion-icon icon="folder" slot="end" />
           </ion-button>
         </p>
-        <ion-item-divider *ngIf="indexesOfRowsWithErr.length">
-          <ion-label>
-            <b>
-              <ion-text color="dark">{{ 'VOTING.SOME_ROWS_HAVE_ERRORS' | translate }}:</ion-text>
-              <ion-text color="danger"> #{{ indexesOfRowsWithErr.join(', #') }} </ion-text>
-            </b>
-          </ion-label>
-        </ion-item-divider>
+        @if (indexesOfRowsWithErr.length) {
+          <ion-item-divider>
+            <ion-label>
+              <b>
+                <ion-text color="dark">{{ 'VOTING.SOME_ROWS_HAVE_ERRORS' | translate }}:</ion-text>
+                <ion-text color="danger"> #{{ indexesOfRowsWithErr.join(', #') }}</ion-text>
+              </b>
+            </ion-label>
+          </ion-item-divider>
+        }
         <hr />
         <p class="ion-text-center">{{ 'COMMON.OR' | translate }}</p>
         <ion-item>
           <ion-select
             interface="popover"
+            [attr.aria-label]="'VOTING.IMPORT_FROM_OTHER_SESSION' | translate"
             [interfaceOptions]="{ cssClass: 'largePopover' }"
             [placeholder]="('VOTING.IMPORT_FROM_OTHER_SESSION' | translate) + '...'"
             [(ngModel)]="votingSessionToCopy"
           >
-            <ion-select-option *ngFor="let os of otherVotingSessions" [value]="os">
-              {{ os.name }}
-            </ion-select-option>
+            @for (os of otherVotingSessions; track os.sessionId) {
+              <ion-select-option [value]="os">
+                {{ os.name }}
+              </ion-select-option>
+            }
           </ion-select>
-          <ion-button slot="end" *ngIf="votingSessionToCopy" (click)="importFromOtherSession()">
-            {{ 'COMMON.COPY' | translate }}
-          </ion-button>
+          @if (votingSessionToCopy) {
+            <ion-button slot="end" (click)="importFromOtherSession()">
+              {{ 'COMMON.COPY' | translate }}
+            </ion-button>
+          }
         </ion-item>
       </ion-list>
     </ion-content>

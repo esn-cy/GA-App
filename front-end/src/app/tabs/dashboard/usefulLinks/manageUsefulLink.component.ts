@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Component, Input } from '@angular/core';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -16,8 +16,7 @@ import { UsefulLinksService } from './usefulLinks.service';
 import { UsefulLink } from '@models/usefulLink.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, EventsPickerComponent],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe, EventsPickerComponent],
   selector: 'app-manage-useful-link',
   template: `
     <ion-header class="ion-no-border">
@@ -38,27 +37,33 @@ import { UsefulLink } from '@models/usefulLink.model';
     <ion-content>
       <ion-list class="aList" lines="full">
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
-          <ion-label position="stacked">
-            {{ 'USEFUL_LINKS.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
-          </ion-label>
-          <ion-input [(ngModel)]="link.name"></ion-input>
+          <ion-input labelPlacement="stacked" [(ngModel)]="link.name">
+            <div slot="label">
+              {{ 'USEFUL_LINKS.NAME' | translate }}
+              <ion-text class="obligatoryDot"></ion-text>
+            </div>
+          </ion-input>
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('url')">
-          <ion-label position="stacked">
-            {{ 'USEFUL_LINKS.URL' | translate }} <ion-text class="obligatoryDot"></ion-text>
-          </ion-label>
-          <ion-input [(ngModel)]="link.url"></ion-input>
+          <ion-input labelPlacement="stacked" [(ngModel)]="link.url">
+            <div slot="label">
+              {{ 'USEFUL_LINKS.URL' | translate }}
+              <ion-text class="obligatoryDot"></ion-text>
+            </div>
+          </ion-input>
         </ion-item>
         <app-events-picker
           [class.fieldHasError]="hasFieldAnError('event')"
           [editMode]="true"
           [(event)]="link.event"
         ></app-events-picker>
-        <ion-row class="ion-padding-top" *ngIf="link.linkId">
-          <ion-col class="ion-text-right ion-padding-end">
-            <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
-          </ion-col>
-        </ion-row>
+        @if (link.linkId) {
+          <ion-row class="ion-padding-top">
+            <ion-col class="ion-text-right ion-padding-end">
+              <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
+            </ion-col>
+          </ion-row>
+        }
       </ion-list>
     </ion-content>
   `

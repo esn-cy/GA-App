@@ -13,35 +13,41 @@
     <ion-col size="12" sizeSm="8" sizeLg="9">
       <ion-item lines="none">
         <ion-label class="ion-text-wrap">
-          <b *ngIf="title">{{ title }}</b>
-          <p *ngIf="statistic?.timePoints?.length">
-            {{ 'STATISTICS.SINCE' | translate | lowercase }}
-            <ion-badge color="ESNpink">{{ getFirstDateOfStatistic() | dateTz }}</ion-badge>
-            {{ 'STATISTICS.TO' | translate | lowercase }}
-            <ion-badge color="ESNpink">
-              {{ 'STATISTICS.TODAY' | translate | lowercase }}
-            </ion-badge>
-          </p>
+          @if (title) {
+            <b>{{ title }}</b>
+          }
+          @if (statistic?.timePoints?.length) {
+            <p>
+              {{ 'STATISTICS.SINCE' | translate | lowercase }}
+              <ion-badge color="ESNpink">{{ getFirstDateOfStatistic() | dateTz }}</ion-badge>
+              {{ 'STATISTICS.TO' | translate | lowercase }}
+              <ion-badge color="ESNpink">
+                {{ 'STATISTICS.TODAY' | translate | lowercase }}
+              </ion-badge>
+            </p>
+          }
         </ion-label>
       </ion-item>
     </ion-col>
-    <ion-col size="12" sizeSm="4" sizeLg="3" *ngIf="statistic">
-      <ion-item lines="none">
-        <ion-label class="ion-text-right ion-hide-md-down">{{ 'STATISTICS.TOTALS' | translate }}:</ion-label>
-        <ion-chip slot="end" [disabled]="true">
-          <ion-icon name="person"></ion-icon>
-          <ion-label>{{ statistic.totals.users }}</ion-label>
-        </ion-chip>
-        <ion-chip slot="end" [disabled]="true">
-          <ion-icon name="home"></ion-icon>
-          <ion-label>{{ statistic.totals.sections }}</ion-label>
-        </ion-chip>
-        <ion-chip slot="end" [disabled]="true">
-          <ion-icon name="earth"></ion-icon>
-          <ion-label>{{ statistic.totals.countries }}</ion-label>
-        </ion-chip>
-      </ion-item>
-    </ion-col>
+    @if (statistic) {
+      <ion-col size="12" sizeSm="4" sizeLg="3">
+        <ion-item lines="none">
+          <ion-label class="ion-text-right ion-hide-md-down">{{ 'STATISTICS.TOTALS' | translate }}:</ion-label>
+          <ion-chip slot="end" [disabled]="true">
+            <ion-icon name="person"></ion-icon>
+            <ion-label>{{ statistic.totals.users }}</ion-label>
+          </ion-chip>
+          <ion-chip slot="end" [disabled]="true">
+            <ion-icon name="home"></ion-icon>
+            <ion-label>{{ statistic.totals.sections }}</ion-label>
+          </ion-chip>
+          <ion-chip slot="end" [disabled]="true">
+            <ion-icon name="earth"></ion-icon>
+            <ion-label>{{ statistic.totals.countries }}</ion-label>
+          </ion-chip>
+        </ion-item>
+      </ion-col>
+    }
   </ion-row>
   <ion-list class="actionsRow" lines="none">
     <ion-item>
@@ -66,9 +72,11 @@
         [(ngModel)]="period"
         (ionChange)="loadStatisticAndBuildChart()"
       >
-        <ion-select-option *ngFor="let period of PeriodsList" [value]="Periods[period]">
-          {{ 'STATISTICS.PERIODS.' + period | translate }}
-        </ion-select-option>
+        @for (period of PeriodsList; track period) {
+          <ion-select-option [value]="Periods[period]">
+            {{ 'STATISTICS.PERIODS.' + period | translate }}
+          </ion-select-option>
+        }
       </ion-select>
     </ion-item>
     <ion-item>
@@ -78,9 +86,11 @@
         [(ngModel)]="granularity"
         (ionChange)="loadStatisticAndBuildChart()"
       >
-        <ion-select-option *ngFor="let g of GranularitiesList" [value]="g">
-          {{ 'STATISTICS.GRANULARITIES.' + g | translate }}
-        </ion-select-option>
+        @for (g of GranularitiesList; track g) {
+          <ion-select-option [value]="g">
+            {{ 'STATISTICS.GRANULARITIES.' + g | translate }}
+          </ion-select-option>
+        }
       </ion-select>
     </ion-item>
     <ion-item>
@@ -90,7 +100,7 @@
         [(ngModel)]="groupBy"
         (ionChange)="buildChart()"
       >
-        <ion-select-option [value]="undefined">
+        <ion-select-option [value]="null">
           {{ 'STATISTICS.GROUP_BYS.NONE' | translate }}
         </ion-select-option>
         <ion-select-option value="country">

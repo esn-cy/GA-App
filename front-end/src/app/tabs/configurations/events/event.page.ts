@@ -11,7 +11,8 @@ import { GAEvent } from '@models/event.model';
 @Component({
   selector: 'event',
   templateUrl: 'event.page.html',
-  styleUrls: ['event.page.scss']
+  styleUrls: ['event.page.scss'],
+  standalone: false
 })
 export class EventPage {
   @Input() eventId = 'new';

@@ -1,11 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule],
+  imports: [IonicModule, IDEATranslatePipe],
   selector: 'app-voting-majority-type',
   template: `
     <ion-content class="ion-padding">

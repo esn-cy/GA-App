@@ -14,16 +14,17 @@ import { Topic, TopicTypes } from '@models/topic.model';
 @Component({
   selector: 'archive',
   templateUrl: 'archive.page.html',
-  styleUrls: ['archive.page.scss']
+  styleUrls: ['archive.page.scss'],
+  standalone: false
 })
 export class ArchivePage implements OnInit {
   topics: Topic[] | undefined;
 
   categories: TopicCategory[] | undefined;
-  filterByCategory: string | undefined;
+  filterByCategory: string | null = null;
 
   events: GAEvent[] | undefined;
-  filterByEvent: string | undefined;
+  filterByEvent: string | null = null;
 
   sortBy: TopicsSortBy = TopicsSortBy.CREATED_DATE_DESC;
   TopicsSortBy = TopicsSortBy;
@@ -61,8 +62,8 @@ export class ArchivePage implements OnInit {
 
     this.topics = await this._topics.getArchivedList({
       force,
-      categoryId: this.filterByCategory,
-      eventId: this.filterByEvent,
+      categoryId: this.filterByCategory ?? undefined,
+      eventId: this.filterByEvent ?? undefined,
       withPagination: true,
       startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy

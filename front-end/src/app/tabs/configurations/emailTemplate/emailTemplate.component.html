@@ -20,19 +20,28 @@
         <p>{{ 'EMAIL_TEMPLATE.HTML_I' | translate }}</p>
         <p>{{ 'EMAIL_TEMPLATE.VARIABLES_ALLOWED' | translate }}</p>
         <ul>
-          <li *ngFor="let variable of variables">
-            <b>{{ '{{' + variable.code + '}}' }}</b> {{ variable.description }}
-          </li>
+          @for (variable of variables; track variable) {
+            <li>
+              <b>{{ '{{' + variable.code + '}}' }}</b> {{ variable.description }}
+            </li>
+          }
         </ul>
       </ion-label>
     </ion-list-header>
     <ion-item [class.fieldHasError]="hasFieldAnError('subject')">
-      <ion-label position="stacked">{{ 'EMAIL_TEMPLATE.SUBJECT' | translate }}</ion-label>
-      <ion-input [(ngModel)]="subject"></ion-input>
+      <ion-input
+        labelPlacement="stacked"
+        [label]="'EMAIL_TEMPLATE.SUBJECT' | translate"
+        [(ngModel)]="subject"
+      ></ion-input>
     </ion-item>
     <ion-item [class.fieldHasError]="hasFieldAnError('content')">
-      <ion-label position="stacked">{{ 'EMAIL_TEMPLATE.CONTENT' | translate }}</ion-label>
-      <ion-textarea [rows]="4" [(ngModel)]="content"></ion-textarea>
+      <ion-textarea
+        labelPlacement="stacked"
+        [label]="'EMAIL_TEMPLATE.CONTENT' | translate"
+        [rows]="4"
+        [(ngModel)]="content"
+      ></ion-textarea>
     </ion-item>
     <ion-row class="ion-margin-top">
       <ion-col class="ion-text-center" size="12" sizeSm="6">

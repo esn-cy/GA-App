@@ -17,7 +17,8 @@ import { UserDraft } from '@models/userDraft.model';
 @Component({
   selector: 'standard-topic',
   templateUrl: 'standardTopic.page.html',
-  styleUrls: ['standardTopic.page.scss']
+  styleUrls: ['standardTopic.page.scss'],
+  standalone: false
 })
 export class StandardTopicPage {
   @Input({ required: true }) topicId!: string;

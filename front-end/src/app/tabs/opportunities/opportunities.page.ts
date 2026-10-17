@@ -11,14 +11,15 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 @Component({
   selector: 'opportunities',
   templateUrl: 'opportunities.page.html',
-  styleUrls: ['opportunities.page.scss']
+  styleUrls: ['opportunities.page.scss'],
+  standalone: false
 })
 export class OpportunitiesPage implements OnInit {
   opportunities: Opportunity[] | undefined;
 
   @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
-  filterByStatus: boolean | undefined;
+  filterByStatus: boolean | null = null;
 
   sortBy: OpportunitiesSortBy = OpportunitiesSortBy.CREATED_DATE_DESC;
   OpportunitiesSortBy = OpportunitiesSortBy;
@@ -57,7 +58,7 @@ export class OpportunitiesPage implements OnInit {
     this.opportunities = await this._opportunities.getActiveList({
       force,
       search,
-      status: this.filterByStatus,
+      status: this.filterByStatus ?? undefined,
       withPagination: true,
       startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy

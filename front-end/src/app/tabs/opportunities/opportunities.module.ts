@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { OpportunitiesRoutingModule } from './opportunities.routing.module';
 import { OpportunitiesPage } from './opportunities.page';
@@ -25,7 +25,7 @@ import { DatetimeWithTimezoneStandaloneComponent } from '@common/datetimeWithTim
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     OpportunitiesRoutingModule,
     OpportunityModule,
     ApplicationStandaloneComponent,

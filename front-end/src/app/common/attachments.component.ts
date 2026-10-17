@@ -12,7 +12,8 @@ export const ACCEPTED_ATTACHMENTS_FORMATS = ['image/*', '.pdf', '.doc', '.docx',
 @Component({
   selector: 'app-attachments',
   templateUrl: 'attachments.component.html',
-  styleUrls: ['attachments.component.scss']
+  styleUrls: ['attachments.component.scss'],
+  standalone: false
 })
 export class AttachmentsComponent {
   /**
@@ -71,7 +72,7 @@ export class AttachmentsComponent {
     } catch (err: any) {
       this.uploadErrors.push({ file: name, error: err.message });
       this.removeAttachment(attachment);
-      await this.message.error(err.message, true);
+      await this.message.error(err.message, { dontTranslate: true });
     }
   }
 

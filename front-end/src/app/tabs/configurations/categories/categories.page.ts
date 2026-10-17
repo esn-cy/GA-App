@@ -9,7 +9,8 @@ import { TopicCategory } from '@models/category.model';
 @Component({
   selector: 'categories',
   templateUrl: 'categories.page.html',
-  styleUrls: ['categories.page.scss']
+  styleUrls: ['categories.page.scss'],
+  standalone: false
 })
 export class CategoriesPage {
   categories: TopicCategory[] | undefined;

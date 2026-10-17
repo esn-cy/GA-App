@@ -11,7 +11,8 @@ import { Opportunity, OpportunityApplicationAttachment } from '@models/opportuni
 @Component({
   selector: 'manage-opportunity',
   templateUrl: 'manageOpportunity.page.html',
-  styleUrls: ['manageOpportunity.page.scss']
+  styleUrls: ['manageOpportunity.page.scss'],
+  standalone: false
 })
 export class ManageOpportunityPage {
   @Input() opportunityId = 'new';

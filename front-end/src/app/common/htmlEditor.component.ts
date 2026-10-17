@@ -15,7 +15,8 @@ import { docsSoap } from 'docs-soap';
 @Component({
   selector: 'app-html-editor',
   templateUrl: 'htmlEditor.component.html',
-  styleUrls: ['htmlEditor.component.scss']
+  styleUrls: ['htmlEditor.component.scss'],
+  standalone: false
 })
 export class HTMLEditorComponent implements OnInit, OnChanges {
   /**

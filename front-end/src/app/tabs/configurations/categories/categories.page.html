@@ -1,10 +1,12 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="ideaToolbar" *ngIf="app.isInMobileMode()">
-    <ion-buttons slot="start">
-      <ion-img [src]="app.getIcon(true)"></ion-img>
-    </ion-buttons>
-    <ion-title>{{ app.configurations.appTitle }}</ion-title>
-  </ion-toolbar>
+  @if (app.isInMobileMode()) {
+    <ion-toolbar color="ideaToolbar">
+      <ion-buttons slot="start">
+        <ion-img [src]="app.getIcon(true)"></ion-img>
+      </ion-buttons>
+      <ion-title>{{ app.configurations.appTitle }}</ion-title>
+    </ion-toolbar>
+  }
   <ion-toolbar color="ideaToolbar">
     <ion-buttons slot="start">
       <ion-button (click)="app.goToInTabs(['configurations'], { back: true })">
@@ -19,17 +21,23 @@
 </ion-header>
 <ion-content>
   <ion-list class="aList maxWidthContainer">
-    <ion-item lines="full" class="ion-text-center noElements" *ngIf="categories && !categories.length">
-      <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="!categories">
-      <ion-label>
-        <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-      </ion-label>
-    </ion-item>
-    <ion-item *ngFor="let category of categories" [button]="true" (click)="openCategory(category)">
-      <ion-label>{{ category.name }}</ion-label>
-    </ion-item>
+    @if (categories && !categories.length) {
+      <ion-item lines="full" class="ion-text-center noElements">
+        <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
+      </ion-item>
+    }
+    @if (!categories) {
+      <ion-item>
+        <ion-label>
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    }
+    @for (category of categories; track category.categoryId) {
+      <ion-item [button]="true" (click)="openCategory(category)">
+        <ion-label>{{ category.name }}</ion-label>
+      </ion-item>
+    }
     <ion-infinite-scroll (ionInfinite)="paginate($event?.target)">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>

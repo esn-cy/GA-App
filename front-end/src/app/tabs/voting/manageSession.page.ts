@@ -1,6 +1,6 @@
 import { Component, HostListener, Input, OnDestroy, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
-import { ColumnMode, DatatableComponent, SelectionType, TableColumn } from '@swimlane/ngx-datatable';
+import { DatatableComponent, TableColumn } from '@swimlane/ngx-datatable';
 import { AlertController, IonAccordionGroup, IonSearchbar, ModalController } from '@ionic/angular';
 import { ISOString } from 'idea-toolbox';
 import {
@@ -32,7 +32,8 @@ import { VotingResults } from '@models/votingResult.model';
 @Component({
   selector: 'manage-voting-session',
   templateUrl: 'manageSession.page.html',
-  styleUrls: ['manageSession.page.scss']
+  styleUrls: ['manageSession.page.scss'],
+  standalone: false
 })
 export class ManageVotingSessionPage implements OnDestroy {
   @Input() sessionId = VotingSessionTypes.FORM_PUBLIC;
@@ -54,9 +55,9 @@ export class ManageVotingSessionPage implements OnDestroy {
   @ViewChild('votersTable') table: DatatableComponent | undefined;
 
   col: TableColumn[] = [];
-  selectionType = SelectionType.single;
-  trackByProp = 'id';
-  columnMode = ColumnMode.force;
+  selectionType = 'single';
+  trackByProp: keyof Voter = 'id';
+  columnMode = 'force';
   limit = 10;
   rowHeight = 42;
   headerHeight = 56;
@@ -431,7 +432,7 @@ export class ManageVotingSessionPage implements OnDestroy {
 
     this.calcVotersFooterTotals();
 
-    if (this.table && !stayInPage) this.table.offset = 0;
+    if (this.table && !stayInPage) this.table.offset.set(0);
   }
 
   calcVotersFooterTotals(): void {

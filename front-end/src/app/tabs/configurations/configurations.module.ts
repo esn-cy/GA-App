@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { IDEAShowHintButtonModule, IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEAShowHintButtonComponent, IDEATranslatePipe } from '@idea-ionic/common';
 
 import { ConfigurationsRoutingModule } from './configurations.routing.module';
 import { ConfigurationsPage } from './configurations.page';
@@ -16,8 +16,8 @@ import { ManageBadgesComponent } from './badges/manageBadges.component';
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
-    IDEAShowHintButtonModule,
+    IDEATranslatePipe,
+    IDEAShowHintButtonComponent,
     ConfigurationsRoutingModule,
     EmailTemplateModule,
     GiveBadgesComponent,

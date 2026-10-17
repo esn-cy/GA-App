@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
@@ -18,21 +18,22 @@ import { ISOString } from 'idea-toolbox';
 import { AppService } from '@app/app.service';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [FormsModule, IonicModule],
   selector: 'app-datetime-timezone',
   template: `
     <ion-item [lines]="lines" [color]="color">
-      <ion-label position="stacked">{{ label }} <ion-text class="obligatoryDot" *ngIf="obligatory" /></ion-label>
+      <ion-label position="stacked">{{ label }} @if (obligatory) {
+        <ion-text class="obligatoryDot" />
+      }</ion-label>
       <input
         #dateTime
         type="datetime-local"
         [disabled]="disabled"
         [value]="initialValue"
         (change)="dateChange.emit(zonedTimeStringToUTC($event.target.value))"
-      />
+        />
     </ion-item>
-  `
+    `
 })
 export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChanges {
   /**

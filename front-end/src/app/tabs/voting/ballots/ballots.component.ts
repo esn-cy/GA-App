@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { IonicModule, PopoverController } from '@ionic/angular';
 import Chart from 'chart.js/auto';
-import { IDEATranslationsModule, IDEATranslationsService } from '@idea-ionic/common';
+import { IDEATranslatePipe, IDEATranslationsService } from '@idea-ionic/common';
 
 import { MajorityTypeStandaloneComponent } from './majorityType.component';
 import { BallotVotesDetailStandaloneComponent } from './ballotVotesDetail.component';
@@ -14,73 +14,90 @@ import { VotingBallot, VotingMajorityTypes, VotingSession } from '@models/voting
 import { VotingResults } from '@models/votingResult.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [CommonModule, FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-voting-ballots',
   template: `
     <ion-reorder-group [disabled]="!showActions" (ionItemReorder)="handleBallotReorder($event)">
-      <ion-card *ngFor="let ballot of votingSession.ballots; let bIndex = index">
-        <ion-card-header>
-          <ng-container *ngIf="showActions">
-            <ion-item lines="none" style="--min-height: none">
-              <ion-button slot="end" fill="clear" color="danger" (click)="remove.emit(ballot)">
-                <ion-icon icon="trash-outline" slot="icon-only" />
-              </ion-button>
-              <ion-button slot="end" fill="clear" (click)="manage.emit(ballot)">
-                <ion-icon icon="pencil" slot="icon-only" />
-              </ion-button>
-              <ion-reorder slot="end" />
-            </ion-item>
-          </ng-container>
-          <ion-card-title>{{ ballot.text }}</ion-card-title>
-          <ion-card-subtitle class="tappable" (click)="openMajorityTypePopover(ballot.majorityType, $event)">
-            {{ 'VOTING.MAJORITY_TYPES.' + ballot.majorityType | translate }} <ion-icon icon="information" />
-          </ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-grid class="ion-no-padding">
-            <ion-row class="ion-align-items-center">
-              <ion-col size="12" [sizeMd]="(results ? 9 : 12).toString()">
-                <ion-item
-                  lines="none"
-                  *ngFor="let option of getOptionsOfBallotIncludingAbstainAndAbsentByIndex(bIndex); let oIndex = index"
-                  [button]="(results ?? false) && !votingSession.isSecret()"
-                  (click)="openBallotVotesDetailPopover(bIndex, oIndex, option, $event)"
-                >
-                  <ion-badge slot="start" color="light" *ngIf="!results">{{ oIndex + 1 }}</ion-badge>
-                  <ion-badge slot="start" style="--background: {{ chartColors[oIndex] }}" *ngIf="results">
-                    &nbsp;
-                  </ion-badge>
-                  <ion-label class="ion-text-wrap">{{ option }}</ion-label>
-                  <ion-badge *ngIf="results" slot="end" color="medium" class="resultPercentage">
-                    {{ getResultOfBallotOptionBasedOnRaw(bIndex, oIndex) | percent : '1.2-2' }}
-                  </ion-badge>
-                </ion-item>
-              </ion-col>
-              <ion-col size="12" sizeMd="3" *ngIf="results">
-                <div class="chartContainer">
-                  <canvas [id]="chartCanvasBaseId + bIndex"></canvas>
-                </div>
-              </ion-col>
-              <ion-col size="12" *ngIf="results && !raw">
-                <ion-item lines="none" class="outcomeItem">
-                  <ion-badge slot="end" color="light" *ngIf="getWinningBallotOptionIndex(bIndex) !== -1">
-                    {{ votingSession.ballots[bIndex].options[getWinningBallotOptionIndex(bIndex)] }}
-                  </ion-badge>
-                  <ion-label class="ion-text-right" *ngIf="getWinningBallotOptionIndex(bIndex) === -1">
-                    <i>{{ 'VOTING.NO_OPTION_RECEIVED_ENOUGH_VOTES' | translate }}</i>
-                  </ion-label>
-                  <ion-icon
-                    slot="end"
-                    size="small"
-                    [icon]="getWinningBallotOptionIndex(bIndex) === -1 ? 'close' : 'trophy-outline'"
-                  />
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-card-content>
-      </ion-card>
+      @for (ballot of votingSession.ballots; track ballot; let bIndex = $index) {
+        <ion-card>
+          <ion-card-header>
+            @if (showActions) {
+              <ion-item lines="none" style="--min-height: none">
+                <ion-button slot="end" fill="clear" color="danger" (click)="remove.emit(ballot)">
+                  <ion-icon icon="trash-outline" slot="icon-only" />
+                </ion-button>
+                <ion-button slot="end" fill="clear" (click)="manage.emit(ballot)">
+                  <ion-icon icon="pencil" slot="icon-only" />
+                </ion-button>
+                <ion-reorder slot="end" />
+              </ion-item>
+            }
+            <ion-card-title>{{ ballot.text }}</ion-card-title>
+            <ion-card-subtitle class="tappable" (click)="openMajorityTypePopover(ballot.majorityType, $event)">
+              {{ 'VOTING.MAJORITY_TYPES.' + ballot.majorityType | translate }}
+              <ion-icon icon="information" />
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-align-items-center">
+                <ion-col size="12" [sizeMd]="(results ? 9 : 12).toString()">
+                  @for (option of getOptionsOfBallotIncludingAbstainAndAbsentByIndex(bIndex); track $index; let oIndex = $index) {
+                    <ion-item
+                      lines="none"
+                      [button]="(results ?? false) && !votingSession.isSecret()"
+                      (click)="openBallotVotesDetailPopover(bIndex, oIndex, option, $event)"
+                    >
+                      @if (!results) {
+                        <ion-badge slot="start" color="light">{{ oIndex + 1 }}</ion-badge>
+                      }
+                      @if (results) {
+                        <ion-badge slot="start" style="--background: {{ chartColors[oIndex] }}">
+                          &nbsp;
+                        </ion-badge>
+                      }
+                      <ion-label class="ion-text-wrap">{{ option }}</ion-label>
+                      @if (results) {
+                        <ion-badge slot="end" color="medium" class="resultPercentage">
+                          {{ getResultOfBallotOptionBasedOnRaw(bIndex, oIndex) | percent : '1.2-2' }}
+                        </ion-badge>
+                      }
+                    </ion-item>
+                  }
+                </ion-col>
+                @if (results) {
+                  <ion-col size="12" sizeMd="3">
+                    <div class="chartContainer">
+                      <canvas [id]="chartCanvasBaseId + bIndex"></canvas>
+                    </div>
+                  </ion-col>
+                }
+                @if (results && !raw) {
+                  <ion-col size="12">
+                    <ion-item lines="none" class="outcomeItem">
+                      @if (getWinningBallotOptionIndex(bIndex) !== -1) {
+                        <ion-badge slot="end" color="light">
+                          {{ votingSession.ballots[bIndex].options[getWinningBallotOptionIndex(bIndex)] }}
+                        </ion-badge>
+                      }
+                      @if (getWinningBallotOptionIndex(bIndex) === -1) {
+                        <ion-label class="ion-text-right">
+                          <i>{{ 'VOTING.NO_OPTION_RECEIVED_ENOUGH_VOTES' | translate }}</i>
+                        </ion-label>
+                      }
+                      <ion-icon
+                        slot="end"
+                        size="small"
+                        [icon]="getWinningBallotOptionIndex(bIndex) === -1 ? 'close' : 'trophy-outline'"
+                      />
+                    </ion-item>
+                  </ion-col>
+                }
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      }
     </ion-reorder-group>
   `,
   styles: [

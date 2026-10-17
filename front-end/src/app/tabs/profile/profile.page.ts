@@ -13,7 +13,8 @@ import { UserBadge } from '@models/badge.model';
 @Component({
   selector: 'profile',
   templateUrl: 'profile.page.html',
-  styleUrls: ['profile.page.scss']
+  styleUrls: ['profile.page.scss'],
+  standalone: false
 })
 export class ProfilePage implements OnInit {
   version = env.idea.app.version;

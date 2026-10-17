@@ -1,373 +1,445 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="ideaToolbar" *ngIf="app.isInMobileMode()">
-    <ion-buttons slot="start">
-      <ion-img [src]="app.getIcon(true)"></ion-img>
-    </ion-buttons>
-    <ion-title>{{ 'TABS.CONFIGURATIONS' | translate }}</ion-title>
-  </ion-toolbar>
+  @if (app.isInMobileMode()) {
+    <ion-toolbar color="ideaToolbar">
+      <ion-buttons slot="start">
+        <ion-img [src]="app.getIcon(true)"></ion-img>
+      </ion-buttons>
+      <ion-title>{{ 'TABS.CONFIGURATIONS' | translate }}</ion-title>
+    </ion-toolbar>
+  }
   <ion-toolbar color="medium">
     <ion-segment [scrollable]="true" [(ngModel)]="pageSection">
-      <ion-segment-button *ngFor="let ps of PageSections | keyvalue" [value]="ps.key">
-        <ion-label>{{ 'CONFIGURATIONS.PAGE_SECTIONS.' + ps.key| translate }}</ion-label>
-      </ion-segment-button>
+      @for (ps of PageSections | keyvalue; track ps.key) {
+        <ion-segment-button [value]="ps.key">
+          <ion-label>{{ 'CONFIGURATIONS.PAGE_SECTIONS.' + ps.key| translate }}</ion-label>
+        </ion-segment-button>
+      }
     </ion-segment>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <div class="maxWidthContainer">
-    <ion-list class="aList" *ngIf="pageSection === PageSections.CONTENTS">
-      <ion-list-header>
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.ENTITIES' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.ENTITIES_I' | translate }}</p>
-        </ion-label>
-      </ion-list-header>
-      <ion-item [button]="true" [detail]="true" (click)="app.goToInTabs(['configurations', 'events'])">
-        <ion-label>{{ 'CONFIGURATIONS.EVENTS' | translate }}</ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="app.goToInTabs(['configurations', 'categories'])">
-        <ion-label>{{ 'CONFIGURATIONS.CATEGORIES' | translate }}</ion-label>
-      </ion-item>
-    </ion-list>
-
-    <ion-list class="aList" *ngIf="pageSection === PageSections.OPTIONS">
-      <ion-list-header>
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.DISPLAY_OPTIONS' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.DISPLAY_OPTIONS_I' | translate }}</p>
-        </ion-label>
-      </ion-list-header>
-      <ion-item *ngIf="!configurations">
-        <ion-label>
-          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-      <ng-container *ngIf="configurations">
-        <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.APP_TITLE' | translate }}</ion-label>
-          <ion-input [readonly]="true" [(ngModel)]="configurations.appTitle"></ion-input>
-          <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeAppTitle()">
-            <ion-icon icon="pencil" slot="icon-only" />
-          </ion-button>
-          <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.APP_TITLE" translate />
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.APP_SUBTITLE' | translate }}</ion-label>
-          <ion-input [readonly]="true" [(ngModel)]="configurations.appSubtitle"></ion-input>
-          <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeAppSubtitle()">
-            <ion-icon icon="pencil" slot="icon-only" />
-          </ion-button>
-          <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.APP_SUBTITLE" translate />
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.SUPPORT_EMAIL' | translate }}</ion-label>
-          <ion-input [readonly]="true" [(ngModel)]="configurations.supportEmail"></ion-input>
-          <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeSupportEmail()">
-            <ion-icon icon="pencil" slot="icon-only" />
-          </ion-button>
-          <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.SUPPORT_EMAIL" translate />
-        </ion-item>
-        <ion-item>
-          <ion-label class="ion-text-wrap">{{ 'CONFIGURATIONS.APP_LOGO_LIGHT' | translate }}</ion-label>
-          <ion-thumbnail slot="end" *ngIf="!app.isInMobileMode()">
-            <ion-img [src]="configurations.appLogoURL ?? app.getIcon()" />
-          </ion-thumbnail>
-          <input #appLogoInput type="file" accept="image/*" style="display: none" (change)="uploadAppLogo($event)" />
-          <ion-button slot="end" fill="clear" color="medium" (click)="appLogoInput.click()">
-            <ion-icon icon="cloud-upload-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button slot="end" fill="clear" color="danger" (click)="resetAppLogo()">
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.APP_LOGO_LIGHT" translate />
-        </ion-item>
-        <ion-item>
-          <ion-label class="ion-text-wrap">{{ 'CONFIGURATIONS.APP_LOGO_DARK' | translate }}</ion-label>
-          <ion-thumbnail slot="end" *ngIf="!app.isInMobileMode()">
-            <ion-img [src]="configurations.appLogoURLDarkMode ?? app.getIcon(true)" />
-          </ion-thumbnail>
-          <input
-            #appLogoDarkModeInput
-            type="file"
-            accept="image/*"
-            style="display: none"
-            (change)="uploadAppLogo($event, true)"
-          />
-          <ion-button slot="end" fill="clear" color="medium" (click)="appLogoDarkModeInput.click()">
-            <ion-icon icon="cloud-upload-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button slot="end" fill="clear" color="danger" (click)="resetAppLogo(true)">
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.APP_LOGO_DARK" translate />
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCE' | translate }}</ion-label>
-          <ion-select
-            interface="popover"
-            [(ngModel)]="configurations.usersOriginDisplay"
-            (ionChange)="updateConfigurations()"
-          >
-            <ion-select-option *ngFor="let dp of UODP | keyvalue" [value]="dp.value">
-              {{ 'CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCES.' + dp.key | translate }}
-            </ion-select-option>
-          </ion-select>
-          <idea-show-hint-button
-            slot="start"
-            class="ion-margin-top"
-            hint="CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCE"
-            translate
-          />
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.TIMEZONE_OF_REFERENCE' | translate }}</ion-label>
-          <ion-select interface="popover" [(ngModel)]="configurations.timezone" (ionChange)="updateConfigurations()">
-            <ion-select-option *ngFor="let timezone of timezones" [value]="timezone">{{ timezone }}</ion-select-option>
-          </ion-select>
-          <idea-show-hint-button
-            slot="start"
-            class="ion-margin-top"
-            hint="CONFIGURATIONS.TIMEZONE_OF_REFERENCE"
-            translate
-          />
-        </ion-item>
+    @if (pageSection === PageSections.CONTENTS) {
+      <ion-list class="aList">
         <ion-list-header>
           <ion-label>
-            <h2>{{ 'CONFIGURATIONS.HIDE_APP_FEATURES' | translate }}</h2>
-            <p>{{ 'CONFIGURATIONS.HIDE_APP_FEATURES_I' | translate }}</p>
+            <h2>{{ 'CONFIGURATIONS.ENTITIES' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.ENTITIES_I' | translate }}</p>
           </ion-label>
         </ion-list-header>
-        <ion-item>
-          <ion-checkbox
-            slot="end"
-            [(ngModel)]="configurations.hideQATopics"
-            (ionChange)="setVisibilityQATopicsFeature(!$event.detail.checked)"
-          />
-          <ion-label>{{ 'CONFIGURATIONS.HIDE_QA_TOPICS' | translate }}</ion-label>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+        <ion-item [button]="true" [detail]="true" (click)="app.goToInTabs(['configurations', 'events'])">
+          <ion-label>{{ 'CONFIGURATIONS.EVENTS' | translate }}</ion-label>
         </ion-item>
-        <ion-item>
-          <ion-checkbox
-            slot="end"
-            [(ngModel)]="configurations.hideOpportunities"
-            (ionChange)="setVisibilityOpportunitiesFeature(!$event.detail.checked)"
-          />
-          <ion-label>{{ 'CONFIGURATIONS.HIDE_OPPORTUNITIES' | translate }}</ion-label>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+        <ion-item [button]="true" [detail]="true" (click)="app.goToInTabs(['configurations', 'categories'])">
+          <ion-label>{{ 'CONFIGURATIONS.CATEGORIES' | translate }}</ion-label>
         </ion-item>
-        <ion-item>
-          <ion-checkbox
-            slot="end"
-            [(ngModel)]="configurations.hideVoting"
-            (ionChange)="setVisibilityVotingFeature(!$event.detail.checked)"
-          />
-          <ion-label>{{ 'CONFIGURATIONS.HIDE_VOTING' | translate }}</ion-label>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
-        </ion-item>
-        <ion-item>
-          <ion-checkbox
-            slot="end"
-            [(ngModel)]="configurations.hideBadges"
-            (ionChange)="setVisibilityBadgesFeature(!$event.detail.checked)"
-          />
-          <ion-label>{{ 'CONFIGURATIONS.HIDE_BADGES' | translate }}</ion-label>
-          <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
-        </ion-item>
-      </ng-container>
-    </ion-list>
+      </ion-list>
+    }
 
-    <ion-list class="aList" *ngIf="pageSection === PageSections.USERS">
-      <ion-list-header class="ion-padding-top">
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.ADMINISTRATORS' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.ADMINISTRATORS_I' | translate }}</p>
-        </ion-label>
-        <ion-button (click)="addAdministrator()">{{ 'COMMON.ADD' | translate }}</ion-button>
-      </ion-list-header>
-      <ion-item *ngIf="!configurations">
-        <ion-label>
-          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-      <ng-container *ngIf="configurations">
-        <ion-item *ngFor="let administratorId of configurations.administratorsIds">
-          <ion-label>{{ administratorId }}</ion-label>
-          <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(administratorId)">
-            <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button
-            fill="clear"
-            color="danger"
-            slot="end"
-            *ngIf="configurations.administratorsIds.length > 1"
-            (click)="removeAdministratorById(administratorId)"
-          >
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ng-container>
-      <ion-list-header class="ion-padding-top">
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.OPPORTUNITIES_MANAGERS' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.OPPORTUNITIES_MANAGERS_I' | translate }}</p>
-        </ion-label>
-        <ion-button (click)="addOpportunitiesManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
-      </ion-list-header>
-      <ion-item *ngIf="!configurations">
-        <ion-label>
-          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-      <ng-container *ngIf="configurations">
-        <ion-item
-          class="noElements"
-          *ngIf="!configurations.opportunitiesManagersIds.length"
-        >
-          <ion-label>{{ 'CONFIGURATIONS.NO_USERS_ADDED' | translate }}</ion-label>
-        </ion-item>
-        <ion-item *ngFor="let managerId of configurations.opportunitiesManagersIds">
-          <ion-label>{{ managerId }}</ion-label>
-          <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(managerId)">
-            <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" slot="end" (click)="removeOpportunitiesManagerById(managerId)">
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ng-container>
-      <ion-list-header class="ion-padding-top">
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.DASHBOARD_MANAGERS' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.DASHBOARD_MANAGERS_I' | translate }}</p>
-        </ion-label>
-        <ion-button (click)="addDashboardManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
-      </ion-list-header>
-      <ion-item *ngIf="!configurations">
-        <ion-label>
-          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-      <ng-container *ngIf="configurations">
-        <ion-item
-          class="noElements"
-          *ngIf="!configurations.dashboardManagersIds.length"
-        >
-          <ion-label>{{ 'CONFIGURATIONS.NO_USERS_ADDED' | translate }}</ion-label>
-        </ion-item>
-        <ion-item *ngFor="let managerId of configurations.dashboardManagersIds">
-          <ion-label>{{ managerId }}</ion-label>
-          <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(managerId)">
-            <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" slot="end" (click)="removeDashboardManagerById(managerId)">
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ng-container>
+    @if (pageSection === PageSections.OPTIONS) {
+      <ion-list class="aList">
+        <ion-list-header>
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.DISPLAY_OPTIONS' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.DISPLAY_OPTIONS_I' | translate }}</p>
+          </ion-label>
+        </ion-list-header>
+        @if (!configurations) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+        @if (configurations) {
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              [label]="'CONFIGURATIONS.APP_TITLE' | translate"
+              [readonly]="true"
+              [(ngModel)]="configurations.appTitle"
+            ></ion-input>
+            <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeAppTitle()">
+              <ion-icon icon="pencil" slot="icon-only" />
+            </ion-button>
+            <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.APP_TITLE" translate />
+          </ion-item>
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              [label]="'CONFIGURATIONS.APP_SUBTITLE' | translate"
+              [readonly]="true"
+              [(ngModel)]="configurations.appSubtitle"
+            ></ion-input>
+            <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeAppSubtitle()">
+              <ion-icon icon="pencil" slot="icon-only" />
+            </ion-button>
+            <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.APP_SUBTITLE" translate />
+          </ion-item>
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              [label]="'CONFIGURATIONS.SUPPORT_EMAIL' | translate"
+              [readonly]="true"
+              [(ngModel)]="configurations.supportEmail"
+            ></ion-input>
+            <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="changeSupportEmail()">
+              <ion-icon icon="pencil" slot="icon-only" />
+            </ion-button>
+            <idea-show-hint-button slot="start" class="ion-margin-top" hint="CONFIGURATIONS.SUPPORT_EMAIL" translate />
+          </ion-item>
+          <ion-item>
+            <ion-label class="ion-text-wrap">{{ 'CONFIGURATIONS.APP_LOGO_LIGHT' | translate }}</ion-label>
+            @if (!app.isInMobileMode()) {
+              <ion-thumbnail slot="end">
+                <ion-img [src]="configurations.appLogoURL ?? app.getIcon()" />
+              </ion-thumbnail>
+            }
+            <input #appLogoInput type="file" accept="image/*" style="display: none" (change)="uploadAppLogo($event)" />
+            <ion-button slot="end" fill="clear" color="medium" (click)="appLogoInput.click()">
+              <ion-icon icon="cloud-upload-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button slot="end" fill="clear" color="danger" (click)="resetAppLogo()">
+              <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.APP_LOGO_LIGHT" translate />
+          </ion-item>
+          <ion-item>
+            <ion-label class="ion-text-wrap">{{ 'CONFIGURATIONS.APP_LOGO_DARK' | translate }}</ion-label>
+            @if (!app.isInMobileMode()) {
+              <ion-thumbnail slot="end">
+                <ion-img [src]="configurations.appLogoURLDarkMode ?? app.getIcon(true)" />
+              </ion-thumbnail>
+            }
+            <input
+              #appLogoDarkModeInput
+              type="file"
+              accept="image/*"
+              style="display: none"
+              (change)="uploadAppLogo($event, true)"
+            />
+            <ion-button slot="end" fill="clear" color="medium" (click)="appLogoDarkModeInput.click()">
+              <ion-icon icon="cloud-upload-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button slot="end" fill="clear" color="danger" (click)="resetAppLogo(true)">
+              <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.APP_LOGO_DARK" translate />
+          </ion-item>
+          <ion-item>
+            <ion-select
+              interface="popover"
+              labelPlacement="stacked"
+              [label]="'CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCE' | translate"
+              [(ngModel)]="configurations.usersOriginDisplay"
+              (ionChange)="updateConfigurations()"
+            >
+              @for (dp of UODP | keyvalue; track dp.key) {
+                <ion-select-option [value]="dp.value">
+                  {{ 'CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCES.' + dp.key | translate }}
+                </ion-select-option>
+              }
+            </ion-select>
+            <idea-show-hint-button
+              slot="start"
+              class="ion-margin-top"
+              hint="CONFIGURATIONS.ORIGIN_DISPLAY_PREFERENCE"
+              translate
+            />
+          </ion-item>
+          <ion-item>
+            <ion-select
+              interface="popover"
+              labelPlacement="stacked"
+              [label]="'CONFIGURATIONS.TIMEZONE_OF_REFERENCE' | translate"
+              [(ngModel)]="configurations.timezone"
+              (ionChange)="updateConfigurations()"
+            >
+              @for (timezone of timezones; track timezone) {
+                <ion-select-option [value]="timezone">{{ timezone }}</ion-select-option>
+              }
+            </ion-select>
+            <idea-show-hint-button
+              slot="start"
+              class="ion-margin-top"
+              hint="CONFIGURATIONS.TIMEZONE_OF_REFERENCE"
+              translate
+            />
+          </ion-item>
+          <ion-list-header>
+            <ion-label>
+              <h2>{{ 'CONFIGURATIONS.HIDE_APP_FEATURES' | translate }}</h2>
+              <p>{{ 'CONFIGURATIONS.HIDE_APP_FEATURES_I' | translate }}</p>
+            </ion-label>
+          </ion-list-header>
+          <ion-item>
+            <ion-checkbox
+              justify="space-between"
+              labelPlacement="start"
+              [(ngModel)]="configurations.hideQATopics"
+              (ionChange)="setVisibilityQATopicsFeature(!$event.detail.checked)"
+            >{{ 'CONFIGURATIONS.HIDE_QA_TOPICS' | translate }}
+            </ion-checkbox>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+          </ion-item>
+          <ion-item>
+            <ion-checkbox
+              justify="space-between"
+              labelPlacement="start"
+              [(ngModel)]="configurations.hideOpportunities"
+              (ionChange)="setVisibilityOpportunitiesFeature(!$event.detail.checked)"
+            >{{ 'CONFIGURATIONS.HIDE_OPPORTUNITIES' | translate }}
+            </ion-checkbox>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+          </ion-item>
+          <ion-item>
+            <ion-checkbox
+              justify="space-between"
+              labelPlacement="start"
+              [(ngModel)]="configurations.hideVoting"
+              (ionChange)="setVisibilityVotingFeature(!$event.detail.checked)"
+            >{{ 'CONFIGURATIONS.HIDE_VOTING' | translate }}
+            </ion-checkbox>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+          </ion-item>
+          <ion-item>
+            <ion-checkbox
+              justify="space-between"
+              labelPlacement="start"
+              [(ngModel)]="configurations.hideBadges"
+              (ionChange)="setVisibilityBadgesFeature(!$event.detail.checked)"
+            >{{ 'CONFIGURATIONS.HIDE_BADGES' | translate }}
+            </ion-checkbox>
+            <idea-show-hint-button slot="start" hint="CONFIGURATIONS.HIDE_APP_FEATURES" translate />
+          </ion-item>
+        }
+      </ion-list>
+    }
 
-      <ion-list-header class="ion-padding-top">
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.BANNED_USERS' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.BANNED_USERS_I' | translate }}</p>
-        </ion-label>
-        <ion-button (click)="addBannedUser()">{{ 'COMMON.ADD' | translate }}</ion-button>
-      </ion-list-header>
-      <ion-item *ngIf="!configurations">
-        <ion-label>
-          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-      <ng-container *ngIf="configurations">
-        <ion-item class="noElements" *ngIf="!configurations.bannedUsersIds.length">
-          <ion-label>{{ 'CONFIGURATIONS.NO_BANNED_USERS' | translate }}</ion-label>
-        </ion-item>
-        <ion-item *ngFor="let userId of configurations.bannedUsersIds">
-          <ion-label>{{ userId }}</ion-label>
-          <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(userId)">
-            <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" slot="end" (click)="removeBannedUserById(userId)">
-            <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ng-container>
-    </ion-list>
+    @if (pageSection === PageSections.USERS) {
+      <ion-list class="aList">
+        <ion-list-header class="ion-padding-top">
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.ADMINISTRATORS' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.ADMINISTRATORS_I' | translate }}</p>
+          </ion-label>
+          <ion-button (click)="addAdministrator()">{{ 'COMMON.ADD' | translate }}</ion-button>
+        </ion-list-header>
+        @if (!configurations) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+        @if (configurations) {
+          @for (administratorId of configurations.administratorsIds; track administratorId) {
+            <ion-item>
+              <ion-label>{{ administratorId }}</ion-label>
+              <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(administratorId)">
+                <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              @if (configurations.administratorsIds.length > 1) {
+                <ion-button
+                  fill="clear"
+                  color="danger"
+                  slot="end"
+                  (click)="removeAdministratorById(administratorId)"
+                >
+                  <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              }
+            </ion-item>
+          }
+        }
+        <ion-list-header class="ion-padding-top">
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.OPPORTUNITIES_MANAGERS' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.OPPORTUNITIES_MANAGERS_I' | translate }}</p>
+          </ion-label>
+          <ion-button (click)="addOpportunitiesManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
+        </ion-list-header>
+        @if (!configurations) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+        @if (configurations) {
+          @if (!configurations.opportunitiesManagersIds.length) {
+            <ion-item
+              class="noElements"
+            >
+              <ion-label>{{ 'CONFIGURATIONS.NO_USERS_ADDED' | translate }}</ion-label>
+            </ion-item>
+          }
+          @for (managerId of configurations.opportunitiesManagersIds; track managerId) {
+            <ion-item>
+              <ion-label>{{ managerId }}</ion-label>
+              <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(managerId)">
+                <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" slot="end" (click)="removeOpportunitiesManagerById(managerId)">
+                <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+          }
+        }
+        <ion-list-header class="ion-padding-top">
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.DASHBOARD_MANAGERS' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.DASHBOARD_MANAGERS_I' | translate }}</p>
+          </ion-label>
+          <ion-button (click)="addDashboardManager()">{{ 'COMMON.ADD' | translate }}</ion-button>
+        </ion-list-header>
+        @if (!configurations) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+        @if (configurations) {
+          @if (!configurations.dashboardManagersIds.length) {
+            <ion-item
+              class="noElements"
+            >
+              <ion-label>{{ 'CONFIGURATIONS.NO_USERS_ADDED' | translate }}</ion-label>
+            </ion-item>
+          }
+          @for (managerId of configurations.dashboardManagersIds; track managerId) {
+            <ion-item>
+              <ion-label>{{ managerId }}</ion-label>
+              <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(managerId)">
+                <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" slot="end" (click)="removeDashboardManagerById(managerId)">
+                <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+          }
+        }
+        <ion-list-header class="ion-padding-top">
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.BANNED_USERS' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.BANNED_USERS_I' | translate }}</p>
+          </ion-label>
+          <ion-button (click)="addBannedUser()">{{ 'COMMON.ADD' | translate }}</ion-button>
+        </ion-list-header>
+        @if (!configurations) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+        @if (configurations) {
+          @if (!configurations.bannedUsersIds.length) {
+            <ion-item class="noElements">
+              <ion-label>{{ 'CONFIGURATIONS.NO_BANNED_USERS' | translate }}</ion-label>
+            </ion-item>
+          }
+          @for (userId of configurations.bannedUsersIds; track userId) {
+            <ion-item>
+              <ion-label>{{ userId }}</ion-label>
+              <ion-button fill="clear" color="medium" slot="end" (click)="app.openUserProfileById(userId)">
+                <ion-icon icon="open-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" slot="end" (click)="removeBannedUserById(userId)">
+                <ion-icon icon="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+          }
+        }
+      </ion-list>
+    }
 
-    <ion-list class="aList" *ngIf="pageSection === PageSections.TEMPLATES">
-      <ion-list-header>
-        <ion-label>
-          <h2>{{ 'CONFIGURATIONS.EMAIL_TEMPLATES' | translate }}</h2>
-          <p>{{ 'CONFIGURATIONS.EMAIL_TEMPLATES_I' | translate }}</p>
-        </ion-label>
-      </ion-list-header>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.QUESTIONS)">
-        <ion-label class="ion-text-wrap">
-          {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.QUESTIONS' | translate }}
-        </ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.ANSWERS)">
-        <ion-label class="ion-text-wrap"> {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.ANSWERS' | translate }}</ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.APPLICATION_APPROVED)">
-        <ion-label class="ion-text-wrap">
-          {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.APPLICATION_APPROVED' | translate }}
-        </ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.APPLICATION_REJECTED)">
-        <ion-label class="ion-text-wrap">
-          {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.APPLICATION_REJECTED' | translate }}
-        </ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.VOTING_INSTRUCTIONS)">
-        <ion-label class="ion-text-wrap">
-          {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.VOTING_INSTRUCTIONS' | translate }}
-        </ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.VOTING_CONFIRMATION)">
-        <ion-label class="ion-text-wrap">
-          {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.VOTING_CONFIRMATION' | translate }}
-        </ion-label>
-      </ion-item>
-    </ion-list>
+    @if (pageSection === PageSections.TEMPLATES) {
+      <ion-list class="aList">
+        <ion-list-header>
+          <ion-label>
+            <h2>{{ 'CONFIGURATIONS.EMAIL_TEMPLATES' | translate }}</h2>
+            <p>{{ 'CONFIGURATIONS.EMAIL_TEMPLATES_I' | translate }}</p>
+          </ion-label>
+        </ion-list-header>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.QUESTIONS)">
+          <ion-label class="ion-text-wrap">
+            {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.QUESTIONS' | translate }}
+          </ion-label>
+        </ion-item>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.ANSWERS)">
+          <ion-label class="ion-text-wrap"> {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.ANSWERS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.APPLICATION_APPROVED)">
+          <ion-label class="ion-text-wrap">
+            {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.APPLICATION_APPROVED' | translate }}
+          </ion-label>
+        </ion-item>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.APPLICATION_REJECTED)">
+          <ion-label class="ion-text-wrap">
+            {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.APPLICATION_REJECTED' | translate }}
+          </ion-label>
+        </ion-item>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.VOTING_INSTRUCTIONS)">
+          <ion-label class="ion-text-wrap">
+            {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.VOTING_INSTRUCTIONS' | translate }}
+          </ion-label>
+        </ion-item>
+        <ion-item [button]="true" [detail]="true" (click)="openTemplateEmailModal(EmailTemplates.VOTING_CONFIRMATION)">
+          <ion-label class="ion-text-wrap">
+            {{ 'CONFIGURATIONS.EMAIL_TEMPLATES_TYPES.VOTING_CONFIRMATION' | translate }}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    }
 
-    <ion-list class="aList" *ngIf="pageSection === PageSections.USERS_BADGES">
-      <ion-list-header>
-        <ion-label>
-          <h2>{{ 'BADGES.GIVE_BADGES' | translate }}</h2>
-          <p>{{ 'BADGES.GIVE_BADGES_I' | translate }}</p>
-        </ion-label>
-      </ion-list-header>
-      <p class="ion-text-center">
-        <ion-button (click)="openBadgesModal()">{{ 'BADGES.GIVE_A_BADGE' | translate }}</ion-button>
-      </p>
-      <ion-list-header>
-        <ion-label>
-          <h2>{{ 'BADGES.CUSTOM_BADGES' | translate }}</h2>
-          <p>{{ 'BADGES.CUSTOM_BADGES_I' | translate }}</p>
-        </ion-label>
-        <ion-button (click)="addCustomBadge()">{{ 'COMMON.ADD' | translate }}</ion-button>
-      </ion-list-header>
-      <ion-searchbar #badgesSearchbar (ionInput)="filterBadges($event.target.value)" />
-      <ion-item *ngIf="!badges">
-        <ion-label>
-          <ion-skeleton-text [animated]="true" />
-        </ion-label>
-      </ion-item>
-      <ion-item class="noElements" *ngIf="badges && !badges.length">
-        <ion-label>{{ 'BADGES.NO_CUSTOM_BADGES_FOUND' | translate }}</ion-label>
-      </ion-item>
-      <ion-item [button]="true" [detail]="true" *ngFor="let badge of badges" (click)="manageCustomBadge(badge)">
-        <ion-thumbnail slot="start">
-          <ion-img [src]="badge.imageURL" (ionError)="_badges.fallbackBadgeImage($event?.target)" />
-        </ion-thumbnail>
-        <ion-label>
-          {{ badge.name }}
-          <p>{{ badge.description }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-infinite-scroll (ionInfinite)="filterBadges(badgesSearchbar.value ?? undefined, $event.target)">
-        <ion-infinite-scroll-content />
-      </ion-infinite-scroll>
-    </ion-list>
+    @if (pageSection === PageSections.USERS_BADGES) {
+      <ion-list class="aList">
+        <ion-list-header>
+          <ion-label>
+            <h2>{{ 'BADGES.GIVE_BADGES' | translate }}</h2>
+            <p>{{ 'BADGES.GIVE_BADGES_I' | translate }}</p>
+          </ion-label>
+        </ion-list-header>
+        <p class="ion-text-center">
+          <ion-button (click)="openBadgesModal()">{{ 'BADGES.GIVE_A_BADGE' | translate }}</ion-button>
+        </p>
+        <ion-list-header>
+          <ion-label>
+            <h2>{{ 'BADGES.CUSTOM_BADGES' | translate }}</h2>
+            <p>{{ 'BADGES.CUSTOM_BADGES_I' | translate }}</p>
+          </ion-label>
+          <ion-button (click)="addCustomBadge()">{{ 'COMMON.ADD' | translate }}</ion-button>
+        </ion-list-header>
+        <ion-searchbar #badgesSearchbar (ionInput)="filterBadges($event.target.value)" />
+        @if (!badges) {
+          <ion-item>
+            <ion-label>
+              <ion-skeleton-text [animated]="true" />
+            </ion-label>
+          </ion-item>
+        }
+        @if (badges && !badges.length) {
+          <ion-item class="noElements">
+            <ion-label>{{ 'BADGES.NO_CUSTOM_BADGES_FOUND' | translate }}</ion-label>
+          </ion-item>
+        }
+        @for (badge of badges; track badge.badgeId) {
+          <ion-item [button]="true" [detail]="true" (click)="manageCustomBadge(badge)">
+            <ion-thumbnail slot="start">
+              <ion-img [src]="badge.imageURL" (ionError)="_badges.fallbackBadgeImage($event?.target)" />
+            </ion-thumbnail>
+            <ion-label>
+              {{ badge.name }}
+              <p>{{ badge.description }}</p>
+            </ion-label>
+          </ion-item>
+        }
+        <ion-infinite-scroll (ionInfinite)="filterBadges(badgesSearchbar.value ?? undefined, $event.target)">
+          <ion-infinite-scroll-content />
+        </ion-infinite-scroll>
+      </ion-list>
+    }
   </div>
 </ion-content>

@@ -1,11 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule],
+  imports: [IonicModule, IDEATranslatePipe],
   selector: 'app-voting-ballot-detail',
   template: `
     <ion-content>
@@ -19,14 +18,18 @@ import { IDEATranslationsModule } from '@idea-ionic/common';
             </p>
           </ion-label>
         </ion-list-header>
-        <ion-item *ngIf="resultValue === 0">
-          <ion-label class="ion-padding-start">
-            <i>{{ 'VOTING.NO_ONE' | translate }}</i>
-          </ion-label>
-        </ion-item>
-        <ion-item *ngFor="let voter of votersNames">
-          <ion-label class="ion-text-wrap ion-padding-start">{{ voter }}</ion-label>
-        </ion-item>
+        @if (resultValue === 0) {
+          <ion-item>
+            <ion-label class="ion-padding-start">
+              <i>{{ 'VOTING.NO_ONE' | translate }}</i>
+            </ion-label>
+          </ion-item>
+        }
+        @for (voter of votersNames; track voter) {
+          <ion-item>
+            <ion-label class="ion-text-wrap ion-padding-start">{{ voter }}</ion-label>
+          </ion-item>
+        }
       </ion-list>
     </ion-content>
   `,

@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { AttachmentsComponent } from './attachments.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [CommonModule, FormsModule, IonicModule, IDEATranslatePipe],
   declarations: [AttachmentsComponent],
   exports: [AttachmentsComponent]
 })

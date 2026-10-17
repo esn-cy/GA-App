@@ -11,7 +11,8 @@ import { CATEGORY_COLORS, TopicCategory } from '@models/category.model';
 @Component({
   selector: 'category',
   templateUrl: 'category.page.html',
-  styleUrls: ['category.page.scss']
+  styleUrls: ['category.page.scss'],
+  standalone: false
 })
 export class CategoryPage {
   @Input() categoryId = 'new';

@@ -12,7 +12,8 @@ const FIRST_YEAR_FOR_ARCHIVE = 2023;
 @Component({
   selector: 'archive',
   templateUrl: 'archive.page.html',
-  styleUrls: ['archive.page.scss']
+  styleUrls: ['archive.page.scss'],
+  standalone: false
 })
 export class ArchivePage implements OnInit {
   opportunities: Opportunity[] | undefined;

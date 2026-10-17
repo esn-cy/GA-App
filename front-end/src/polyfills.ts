@@ -57,6 +57,3 @@ import 'zone.js'; // Included with Angular CLI.
  * @idea
  */
 (window as any).global = window;
-// @ts-expect-error Expect Buffer to exist
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-window.Buffer = window.Buffer || require('buffer').Buffer;

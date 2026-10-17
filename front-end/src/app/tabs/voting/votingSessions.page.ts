@@ -12,7 +12,8 @@ import { VotingSession, VotingSessionTypes } from '@models/votingSession.model';
 @Component({
   selector: 'voting-sessions',
   templateUrl: 'votingSessions.page.html',
-  styleUrls: ['votingSessions.page.scss']
+  styleUrls: ['votingSessions.page.scss'],
+  standalone: false
 })
 export class VotingSessionsPage implements OnInit {
   votingSessions: VotingSession[] | undefined;
@@ -20,7 +21,7 @@ export class VotingSessionsPage implements OnInit {
   @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
   events: GAEvent[] | undefined;
-  filterByEvent: string | undefined;
+  filterByEvent: string | null = null;
 
   sortBy: VotingSessionsSortBy = VotingSessionsSortBy.CREATED_DATE_DESC;
   SortBy = VotingSessionsSortBy;
@@ -62,7 +63,7 @@ export class VotingSessionsPage implements OnInit {
     this.votingSessions = await this._voting.getActiveList({
       force,
       search,
-      eventId: this.filterByEvent,
+      eventId: this.filterByEvent ?? undefined,
       withPagination: true,
       startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy

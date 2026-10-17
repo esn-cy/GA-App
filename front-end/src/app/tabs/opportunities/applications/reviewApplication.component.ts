@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -23,12 +23,10 @@ import { TopicCategoryAttached } from '@models/category.model';
 import { GAEventAttached } from '@models/event.model';
 
 @Component({
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     ApplicationStandaloneComponent,
     EventsPickerComponent,
     CategoriesPickerComponent
@@ -46,57 +44,67 @@ import { GAEventAttached } from '@models/event.model';
     </ion-header>
     <ion-content>
       <app-application [application]="application" [card]="true" />
-      <ion-list class="ion-padding aList" *ngIf="!opportunity.isArchived()">
-        <ion-list-header>
-          <ion-label>
-            <h2>{{ 'OPPORTUNITIES.YOUR_REVIEW' | translate }}</h2>
-            <p>{{ 'OPPORTUNITIES.YOUR_REVIEW_I' | translate }}</p>
-            <p>{{ 'OPPORTUNITIES.YOUR_REVIEW_II' | translate }}</p>
-          </ion-label>
-        </ion-list-header>
-        <ion-item color="white">
-          <ion-textarea placeholder="..." [(ngModel)]="reviewMessage" [rows]="4"></ion-textarea>
-        </ion-item>
-        <ion-row class="ion-margin">
-          <ion-col size="6">
-            <ion-button expand="block" color="danger" (click)="review(false)">
-              <ion-icon icon="thumbs-down" slot="start" />
-              {{ 'OPPORTUNITIES.REVIEW_REJECT' | translate }}
+      @if (!opportunity.isArchived()) {
+        <ion-list class="ion-padding aList">
+          <ion-list-header>
+            <ion-label>
+              <h2>{{ 'OPPORTUNITIES.YOUR_REVIEW' | translate }}</h2>
+              <p>{{ 'OPPORTUNITIES.YOUR_REVIEW_I' | translate }}</p>
+              <p>{{ 'OPPORTUNITIES.YOUR_REVIEW_II' | translate }}</p>
+            </ion-label>
+          </ion-list-header>
+          <ion-item color="white">
+            <ion-textarea
+              [attr.aria-label]="'OPPORTUNITIES.YOUR_REVIEW' | translate"
+              placeholder="..."
+              [(ngModel)]="reviewMessage"
+              [rows]="4"
+            ></ion-textarea>
+          </ion-item>
+          <ion-row class="ion-margin">
+            <ion-col size="6">
+              <ion-button expand="block" color="danger" (click)="review(false)">
+                <ion-icon icon="thumbs-down" slot="start" />
+                {{ 'OPPORTUNITIES.REVIEW_REJECT' | translate }}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" color="success" (click)="review(true)">
+                {{ 'OPPORTUNITIES.REVIEW_APPROVE' | translate }}
+                <ion-icon icon="thumbs-up" slot="end" />
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-list>
+      }
+      @if (opportunity.isClosed() && app.user.isAdministrator) {
+        <ion-list class="ion-padding aList">
+          <ion-list-header>
+            <ion-label>
+              <h2>{{ 'OPPORTUNITIES.PROMOTE_TO_QA' | translate }}</h2>
+              <p>{{ 'OPPORTUNITIES.PROMOTE_TO_QA_I' | translate }}</p>
+            </ion-label>
+          </ion-list-header>
+          <app-categories-picker
+            [class.fieldHasError]="hasFieldAnError('category')"
+            [editMode]="true"
+            [obligatory]="true"
+            [(category)]="promoteTopicCategory"
+          ></app-categories-picker>
+          <app-events-picker
+            [class.fieldHasError]="hasFieldAnError('event')"
+            [editMode]="true"
+            [obligatory]="true"
+            [(event)]="promoteTopicEvent"
+          ></app-events-picker>
+          <p class="ion-text-right">
+            <ion-button (click)="promoteToTopic()">
+              {{ 'OPPORTUNITIES.PROMOTE_TO_QA' | translate }}
+              <ion-icon icon="chatbubbles" slot="end" />
             </ion-button>
-          </ion-col>
-          <ion-col size="6">
-            <ion-button expand="block" color="success" (click)="review(true)">
-              {{ 'OPPORTUNITIES.REVIEW_APPROVE' | translate }}
-              <ion-icon icon="thumbs-up" slot="end" />
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-list>
-      <ion-list class="ion-padding aList" *ngIf="opportunity.isClosed() && app.user.isAdministrator">
-        <ion-list-header>
-          <ion-label>
-            <h2>{{ 'OPPORTUNITIES.PROMOTE_TO_QA' | translate }}</h2>
-            <p>{{ 'OPPORTUNITIES.PROMOTE_TO_QA_I' | translate }}</p>
-          </ion-label>
-        </ion-list-header>
-        <app-categories-picker
-          [class.fieldHasError]="hasFieldAnError('category')"
-          [editMode]="true"
-          [obligatory]="true"
-          [(category)]="promoteTopicCategory"
-        ></app-categories-picker>
-        <app-events-picker
-          [class.fieldHasError]="hasFieldAnError('event')"
-          [editMode]="true"
-          [obligatory]="true"
-          [(event)]="promoteTopicEvent"
-        ></app-events-picker>
-        <p class="ion-text-right">
-          <ion-button (click)="promoteToTopic()">
-            {{ 'OPPORTUNITIES.PROMOTE_TO_QA' | translate }} <ion-icon icon="chatbubbles" slot="end" />
-          </ion-button>
-        </p>
-      </ion-list>
+          </p>
+        </ion-list>
+      }
     </ion-content>
   `
 })

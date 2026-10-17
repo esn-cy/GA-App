@@ -9,7 +9,8 @@ import { GAEvent } from '@models/event.model';
 @Component({
   selector: 'events',
   templateUrl: 'events.page.html',
-  styleUrls: ['events.page.scss']
+  styleUrls: ['events.page.scss'],
+  standalone: false
 })
 export class EventsPage {
   events: GAEvent[] | undefined;

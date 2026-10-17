@@ -8,7 +8,9 @@ import { AppRoutingModule } from './app.routing.module';
 
 import { registerLocaleData } from '@angular/common';
 import localeIt from '@angular/common/locales/it';
-import { IDEAActionSheetModule, IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEAEnvironment } from '@idea-ionic/common';
+import { provideIonicAngular } from '@ionic/angular/standalone';
+import { environment } from '@env';
 
 registerLocaleData(localeIt, 'it');
 
@@ -18,11 +20,13 @@ registerLocaleData(localeIt, 'it');
     BrowserModule,
     IonicModule.forRoot({ mode: 'md' }),
     AppRoutingModule,
-    IonicStorageModule.forRoot({ name: 'esn-assembly' }),
-    IDEATranslationsModule,
-    IDEAActionSheetModule
+    IonicStorageModule.forRoot({ name: 'esn-assembly' })
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: IDEAEnvironment, useValue: environment },
+    provideIonicAngular({ mode: 'md' })
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

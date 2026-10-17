@@ -12,13 +12,14 @@ import { GAEvent } from '@models/event.model';
 @Component({
   selector: 'voting-archive',
   templateUrl: 'votingArchive.page.html',
-  styleUrls: ['votingArchive.page.scss']
+  styleUrls: ['votingArchive.page.scss'],
+  standalone: false
 })
 export class VotingArchivePage implements OnInit {
   votingSessions: VotingSession[] | undefined;
 
   events: GAEvent[] | undefined;
-  filterByEvent: string | undefined;
+  filterByEvent: string | null = null;
 
   sortBy: VotingSessionsSortBy = VotingSessionsSortBy.CREATED_DATE_DESC;
   SortBy = VotingSessionsSortBy;

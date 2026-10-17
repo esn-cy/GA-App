@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { HTMLEditorModule } from '@common/htmlEditor.module';
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
@@ -9,8 +9,7 @@ import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 import { Communication } from '@models/communication.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule, HTMLEditorModule, DateTimezonePipe],
+  imports: [CommonModule, IonicModule, IDEATranslatePipe, HTMLEditorModule, DateTimezonePipe],
   selector: 'app-communication-detail',
   template: `
     <ion-header class="ion-no-border">
@@ -30,12 +29,16 @@ import { Communication } from '@models/communication.model';
             <ion-text color="medium" style="font-weight: 600">
               {{ communication.event?.name }}
             </ion-text>
-            <ion-text *ngIf="communication.event"> - </ion-text>
+            @if (communication.event) {
+              <ion-text> -</ion-text>
+            }
             {{ communication.name }}
           </ion-card-title>
           <ion-card-subtitle>{{ communication.brief }}</ion-card-subtitle>
         </ion-card-header>
-        <ion-img *ngIf="communication.imageURL" [src]="communication.imageURL"></ion-img>
+        @if (communication.imageURL) {
+          <ion-img [src]="communication.imageURL"></ion-img>
+        }
         <app-html-editor [content]="communication.content" [editMode]="false"></app-html-editor>
       </ion-card>
     </ion-content>

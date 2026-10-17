@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 
@@ -11,8 +11,7 @@ import { AppService } from '@app/app.service';
 import { VotingSession, VotingSessionTypes } from '@models/votingSession.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, DateTimezonePipe],
+  imports: [CommonModule, FormsModule, IonicModule, IDEATranslatePipe, DateTimezonePipe],
   selector: 'app-voting-session',
   templateUrl: 'votingSession.component.html',
   styleUrls: ['votingSession.component.scss']

@@ -7,7 +7,8 @@ import { Subject, SubjectTypes } from '@models/subject.model';
 @Component({
   selector: 'app-subject',
   templateUrl: 'subject.component.html',
-  styleUrls: ['subject.component.scss']
+  styleUrls: ['subject.component.scss'],
+  standalone: false
 })
 export class SubjectComponent {
   /**

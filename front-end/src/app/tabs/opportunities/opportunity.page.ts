@@ -19,7 +19,8 @@ import { Subject } from '@models/subject.model';
 @Component({
   selector: 'opportunity',
   templateUrl: 'opportunity.page.html',
-  styleUrls: ['opportunity.page.scss']
+  styleUrls: ['opportunity.page.scss'],
+  standalone: false
 })
 export class OpportunityPage {
   @Input({ required: true }) opportunityId!: string;
@@ -115,7 +116,7 @@ export class OpportunityPage {
     } catch (err: any) {
       this.removeAttachmentByExpectedName(expectedAttachmentName);
       this.attachmentUploadErrors[expectedAttachmentName] = err.message;
-      await this.message.error(err.message, true);
+      await this.message.error(err.message, { dontTranslate: true });
     }
 
     // empty the file picker to allow the upload of new files with the same name

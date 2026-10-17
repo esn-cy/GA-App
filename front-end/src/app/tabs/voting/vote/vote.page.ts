@@ -11,7 +11,8 @@ import { VotingTicket } from '@models/votingTicket.model';
 @Component({
   selector: 'vote',
   templateUrl: 'vote.page.html',
-  styleUrls: ['vote.page.scss']
+  styleUrls: ['vote.page.scss'],
+  standalone: false
 })
 export class VotePage implements OnInit {
   /**

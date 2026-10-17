@@ -11,7 +11,8 @@ import { EmailTemplates } from '@models/configurations.model';
 @Component({
   selector: 'app-email-template',
   templateUrl: 'emailTemplate.component.html',
-  styleUrls: ['emailTemplate.component.scss']
+  styleUrls: ['emailTemplate.component.scss'],
+  standalone: false
 })
 export class EmailTemplateComponent implements OnInit {
   /**

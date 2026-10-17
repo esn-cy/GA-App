@@ -26,7 +26,8 @@ import { WebSocketConnectionTypes, WebSocketMessage } from '@models/webSocket.mo
 @Component({
   selector: 'live-topic',
   templateUrl: 'liveTopic.page.html',
-  styleUrls: ['liveTopic.page.scss']
+  styleUrls: ['liveTopic.page.scss'],
+  standalone: false
 })
 export class LiveTopicPage implements OnInit, OnDestroy {
   @Input({ required: true }) topicId!: string;

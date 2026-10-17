@@ -9,7 +9,8 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 @Component({
   selector: 'app-topic',
   templateUrl: 'topic.component.html',
-  styleUrls: ['topic.component.scss']
+  styleUrls: ['topic.component.scss'],
+  standalone: false
 })
 export class TopicComponent {
   /**

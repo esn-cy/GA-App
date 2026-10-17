@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -16,8 +16,7 @@ import { MediaService } from '@common/media.service';
 import { Badge } from '@models/badge.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-manage-badges',
   template: `
     <ion-header>
@@ -38,29 +37,40 @@ import { Badge } from '@models/badge.model';
     <ion-content>
       <ion-list class="aList">
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
-          <ion-label position="stacked">{{ 'BADGES.NAME' | translate }}</ion-label>
-          <ion-input [(ngModel)]="badge.name" />
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'BADGES.NAME' | translate"
+            [(ngModel)]="badge.name"
+          />
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('description')">
-          <ion-label position="stacked">{{ 'BADGES.DESCRIPTION' | translate }}</ion-label>
-          <ion-input [(ngModel)]="badge.description" />
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'BADGES.DESCRIPTION' | translate"
+            [(ngModel)]="badge.description"
+          />
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('imageURL')">
-          <ion-label position="stacked">{{ 'BADGES.IMAGE_URL' | translate }}</ion-label>
-          <ion-input [(ngModel)]="badge.imageURL" />
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'BADGES.IMAGE_URL' | translate"
+            [(ngModel)]="badge.imageURL"
+          />
           <input #uploadImageInput type="file" accept="image/*" style="display: none" (change)="uploadImage($event)" />
           <ion-button slot="end" fill="clear" color="medium" class="ion-margin-top" (click)="uploadImageInput.click()">
             <ion-icon icon="cloud-upload-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-item>
-        <p class="ion-text-right ion-padding-end ion-padding-top" *ngIf="badge.badgeId">
-          <ion-button color="danger" (click)="deleteBadge()">
-            {{ 'COMMON.DELETE' | translate }}
-          </ion-button>
-        </p>
+        @if (badge.badgeId) {
+          <p class="ion-text-right ion-padding-end ion-padding-top">
+            <ion-button color="danger" (click)="deleteBadge()">
+              {{ 'COMMON.DELETE' | translate }}
+            </ion-button>
+          </p>
+        }
       </ion-list>
     </ion-content>
-  `
+    `
 })
 export class ManageBadgesComponent implements OnInit {
   /**

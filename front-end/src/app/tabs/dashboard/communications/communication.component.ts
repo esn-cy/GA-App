@@ -1,48 +1,53 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
-
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 
 import { Communication } from '@models/communication.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, IonicModule, IDEATranslationsModule, DateTimezonePipe],
+  imports: [CommonModule, IonicModule, DateTimezonePipe],
   selector: 'app-communication',
   template: `
-    <ion-card [color]="color" *ngIf="!communication">
-      <ion-skeleton-text [animated]="true" style="height: 180px"></ion-skeleton-text>
-      <ion-card-header>
-        <ion-card-subtitle>
-          <ion-skeleton-text [animated]="true" style="width: 30%"></ion-skeleton-text>
-        </ion-card-subtitle>
-        <ion-card-title>
-          <ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text>
-        </ion-card-title>
-        <ion-card-subtitle>
-          <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
-        </ion-card-subtitle>
-      </ion-card-header>
-    </ion-card>
-    <ion-card *ngIf="communication" [color]="color" [button]="button" (click)="select.emit()">
-      <ion-img *ngIf="communication.imageURL" [src]="communication.imageURL"></ion-img>
-      <ion-card-header>
-        <ion-card-subtitle>{{ communication.date | dateTz }}</ion-card-subtitle>
-        <ion-card-title>
-          <ion-text color="medium" style="font-weight: 600">
-            {{ communication.event?.name }}
-          </ion-text>
-          <ion-text *ngIf="communication.event"> -</ion-text>
-          {{ communication.name }}
-        </ion-card-title>
-        <ion-card-subtitle>{{ communication.brief }}</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <ng-content></ng-content>
-      </ion-card-content>
-    </ion-card>
+    @if (!communication) {
+      <ion-card [color]="color">
+        <ion-skeleton-text [animated]="true" style="height: 180px"></ion-skeleton-text>
+        <ion-card-header>
+          <ion-card-subtitle>
+            <ion-skeleton-text [animated]="true" style="width: 30%"></ion-skeleton-text>
+          </ion-card-subtitle>
+          <ion-card-title>
+            <ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text>
+          </ion-card-title>
+          <ion-card-subtitle>
+            <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
+          </ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+    }
+    @if (communication) {
+      <ion-card [color]="color" [button]="button" (click)="select.emit()">
+        @if (communication.imageURL) {
+          <ion-img [src]="communication.imageURL"></ion-img>
+        }
+        <ion-card-header>
+          <ion-card-subtitle>{{ communication.date | dateTz }}</ion-card-subtitle>
+          <ion-card-title>
+            <ion-text color="medium" style="font-weight: 600">
+              {{ communication.event?.name }}
+            </ion-text>
+            @if (communication.event) {
+              <ion-text> -</ion-text>
+            }
+            {{ communication.name }}
+          </ion-card-title>
+          <ion-card-subtitle>{{ communication.brief }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ng-content></ng-content>
+        </ion-card-content>
+      </ion-card>
+    }
   `,
   styles: [
     `

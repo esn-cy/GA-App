@@ -5,7 +5,8 @@ import { AppService } from '../app.service';
 @Component({
   selector: 'app-edit-mode-buttons',
   templateUrl: 'editModeButtons.component.html',
-  styleUrls: ['editModeButtons.component.scss']
+  styleUrls: ['editModeButtons.component.scss'],
+  standalone: false
 })
 export class EditModeButtonsComponent {
   /**

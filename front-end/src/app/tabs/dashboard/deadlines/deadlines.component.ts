@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { IDEAMessageService, IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEAMessageService, IDEATranslatePipe } from '@idea-ionic/common';
 
 import { DeadlineComponent } from './deadline.component';
 import { ManageDeadlineComponent } from './manageDeadline.component';
@@ -15,8 +15,7 @@ import { Deadline } from '@models/deadline.model';
 const FIRST_YEAR_FOR_DEADLINES = 2023;
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, DeadlineComponent],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe, DeadlineComponent],
   selector: 'app-deadlines',
   template: `
     <ion-header class="ion-no-border">
@@ -33,38 +32,51 @@ const FIRST_YEAR_FOR_DEADLINES = 2023;
         <ion-list-header>
           <ion-label>
             <h1>{{ 'DEADLINES.DEADLINES' | translate }}</h1>
-            <p *ngIf="!editMode">
-              {{ 'DEADLINES.DEADLINES_TIMEZONE' | translate : { timezone: app.configurations.timezone } }}
-            </p>
+            @if (!editMode) {
+              <p>
+                {{ 'DEADLINES.DEADLINES_TIMEZONE' | translate : { timezone: app.configurations.timezone } }}
+              </p>
+            }
           </ion-label>
-          <ion-button color="ESNgreen" *ngIf="editMode" (click)="addDeadline()">
-            {{ 'COMMON.ADD' | translate }}
-          </ion-button>
+          @if (editMode) {
+            <ion-button color="ESNgreen" (click)="addDeadline()">
+              {{ 'COMMON.ADD' | translate }}
+            </ion-button>
+          }
         </ion-list-header>
         <div class="ion-text-right">
           <ion-item color="transparent" lines="none">
             <ion-select
               interface="popover"
               labelPlacement="end"
+              [attr.aria-label]="'COMMON.YEAR' | translate"
               [(ngModel)]="filterByYear"
               (ionChange)="loadListOfYear(filterByYear)"
             >
-              <ion-select-option [value]="undefined">{{ 'DEADLINES.FUTURE_DEADLINES' | translate }}</ion-select-option>
-              <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+              <ion-select-option [value]="null">{{ 'DEADLINES.FUTURE_DEADLINES' | translate }}</ion-select-option>
+              @for (year of years; track year) {
+                <ion-select-option [value]="year">{{ year }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
-        <ion-item class="noElements" *ngIf="deadlines && !deadlines.length">
-          <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
-        </ion-item>
-        <app-deadline *ngIf="!deadlines"></app-deadline>
-        <app-deadline *ngFor="let deadline of deadlines" [deadline]="deadline">
-          <ng-container *ngIf="editMode">
-            <ion-button slot="end" fill="clear" color="ESNgreen" (click)="editDeadline(deadline)">
-              <ion-icon icon="pencil" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ng-container>
-        </app-deadline>
+        @if (deadlines && !deadlines.length) {
+          <ion-item class="noElements">
+            <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
+          </ion-item>
+        }
+        @if (!deadlines) {
+          <app-deadline></app-deadline>
+        }
+        @for (deadline of deadlines; track deadline.deadlineId) {
+          <app-deadline [deadline]="deadline">
+            @if (editMode) {
+              <ion-button slot="end" fill="clear" color="ESNgreen" (click)="editDeadline(deadline)">
+                <ion-icon icon="pencil" slot="icon-only"></ion-icon>
+              </ion-button>
+            }
+          </app-deadline>
+        }
       </ion-list>
     </ion-content>
   `,
@@ -92,7 +104,7 @@ export class DeadlinesComponent implements OnInit {
   @Input() editMode = false;
 
   years: number[] = [];
-  filterByYear: number | undefined;
+  filterByYear: number | null = null;
 
   constructor(
     private modalCtrl: ModalController,
@@ -105,10 +117,10 @@ export class DeadlinesComponent implements OnInit {
     this.years = this.app.getYearsSince(FIRST_YEAR_FOR_DEADLINES);
   }
 
-  async loadListOfYear(year: number | undefined): Promise<void> {
+  async loadListOfYear(year: number | null | undefined): Promise<void> {
     try {
       this.deadlines = undefined;
-      this.deadlines = await this._deadlines.getList({ force: true, year });
+      this.deadlines = await this._deadlines.getList({ force: true, year: year ?? undefined });
     } catch (error) {
       await this.message.error('COMMON.COULDNT_LOAD_LIST');
     }
@@ -129,7 +141,7 @@ export class DeadlinesComponent implements OnInit {
       backdropDismiss: false
     });
     modal.onDidDismiss().then(async (): Promise<void> => {
-      this.deadlines = await this._deadlines.getList({ force: true, year: this.filterByYear });
+      this.deadlines = await this._deadlines.getList({ force: true, year: this.filterByYear ?? undefined });
     });
     await modal.present();
   }

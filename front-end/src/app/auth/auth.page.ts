@@ -8,7 +8,8 @@ import { environment as env } from '@env';
 @Component({
   selector: 'auth-page',
   templateUrl: 'auth.page.html',
-  styleUrls: ['auth.page.scss']
+  styleUrls: ['auth.page.scss'],
+  standalone: false
 })
 export class AuthPage implements OnInit {
   @Input() token: string | undefined;

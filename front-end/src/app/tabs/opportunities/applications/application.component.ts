@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -19,55 +19,59 @@ import { ApplicationsService } from './applications.service';
 import { Application, ApplicationStatuses } from '@models/application.model';
 
 @Component({
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     SubjectModule,
     HTMLEditorModule,
     DateTimezonePipe
   ],
   selector: 'app-application',
   template: `
-    <ion-card *ngIf="card" [color]="color">
-      <ion-card-header class="ion-text-center">
-        <ion-card-title class="ion-margin-top">{{ 'OPPORTUNITIES.APPLICATION' | translate }}</ion-card-title>
-        <ion-card-subtitle>
-          <ion-badge [color]="getApplicationColorByStatus(application)">
-            {{ getApplicationLabelByStatus(application) }}
-          </ion-badge>
-        </ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <app-subject lines="none" [color]="color" [subject]="application.subject"></app-subject>
-        <app-html-editor [content]="application.motivation" [editMode]="false"></app-html-editor>
-        <ion-item
-          *ngFor="let att of application.attachments | keyvalue"
-          [button]="true"
-          [color]="color"
-          (click)="downloadApplicationAttachment(att.key)"
-        >
-          <ion-icon name="attach" slot="start"></ion-icon>
-          <ion-label class="ion-text-wrap">{{ att.key }}</ion-label>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
+    @if (card) {
+      <ion-card [color]="color">
+        <ion-card-header class="ion-text-center">
+          <ion-card-title class="ion-margin-top">{{ 'OPPORTUNITIES.APPLICATION' | translate }}</ion-card-title>
+          <ion-card-subtitle>
+            <ion-badge [color]="getApplicationColorByStatus(application)">
+              {{ getApplicationLabelByStatus(application) }}
+            </ion-badge>
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <app-subject lines="none" [color]="color" [subject]="application.subject"></app-subject>
+          <app-html-editor [content]="application.motivation" [editMode]="false"></app-html-editor>
+          @for (att of application.attachments | keyvalue; track att.key) {
+            <ion-item
+              [button]="true"
+              [color]="color"
+              (click)="downloadApplicationAttachment(att.key)"
+            >
+              <ion-icon name="attach" slot="start"></ion-icon>
+              <ion-label class="ion-text-wrap">{{ att.key }}</ion-label>
+            </ion-item>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
     <!---->
-    <ion-item *ngIf="!card" [button]="true" [detail]="true" (click)="select.emit()">
-      <ion-note slot="start">#{{ (index ?? 0) + 1 }}</ion-note>
-      <ion-label class="ion-text-wrap">
-        {{ application.subject.name }}
-        <p>{{ application.subject.getOrigin() }}</p>
-      </ion-label>
-      <ion-badge slot="end" [color]="getApplicationColorByStatus(application)">
-        {{ getApplicationLabelByStatus(application, true) }}
-      </ion-badge>
-      <ion-note slot="end" class="ion-hide-xl-down">
-        {{ application.createdAt | dateTz : 'datetime' }}
-      </ion-note>
-    </ion-item>
+    @if (!card) {
+      <ion-item [button]="true" [detail]="true" (click)="select.emit()">
+        <ion-note slot="start">#{{ (index ?? 0) + 1 }}</ion-note>
+        <ion-label class="ion-text-wrap">
+          {{ application.subject.name }}
+          <p>{{ application.subject.getOrigin() }}</p>
+        </ion-label>
+        <ion-badge slot="end" [color]="getApplicationColorByStatus(application)">
+          {{ getApplicationLabelByStatus(application, true) }}
+        </ion-badge>
+        <ion-note slot="end" class="ion-hide-xl-down">
+          {{ application.createdAt | dateTz : 'datetime' }}
+        </ion-note>
+      </ion-item>
+    }
   `,
   styles: [
     `

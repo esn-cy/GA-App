@@ -1,12 +1,12 @@
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEAShowHintButtonModule,
-  IDEATranslationsModule,
+  IDEAShowHintButtonComponent,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -16,8 +16,7 @@ import { VotingService } from '../voting.service';
 import { Voter, VotingSession } from '@models/votingSession.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, IDEAShowHintButtonModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe, IDEAShowHintButtonComponent],
   selector: 'app-manage-voter',
   template: `
     <ion-header class="ion-no-border">
@@ -29,67 +28,85 @@ import { Voter, VotingSession } from '@models/votingSession.model';
         </ion-buttons>
         <ion-title>{{ 'VOTING.MANAGE_VOTER' | translate }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button [title]="'COMMON.SAVE' | translate" *ngIf="editMode" (click)="save()">
-            <ion-icon slot="icon-only" icon="checkmark-circle"></ion-icon>
-          </ion-button>
+          @if (editMode) {
+            <ion-button [title]="'COMMON.SAVE' | translate" (click)="save()">
+              <ion-icon slot="icon-only" icon="checkmark-circle"></ion-icon>
+            </ion-button>
+          }
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-list class="aList" lines="full" [class.viewMode]="!editMode">
         <ion-item [class.fieldHasError]="hasFieldAnError('id')">
-          <ion-label position="stacked">
-            {{ 'VOTING.VOTER_ID' | translate }} <ion-text class="obligatoryDot" />
-          </ion-label>
-          <ion-input [readonly]="true" [value]="voter.id" />
+          <ion-input labelPlacement="stacked" [readonly]="true" [value]="voter.id">
+            <div slot="label">
+              {{ 'VOTING.VOTER_ID' | translate }} <ion-text class="obligatoryDot" />
+            </div>
+          </ion-input>
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
-          <ion-label position="stacked">
-            {{ 'VOTING.VOTER_NAME' | translate }} <ion-text class="obligatoryDot" />
-          </ion-label>
-          <ion-input [disabled]="!editMode" [(ngModel)]="voter.name" />
+          <ion-input labelPlacement="stacked" [disabled]="!editMode" [(ngModel)]="voter.name">
+            <div slot="label">
+              {{ 'VOTING.VOTER_NAME' | translate }} <ion-text class="obligatoryDot" />
+            </div>
+          </ion-input>
         </ion-item>
-        <ion-item *ngIf="votingSession.isForm()" [class.fieldHasError]="hasFieldAnError('email')">
-          <ion-label position="stacked">{{ 'VOTING.VOTER_EMAIL' | translate }}</ion-label>
-          <ion-input type="email" [disabled]="!editMode" [(ngModel)]="voter.email" />
-        </ion-item>
-        <ion-item *ngIf="votingSession.isWeighted" [class.fieldHasError]="hasFieldAnError('voteWeight')">
-          <ion-label position="stacked">
-            {{ 'VOTING.VOTER_WEIGHT' | translate }} <ion-text class="obligatoryDot" />
-          </ion-label>
-          <ion-input
-            type="number"
-            pattern="[0-9]{1,6}"
-            step="1"
-            [min]="1"
-            [max]="999999"
-            [disabled]="!editMode"
-            [(ngModel)]="voter.voteWeight"
-          />
-          <idea-show-hint-button
-            slot="end"
-            class="ion-margin-top"
-            hint="VOTING.VOTER_WEIGHT"
-            *ngIf="editMode"
-            translate
-          />
-        </ion-item>
+        @if (votingSession.isForm()) {
+          <ion-item [class.fieldHasError]="hasFieldAnError('email')">
+            <ion-input
+              type="email"
+              labelPlacement="stacked"
+              [label]="'VOTING.VOTER_EMAIL' | translate"
+              [disabled]="!editMode"
+              [(ngModel)]="voter.email"
+            />
+          </ion-item>
+        }
+        @if (votingSession.isWeighted) {
+          <ion-item [class.fieldHasError]="hasFieldAnError('voteWeight')">
+            <ion-input
+              type="number"
+              labelPlacement="stacked"
+              pattern="[0-9]{1,6}"
+              step="1"
+              [min]="1"
+              [max]="999999"
+              [disabled]="!editMode"
+              [(ngModel)]="voter.voteWeight"
+            >
+              <div slot="label">
+                {{ 'VOTING.VOTER_WEIGHT' | translate }} <ion-text class="obligatoryDot" />
+              </div>
+            </ion-input>
+            @if (editMode) {
+              <idea-show-hint-button
+                slot="end"
+                class="ion-margin-top"
+                hint="VOTING.VOTER_WEIGHT"
+                translate
+                />
+            }
+          </ion-item>
+        }
         <p class="ion-text-end ion-padding-end">
-          <ion-button size="small" color="danger" *ngIf="editMode" (click)="removeVoter()">
-            {{ 'COMMON.REMOVE' | translate }}
-          </ion-button>
-          <ng-container *ngIf="votingSession.isInProgress()">
+          @if (editMode) {
+            <ion-button size="small" color="danger" (click)="removeVoter()">
+              {{ 'COMMON.REMOVE' | translate }}
+            </ion-button>
+          }
+          @if (votingSession.isInProgress()) {
             <ion-button (click)="resendVotingLink()">
               {{ 'VOTING.RESEND_VOTING_LINK' | translate }} <ion-icon slot="end" icon="send" />
             </ion-button>
             <ion-button color="warning" (click)="showVotingSecret()">
               {{ 'VOTING.SHOW_VOTING_TOKEN' | translate }} <ion-icon slot="end" icon="eye" />
             </ion-button>
-          </ng-container>
+          }
         </p>
       </ion-list>
     </ion-content>
-  `
+    `
 })
 export class ManageVoterStandaloneComponent implements OnInit {
   /**

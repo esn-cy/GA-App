@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { QuestionSummaryComponent } from './questionSummary.component';
 import { QuestionComponent } from './question.component';
@@ -17,7 +17,7 @@ import { DateTimezonePipe } from '@common/dateTimezone.pipe';
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     SubjectModule,
     MessageBubbleModule,
     HTMLEditorModule,

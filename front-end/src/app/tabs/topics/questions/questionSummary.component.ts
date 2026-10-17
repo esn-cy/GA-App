@@ -7,7 +7,8 @@ import { Question } from '@models/question.model';
 @Component({
   selector: 'app-question-summary',
   templateUrl: 'questionSummary.component.html',
-  styleUrls: ['questionSummary.component.scss']
+  styleUrls: ['questionSummary.component.scss'],
+  standalone: false
 })
 export class QuestionSummaryComponent {
   /**

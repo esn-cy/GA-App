@@ -23,7 +23,8 @@ import { Statistic, StatisticEntityTypes, StatisticGranularities } from '@models
         --padding-end: 4px;
       }
     `
-  ]
+  ],
+  standalone: false
 })
 export class StatisticsButtonComponent {
   /**
@@ -45,7 +46,7 @@ export class StatisticsButtonComponent {
   /**
    * Whether to group the statistic per ESN country.
    */
-  @Input() groupBy: 'country' | 'section' | undefined;
+  @Input() groupBy: 'country' | 'section' | null = null;
   /**
    * The type of chart to display.
    */
@@ -81,14 +82,15 @@ export class StatisticsButtonComponent {
 @Component({
   selector: 'app-statistics',
   templateUrl: 'statistics.component.html',
-  styleUrls: ['statistics.component.scss']
+  styleUrls: ['statistics.component.scss'],
+  standalone: false
 })
 export class StatisticsComponent implements OnInit {
   @Input({ required: true }) entityType!: StatisticEntityTypes;
   @Input() entityId: string | undefined;
   @Input({ required: true }) period!: StatisticPeriods;
   @Input({ required: true }) granularity!: StatisticGranularities;
-  @Input() groupBy: 'country' | 'section' | undefined;
+  @Input() groupBy: 'country' | 'section' | null = null;
   @Input({ required: true }) chartType!: 'bar' | 'line';
   @Input() title: string | undefined;
 
@@ -97,7 +99,7 @@ export class StatisticsComponent implements OnInit {
   GranularitiesList = Object.keys(StatisticGranularities);
   Granularities = StatisticGranularities;
   Periods = StatisticPeriods;
-  PeriodsList = Object.keys(StatisticPeriods).filter(x => isNaN(Number(x)));
+  PeriodsList = Object.keys(StatisticPeriods).filter(x => isNaN(Number(x))) as (keyof typeof StatisticPeriods)[];
 
   chart: Chart | undefined;
 
@@ -145,7 +147,7 @@ export class StatisticsComponent implements OnInit {
           ? `HH':00', d MMM yy`
           : this.granularity === StatisticGranularities.DAILY
             ? 'd MMM yy'
-            : 'MMM YYYY'
+            : 'MMM yyyy'
       )
     );
 

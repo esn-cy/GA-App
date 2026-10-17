@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule, ModalController, PopoverController } from '@ionic/angular';
 import { Suggestion } from 'idea-toolbox';
@@ -7,7 +7,7 @@ import {
   IDEALoadingService,
   IDEAMessageService,
   IDEASuggestionsComponent,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -19,8 +19,7 @@ import { BadgesService } from './badges.service';
 import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-give-badges',
   template: `
     <ion-header>
@@ -36,59 +35,70 @@ import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
     <ion-content>
       <ion-list class="aList">
         <ion-item>
-          <ion-label position="stacked">{{ 'CONFIGURATIONS.USER_ID' | translate }}</ion-label>
-          <ion-input [(ngModel)]="userId" [readonly]="!!usersBadges" />
-          <ion-button
-            slot="end"
-            class="ion-margin-top"
-            *ngIf="!usersBadges"
-            [disabled]="!userId"
-            (click)="getUserBadges(userId)"
-          >
-            <ion-icon icon="search" slot="icon-only" />
-          </ion-button>
-          <ion-button
-            slot="end"
-            class="ion-margin-top"
-            fill="clear"
-            color="medium"
-            *ngIf="usersBadges"
-            (click)="usersBadges = undefined"
-          >
-            <ion-icon icon="arrow-undo" slot="icon-only" />
-          </ion-button>
-          <ion-button
-            slot="end"
-            class="ion-margin-top"
-            fill="clear"
-            *ngIf="usersBadges"
-            (click)="app.openUserProfileById(userId!)"
-          >
-            <ion-icon slot="icon-only" icon="open-outline" />
-          </ion-button>
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'CONFIGURATIONS.USER_ID' | translate"
+            [(ngModel)]="userId"
+            [readonly]="!!usersBadges"
+          />
+          @if (!usersBadges) {
+            <ion-button
+              slot="end"
+              class="ion-margin-top"
+              [disabled]="!userId"
+              (click)="getUserBadges(userId)"
+              >
+              <ion-icon icon="search" slot="icon-only" />
+            </ion-button>
+          }
+          @if (usersBadges) {
+            <ion-button
+              slot="end"
+              class="ion-margin-top"
+              fill="clear"
+              color="medium"
+              (click)="usersBadges = undefined"
+              >
+              <ion-icon icon="arrow-undo" slot="icon-only" />
+            </ion-button>
+          }
+          @if (usersBadges) {
+            <ion-button
+              slot="end"
+              class="ion-margin-top"
+              fill="clear"
+              (click)="app.openUserProfileById(userId!)"
+              >
+              <ion-icon slot="icon-only" icon="open-outline" />
+            </ion-button>
+          }
         </ion-item>
-        <ion-grid class="ion-margin-top badgesGrid" *ngIf="usersBadges">
-          <ion-row class="ion-justify-content-center ion-align-items-center">
-            <ion-col class="ion-text-center" *ngFor="let userBadge of usersBadges">
-              <ion-img
-                [src]="_badges.getImageURLOfUserBadge(userBadge)"
-                (ionError)="_badges.fallbackBadgeImage($event?.target)"
-                (click)="openUserBadgeDetails(userBadge)"
-              />
-              <ion-button fill="clear" color="danger" (click)="removeBadgeFromUser(userId!, userBadge)">
-                <ion-icon slot="icon-only" icon="trash" />
-              </ion-button>
-            </ion-col>
-            <ion-col class="ion-text-center">
-              <ion-button shape="round" (click)="addBadgeToUser(userId!)">
-                <ion-icon slot="icon-only" icon="add" />
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        @if (usersBadges) {
+          <ion-grid class="ion-margin-top badgesGrid">
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+              @for (userBadge of usersBadges; track userBadge.badge) {
+                <ion-col class="ion-text-center">
+                  <ion-img
+                    [src]="_badges.getImageURLOfUserBadge(userBadge)"
+                    (ionError)="_badges.fallbackBadgeImage($event?.target)"
+                    (click)="openUserBadgeDetails(userBadge)"
+                    />
+                  <ion-button fill="clear" color="danger" (click)="removeBadgeFromUser(userId!, userBadge)">
+                    <ion-icon slot="icon-only" icon="trash" />
+                  </ion-button>
+                </ion-col>
+              }
+              <ion-col class="ion-text-center">
+                <ion-button shape="round" (click)="addBadgeToUser(userId!)">
+                  <ion-icon slot="icon-only" icon="add" />
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        }
       </ion-list>
     </ion-content>
-  `,
+    `,
   styles: [
     `
       ion-grid.badgesGrid ion-img {

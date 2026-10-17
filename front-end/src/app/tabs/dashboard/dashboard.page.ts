@@ -29,7 +29,8 @@ const NEXT_DEADLINES_NUM_DAYS = 30;
 @Component({
   selector: 'dashboard',
   templateUrl: 'dashboard.page.html',
-  styleUrls: ['dashboard.page.scss']
+  styleUrls: ['dashboard.page.scss'],
+  standalone: false
 })
 export class DashboardPage implements OnInit {
   communications: Communication[] | undefined;

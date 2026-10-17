@@ -1,41 +1,45 @@
-<ion-item [button]="true" *ngIf="question" [detail]="current" [class.current]="current" (click)="select.emit()">
-  <ion-avatar slot="start" class="ion-hide-lg-down">
-    <ion-img
-      [src]="question.creator.avatarURL ?? app.getAvatarFallbackURL()"
-      (ionError)="app.fallbackAvatar($event?.target)"
-    ></ion-img>
-  </ion-avatar>
-  <ion-label class="ion-text-wrap">
-    {{ question.summary }}
-    <p>
-      {{ 'QUESTIONS.BY' | translate | lowercase }}
-      <b>{{ question.creator.name }}</b>
-      <br />
-      {{ 'QUESTIONS.ON' | translate | lowercase }}
-      {{ question.createdAt | dateTz }}
-    </p>
-  </ion-label>
-  <div slot="end" class="ion-text-center questionStats" [class.mobile]="app.isInMobileMode()">
-    <ion-chip color="medium" [disabled]="true">
-      <ion-icon name="chatbubbles"></ion-icon>
-      <ion-label>{{ question.numOfAnswers }}</ion-label>
-    </ion-chip>
-    <ion-chip color="success" [disabled]="true">
-      <ion-icon name="thumbs-up"></ion-icon>
-      <ion-label>{{ question.numOfUpvotes }}</ion-label>
-    </ion-chip>
-    <ion-chip color="ESNpink" [disabled]="true">
-      <ion-icon icon="assets/icons/clap.svg"></ion-icon>
-      <ion-label>{{ question.numOfClaps }}</ion-label>
-    </ion-chip>
-  </div>
-</ion-item>
+@if (question) {
+  <ion-item [button]="true" [detail]="current" [class.current]="current" (click)="select.emit()">
+    <ion-avatar slot="start" class="ion-hide-lg-down">
+      <ion-img
+        [src]="question.creator.avatarURL ?? app.getAvatarFallbackURL()"
+        (ionError)="app.fallbackAvatar($event?.target)"
+      ></ion-img>
+    </ion-avatar>
+    <ion-label class="ion-text-wrap">
+      {{ question.summary }}
+      <p>
+        {{ 'QUESTIONS.BY' | translate | lowercase }}
+        <b>{{ question.creator.name }}</b>
+        <br />
+        {{ 'QUESTIONS.ON' | translate | lowercase }}
+        {{ question.createdAt | dateTz }}
+      </p>
+    </ion-label>
+    <div slot="end" class="ion-text-center questionStats" [class.mobile]="app.isInMobileMode()">
+      <ion-chip color="medium" [disabled]="true">
+        <ion-icon name="chatbubbles"></ion-icon>
+        <ion-label>{{ question.numOfAnswers }}</ion-label>
+      </ion-chip>
+      <ion-chip color="success" [disabled]="true">
+        <ion-icon name="thumbs-up"></ion-icon>
+        <ion-label>{{ question.numOfUpvotes }}</ion-label>
+      </ion-chip>
+      <ion-chip color="ESNpink" [disabled]="true">
+        <ion-icon icon="/assets/icons/clap.svg"></ion-icon>
+        <ion-label>{{ question.numOfClaps }}</ion-label>
+      </ion-chip>
+    </div>
+  </ion-item>
+}
 <!-- skeleton -->
-<ion-item *ngIf="!question">
-  <ion-avatar slot="start">
-    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-  </ion-avatar>
-  <ion-label>
-    <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
-  </ion-label>
-</ion-item>
+@if (!question) {
+  <ion-item>
+    <ion-avatar slot="start">
+      <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+    </ion-avatar>
+    <ion-label>
+      <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
+    </ion-label>
+  </ion-item>
+}

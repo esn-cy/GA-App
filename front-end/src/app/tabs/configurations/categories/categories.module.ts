@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { CategoriesRoutingModule } from './categories.routing.module';
 import { CategoriesPage } from './categories.page';
@@ -15,7 +15,7 @@ import { EditModeButtonsModule } from '@common/editModeButtons.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     CategoriesRoutingModule,
     EditModeButtonsModule
   ],

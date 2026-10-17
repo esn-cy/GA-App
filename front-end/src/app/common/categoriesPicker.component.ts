@@ -1,33 +1,40 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslationsModule } from '@idea-ionic/common';
+import { IDEATranslatePipe } from '@idea-ionic/common';
 
 import { TopicCategoryService } from '@tabs/configurations/categories/categories.service';
 
 import { TopicCategoryAttached } from '@models/category.model';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule],
+  imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-categories-picker',
   template: `
     <ion-item [lines]="lines" [color]="color">
-      <ion-label position="stacked">
-        {{ 'CATEGORIES.CATEGORY' | translate }} <ion-text class="obligatoryDot" *ngIf="obligatory"></ion-text>
-      </ion-label>
       <ion-select
         interface="popover"
+        labelPlacement="stacked"
         [compareWith]="compareWithCategory"
         [(ngModel)]="category"
         (ngModelChange)="categoryChange.emit($event)"
         [disabled]="!editMode || !categories"
       >
-        <ion-select-option *ngIf="!obligatory" [value]="undefined"></ion-select-option>
-        <ion-select-option *ngFor="let category of categories" [value]="category">
-          {{ category.name }}
-        </ion-select-option>
+        <div slot="label">
+          {{ 'CATEGORIES.CATEGORY' | translate }}
+          @if (obligatory) {
+            <ion-text class="obligatoryDot"></ion-text>
+          }
+        </div>
+        @if (!obligatory) {
+          <ion-select-option [value]="null"></ion-select-option>
+        }
+        @for (category of categories; track category.categoryId) {
+          <ion-select-option [value]="category">
+            {{ category.name }}
+          </ion-select-option>
+        }
       </ion-select>
     </ion-item>
   `,
@@ -37,8 +44,8 @@ export class CategoriesPickerComponent implements OnInit {
   /**
    * The category picked.
    */
-  @Input() category: TopicCategoryAttached | undefined;
-  @Output() categoryChange = new EventEmitter<TopicCategoryAttached | undefined>();
+  @Input() category: TopicCategoryAttached | null | undefined;
+  @Output() categoryChange = new EventEmitter<TopicCategoryAttached | null | undefined>();
   /**
    * The colour of the item.
    */

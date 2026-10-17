@@ -8,7 +8,8 @@ import { Subject } from '@models/subject.model';
 @Component({
   selector: 'app-message-bubble',
   templateUrl: 'messageBubble.component.html',
-  styleUrls: ['messageBubble.component.scss']
+  styleUrls: ['messageBubble.component.scss'],
+  standalone: false
 })
 export class MessageBubbleComponent implements OnChanges {
   /**

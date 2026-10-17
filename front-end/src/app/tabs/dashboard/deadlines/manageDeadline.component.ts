@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Component, Input } from '@angular/core';
 import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import {
   IDEALoadingService,
   IDEAMessageService,
-  IDEATranslationsModule,
+  IDEATranslatePipe,
   IDEATranslationsService
 } from '@idea-ionic/common';
 
@@ -18,12 +18,10 @@ import { DeadlinesService } from './deadlines.service';
 import { Deadline } from '@models/deadline.model';
 
 @Component({
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonicModule,
-    IDEATranslationsModule,
+    IDEATranslatePipe,
     EventsPickerComponent,
     DatetimeWithTimezoneStandaloneComponent
   ],
@@ -47,31 +45,43 @@ import { Deadline } from '@models/deadline.model';
     <ion-content>
       <ion-list class="aList" lines="full">
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
-          <ion-label position="stacked">
-            {{ 'DEADLINES.NAME' | translate }} <ion-text class="obligatoryDot"></ion-text>
-          </ion-label>
-          <ion-input [(ngModel)]="deadline.name"></ion-input>
+          <ion-input labelPlacement="stacked" [(ngModel)]="deadline.name">
+            <div slot="label">
+              {{ 'DEADLINES.NAME' | translate }}
+              <ion-text class="obligatoryDot"></ion-text>
+            </div>
+          </ion-input>
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('action')">
-          <ion-label position="stacked">
-            {{ 'DEADLINES.ACTION' | translate }}
-          </ion-label>
-          <ion-input [(ngModel)]="deadline.action" [maxlength]="15" [counter]="true"></ion-input>
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'DEADLINES.ACTION' | translate"
+            [(ngModel)]="deadline.action"
+            [maxlength]="15"
+            [counter]="true"
+          ></ion-input>
         </ion-item>
-        <ion-item *ngIf="deadline.action" [class.fieldHasError]="hasFieldAnError('actionColor')">
-          <ion-label position="stacked">
-            {{ 'DEADLINES.ACTION_COLOR' | translate }}
-          </ion-label>
-          <ion-select interface="popover" [(ngModel)]="deadline.actionColor">
-            <ion-select-option [value]="undefined"></ion-select-option>
-            <ion-select-option *ngFor="let color of COLORS" [value]="color">{{ color }}</ion-select-option>
-          </ion-select>
-        </ion-item>
+        @if (deadline.action) {
+          <ion-item [class.fieldHasError]="hasFieldAnError('actionColor')">
+            <ion-select
+              interface="popover"
+              labelPlacement="stacked"
+              [label]="'DEADLINES.ACTION_COLOR' | translate"
+              [(ngModel)]="deadline.actionColor"
+            >
+              <ion-select-option [value]="null"></ion-select-option>
+              @for (color of COLORS; track color) {
+                <ion-select-option [value]="color">{{ color }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        }
         <ion-item [class.fieldHasError]="hasFieldAnError('target')">
-          <ion-label position="stacked">
-            {{ 'DEADLINES.TARGET' | translate }}
-          </ion-label>
-          <ion-input [(ngModel)]="deadline.target"></ion-input>
+          <ion-input
+            labelPlacement="stacked"
+            [label]="'DEADLINES.TARGET' | translate"
+            [(ngModel)]="deadline.target"
+          ></ion-input>
         </ion-item>
         <app-events-picker
           [class.fieldHasError]="hasFieldAnError('event')"
@@ -91,11 +101,13 @@ import { Deadline } from '@models/deadline.model';
             </p>
           </ion-label>
         </ion-item-divider>
-        <ion-row class="ion-padding-top" *ngIf="deadline.deadlineId">
-          <ion-col class="ion-text-right ion-padding-end">
-            <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
-          </ion-col>
-        </ion-row>
+        @if (deadline.deadlineId) {
+          <ion-row class="ion-padding-top">
+            <ion-col class="ion-text-right ion-padding-end">
+              <ion-button color="danger" (click)="askAndDelete()">{{ 'COMMON.DELETE' | translate }}</ion-button>
+            </ion-col>
+          </ion-row>
+        }
       </ion-list>
     </ion-content>
   `
