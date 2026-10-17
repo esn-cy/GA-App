@@ -9,8 +9,8 @@ import { TopicCategoryAttached } from '@models/category.model';
 
 @Injectable({ providedIn: 'root' })
 export class TopicsService {
-  private topics: Topic[];
-  private archivedTopics: Topic[];
+  private topics: Topic[] | undefined;
+  private archivedTopics: Topic[] | undefined;
 
   /**
    * The number of topics to consider for the pagination, when active.
@@ -43,17 +43,17 @@ export class TopicsService {
       startPaginationAfterId?: string;
       sortBy?: TopicsSortBy;
     } = { sortBy: TopicsSortBy.CREATED_DATE_DESC }
-  ): Promise<Topic[]> {
+  ): Promise<Topic[] | undefined> {
     if (!this.topics || options.force) await this.loadActiveList();
-    if (!this.topics) return null;
+    if (!this.topics) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.topics.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm =>
             [x.name, x.content, x.category.name, x.event.name, ...x.subjects.map(s => s.name)]
@@ -90,14 +90,14 @@ export class TopicsService {
         filteredList = filteredList.sort((a, b): number => {
           const liveA = a.type === TopicTypes.LIVE ? (a.isClosed() ? -1 : 1) : 0;
           const liveB = b.type === TopicTypes.LIVE ? (b.isClosed() ? -1 : 1) : 0;
-          return liveA - liveB || a.numOfQuestions - b.numOfQuestions;
+          return liveA - liveB || (a.numOfQuestions ?? 0) - (b.numOfQuestions ?? 0);
         });
         break;
       case TopicsSortBy.ACTIVITY_DESC:
         filteredList = filteredList.sort((a, b): number => {
           const liveA = a.type === TopicTypes.LIVE ? (a.isClosed() ? -1 : 1) : 0;
           const liveB = b.type === TopicTypes.LIVE ? (b.isClosed() ? -1 : 1) : 0;
-          return liveB - liveA || b.numOfQuestions - a.numOfQuestions;
+          return liveB - liveA || (b.numOfQuestions ?? 0) - (a.numOfQuestions ?? 0);
         });
         break;
     }
@@ -136,9 +136,9 @@ export class TopicsService {
       startPaginationAfterId?: string;
       sortBy?: TopicsSortBy;
     } = { sortBy: TopicsSortBy.CREATED_DATE_DESC }
-  ): Promise<Topic[]> {
+  ): Promise<Topic[] | undefined> {
     if (!this.archivedTopics || options.force) await this.loadArchivedList(options.categoryId, options.eventId);
-    if (!this.archivedTopics) return null;
+    if (!this.archivedTopics) return undefined;
 
     let filteredList = this.archivedTopics.slice();
 
@@ -150,10 +150,10 @@ export class TopicsService {
         filteredList = filteredList.sort((a, b): number => b.createdAt.localeCompare(a.createdAt));
         break;
       case TopicsSortBy.ACTIVITY_ASC:
-        filteredList = filteredList.sort((a, b): number => a.numOfQuestions - b.numOfQuestions);
+        filteredList = filteredList.sort((a, b): number => (a.numOfQuestions ?? 0) - (b.numOfQuestions ?? 0));
         break;
       case TopicsSortBy.ACTIVITY_DESC:
-        filteredList = filteredList.sort((a, b): number => b.numOfQuestions - a.numOfQuestions);
+        filteredList = filteredList.sort((a, b): number => (b.numOfQuestions ?? 0) - (a.numOfQuestions ?? 0));
         break;
     }
 
@@ -264,7 +264,7 @@ export class TopicsService {
   async userMessagesUpvotesForTopic(topic: Topic): Promise<{ [messageId: string]: boolean }> {
     const path = ['topics', topic.topicId];
     const answersIds: string[] = await this.api.patchResource(path, { body: { action: 'MESSAGES_UPVOTES' } });
-    const upvoteMap = {};
+    const upvoteMap: Record<string, boolean> = {};
     answersIds.forEach(a => (upvoteMap[a] = true));
     return upvoteMap;
   }

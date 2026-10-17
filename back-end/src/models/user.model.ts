@@ -144,10 +144,10 @@ export const getUserOrigin = (
   user: { country?: string; section?: string },
   displayOption: UsersOriginDisplayOptions
 ): string => {
-  if (displayOption === UsersOriginDisplayOptions.COUNTRY) return user.country;
-  if (displayOption === UsersOriginDisplayOptions.SECTION) return user.section;
+  if (displayOption === UsersOriginDisplayOptions.COUNTRY) return user.country ?? '';
+  if (displayOption === UsersOriginDisplayOptions.SECTION) return user.section ?? '';
   if (displayOption === UsersOriginDisplayOptions.BOTH) {
-    if (user.country === user.section) return user.section;
+    if (user.country === user.section) return user.section ?? '';
     return [user.country, user.section].filter(x => x).join(' - ');
-  } else return null;
+  } else return '';
 };

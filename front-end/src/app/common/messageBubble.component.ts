@@ -12,23 +12,23 @@ import { Subject } from '@models/subject.model';
 })
 export class MessageBubbleComponent implements OnChanges {
   /**
-   * The text to show; if null, load a skeleton instead.
+   * The text to show; if undefined, load a skeleton instead.
    */
-  @Input() text: string | null;
+  @Input() text: string | undefined;
   /**
    * The creator of the text.
    */
-  @Input() creator: Subject;
+  @Input() creator: Subject | undefined;
   /**
    * Whether the creator of the text is the sender.
    */
   @Input() isSender = false;
 
-  sanitizedHtml: string;
+  sanitizedHtml: string | undefined;
 
   constructor(private sanitizer: DomSanitizer, public app: AppService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.text?.currentValue) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.text);
+    if (changes.text?.currentValue) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.text ?? '') ?? undefined;
   }
 }

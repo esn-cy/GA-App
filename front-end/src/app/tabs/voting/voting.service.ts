@@ -8,8 +8,8 @@ import { VotingResults } from '@models/votingResult.model';
 
 @Injectable({ providedIn: 'root' })
 export class VotingService {
-  private votingSessions: VotingSession[];
-  private archivedVotingSessions: VotingSession[];
+  private votingSessions: VotingSession[] | undefined;
+  private archivedVotingSessions: VotingSession[] | undefined;
 
   /**
    * The number of voting sessions to consider for the pagination, when active.
@@ -41,24 +41,24 @@ export class VotingService {
       startPaginationAfterId?: string;
       sortBy?: VotingSessionsSortBy;
     } = { sortBy: VotingSessionsSortBy.CREATED_DATE_DESC }
-  ): Promise<VotingSession[]> {
+  ): Promise<VotingSession[] | undefined> {
     if (!this.votingSessions || options.force) await this.loadActiveList();
-    if (!this.votingSessions) return null;
+    if (!this.votingSessions) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.votingSessions.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm =>
-            [x.name, x.description, x.event.name].filter(f => f).some(f => f.toLowerCase().includes(searchTerm))
+            [x.name, x.description, x.event?.name].filter(f => f).some(f => f?.toLowerCase().includes(searchTerm))
           )
       );
 
-    if (options.eventId) filteredList = filteredList.filter(x => x.event.eventId === options.eventId);
+    if (options.eventId) filteredList = filteredList.filter(x => x.event?.eventId === options.eventId);
 
     switch (options.sortBy) {
       case VotingSessionsSortBy.CREATED_DATE_ASC:
@@ -101,9 +101,9 @@ export class VotingService {
       startPaginationAfterId?: string;
       sortBy?: VotingSessionsSortBy;
     } = { sortBy: VotingSessionsSortBy.CREATED_DATE_DESC }
-  ): Promise<VotingSession[]> {
+  ): Promise<VotingSession[] | undefined> {
     if (!this.archivedVotingSessions || options.force) await this.loadArchivedList(options.eventId);
-    if (!this.archivedVotingSessions) return null;
+    if (!this.archivedVotingSessions) return undefined;
 
     let filteredList = this.archivedVotingSessions.slice();
 
@@ -310,7 +310,7 @@ export class VotingService {
         sheetRows.push([], []);
       });
     } else {
-      sheetRows.push([, ...votingSession.ballots.map(b => b.text)]);
+      sheetRows.push([undefined, ...votingSession.ballots.map(b => b.text)]);
       votingSession.voters.forEach(voter => {
         const row = [voter.name];
         votingSession.ballots.forEach((ballot, bIndex): void => {
@@ -369,8 +369,8 @@ export class VotingService {
     const exportableVoters: ExportableVoter[] = [];
     votingSession.voters.forEach(x => {
       const voter: ExportableVoter = { Name: x.name, 'Voter Identifier': x.id };
-      if (votingSession.isForm()) voter.Email = x.email;
-      if (votingSession.isWeighted) voter['Vote Weight'] = x.voteWeight;
+      if (votingSession.isForm() && x.email) voter.Email = x.email;
+      if (votingSession.isWeighted && x.voteWeight !== undefined) voter['Vote Weight'] = x.voteWeight;
       exportableVoters.push(voter);
     });
 

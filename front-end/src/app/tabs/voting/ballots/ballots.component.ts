@@ -40,11 +40,11 @@ import { VotingResults } from '@models/votingResult.model';
         <ion-card-content>
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-align-items-center">
-              <ion-col [size]="12" [sizeMd]="results ? 9 : 12">
+              <ion-col size="12" [sizeMd]="(results ? 9 : 12).toString()">
                 <ion-item
                   lines="none"
                   *ngFor="let option of getOptionsOfBallotIncludingAbstainAndAbsentByIndex(bIndex); let oIndex = index"
-                  [button]="results && !votingSession.isSecret()"
+                  [button]="(results ?? false) && !votingSession.isSecret()"
                   (click)="openBallotVotesDetailPopover(bIndex, oIndex, option, $event)"
                 >
                   <ion-badge slot="start" color="light" *ngIf="!results">{{ oIndex + 1 }}</ion-badge>
@@ -57,12 +57,12 @@ import { VotingResults } from '@models/votingResult.model';
                   </ion-badge>
                 </ion-item>
               </ion-col>
-              <ion-col [size]="12" [sizeMd]="3" *ngIf="results">
+              <ion-col size="12" sizeMd="3" *ngIf="results">
                 <div class="chartContainer">
                   <canvas [id]="chartCanvasBaseId + bIndex"></canvas>
                 </div>
               </ion-col>
-              <ion-col [size]="12" *ngIf="results && !raw">
+              <ion-col size="12" *ngIf="results && !raw">
                 <ion-item lines="none" class="outcomeItem">
                   <ion-badge slot="end" color="light" *ngIf="getWinningBallotOptionIndex(bIndex) !== -1">
                     {{ votingSession.ballots[bIndex].options[getWinningBallotOptionIndex(bIndex)] }}
@@ -128,11 +128,11 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
   /**
    * The voting session containing the ballots to display.
    */
-  @Input() votingSession: VotingSession;
+  @Input({ required: true }) votingSession!: VotingSession;
   /**
    * The results to display; if not set, they are not shown.
    */
-  @Input() results: VotingResults | null;
+  @Input() results: VotingResults | undefined;
   /**
    * Whether to show the raw results.
    */
@@ -155,7 +155,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
   charts: Chart<'doughnut'>[] = [];
   chartColors = CHART_COLORS;
 
-  chartCanvasBaseId: string;
+  chartCanvasBaseId!: string;
 
   constructor(private popoverCtrl: PopoverController, private t: IDEATranslationsService, public app: AppService) {}
 
@@ -179,7 +179,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       componentProps: { majorityType },
       event
     });
-    popover.present();
+    await popover.present();
   }
 
   getOptionsOfBallotIncludingAbstainAndAbsentByIndex(bIndex: number): string[] {
@@ -190,15 +190,15 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
   }
 
   getResultOfBallotOptionBasedOnRaw(bIndex: number, oIndex: number): number {
-    if (this.raw) return this.results[bIndex][oIndex].value;
-    const oResults = Object.values(this.results[bIndex]);
+    if (this.raw) return this.results![bIndex][oIndex].value;
+    const oResults = Object.values(this.results![bIndex]);
     const oResultsNoAbstainAndAbsent = oResults.slice(0, oResults.length - 2);
-    const totNoAbstainAndAbsent = oResultsNoAbstainAndAbsent.reduce((tot, acc): number => (tot += acc.value), 0);
-    return totNoAbstainAndAbsent > 0 ? this.results[bIndex][oIndex].value / totNoAbstainAndAbsent : 0;
+    const totNoAbstainAndAbsent = oResultsNoAbstainAndAbsent.reduce((tot, acc): number => tot + acc.value, 0);
+    return totNoAbstainAndAbsent > 0 ? this.results![bIndex][oIndex].value / totNoAbstainAndAbsent : 0;
   }
 
-  getWinningBallotOptionIndex(bIndex: number): number | -1 {
-    const oResults = Object.values(this.results[bIndex]);
+  getWinningBallotOptionIndex(bIndex: number): number {
+    const oResults = Object.values(this.results![bIndex]);
     const oResultsNoAbstainAndAbsent = oResults.slice(0, oResults.length - 2);
 
     let winnerOptionIndex = -1;
@@ -221,9 +221,11 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
     if (this.votingSession.ballots[bIndex].majorityType === VotingMajorityTypes.TWO_THIRDS)
       // @todo this majority should be fixed in the Statutes (it's not possible to calculate "+1" with weighted voting)
       return this.getResultOfBallotOptionBasedOnRaw(bIndex, winnerOptionIndex) > 2 / 3 ? winnerOptionIndex : -1;
+
+    return -1;
   }
 
-  handleBallotReorder({ detail }): void {
+  handleBallotReorder({ detail }: CustomEvent): void {
     this.votingSession.ballots = detail.complete(this.votingSession.ballots);
   }
 
@@ -269,12 +271,12 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       componentProps,
       event
     });
-    popover.present();
+    await popover.present();
   }
 }
 
 /**
- * The sorted list of colors to use in the charts.
+ * The sorted list of colours to use in the charts.
  */
 const CHART_COLORS = [
   '#00a950',

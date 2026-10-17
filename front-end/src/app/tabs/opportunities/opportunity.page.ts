@@ -22,18 +22,18 @@ import { Subject } from '@models/subject.model';
   styleUrls: ['opportunity.page.scss']
 })
 export class OpportunityPage {
-  @Input() opportunityId: string;
-  opportunity: Opportunity;
+  @Input({ required: true }) opportunityId!: string;
+  opportunity: Opportunity | undefined;
   showContent = true;
 
-  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonContent) content!: IonContent;
 
-  applications: Application[];
+  applications: Application[] | undefined;
 
-  userApplication: Application;
+  userApplication: Application | undefined;
   acceptedAttachmentsFormats = ACCEPTED_ATTACHMENTS_FORMATS.join(',');
   errors = new Set<string>();
-  attachmentUploadErros: Record<string, Error> = {};
+  attachmentUploadErrors: Record<string, string | undefined> = {};
   writingApplication = false;
   ApplicationStatuses = ApplicationStatuses;
 
@@ -54,27 +54,30 @@ export class OpportunityPage {
       await this.loading.show();
       await this.loadResources();
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   private async loadResources(): Promise<void> {
     this.opportunity = await this._opportunities.getById(this.opportunityId);
-    this.applications = await this._applications.getListOfopportunity(this.opportunity, { force: true });
-    this.userApplication = this.applications.find(x => x.userId === this.app.user.userId);
+    if (this.opportunity) {
+      this.applications = await this._applications.getListOfOpportunity(this.opportunity, { force: true });
+      this.userApplication = this.applications?.find(x => x.userId === this.app.user.userId);
+    }
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
-    this.opportunity = null;
-    this.applications = null;
-    this.userApplication = null;
+    this.opportunity = undefined;
+    this.applications = undefined;
+    this.userApplication = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
   manageOpportunity(): void {
+    if (!this.opportunity) return;
     this.app.goToInTabs(['opportunities', this.opportunity.opportunityId, 'manage']);
   }
 
@@ -84,18 +87,18 @@ export class OpportunityPage {
       const url = await this._attachments.download(attachment);
       await this.app.openURL(url);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   browseFilesForInputId(id: string): void {
-    document.getElementById(id).click();
+    document.getElementById(id)?.click();
   }
 
-  async addAttachment({ target }, expectedAttachmentName: string): Promise<void> {
-    if (!target?.files.length) return;
+  async addAttachment({ target }: { target: HTMLInputElement }, expectedAttachmentName: string): Promise<void> {
+    if (!target?.files?.length || !this.userApplication || !this.opportunity) return;
 
     const file: File = target.files[0];
     const fullName = file.name.split('.');
@@ -108,21 +111,21 @@ export class OpportunityPage {
       if (bytesToMegaBytes(file.size) > env.idea.app.maxFileUploadSizeMB)
         throw new Error(this.t._('ATTACHMENTS.FILE_IS_TOO_BIG', { maxSize: env.idea.app.maxFileUploadSizeMB }));
       attachment.attachmentId = await this._applications.uploadAttachment(this.opportunity, file);
-      this.attachmentUploadErros[expectedAttachmentName] = null;
-    } catch (err) {
+      delete this.attachmentUploadErrors[expectedAttachmentName];
+    } catch (err: any) {
       this.removeAttachmentByExpectedName(expectedAttachmentName);
-      this.attachmentUploadErros[expectedAttachmentName] = err.message;
-      this.message.error(err.message, true);
+      this.attachmentUploadErrors[expectedAttachmentName] = err.message;
+      await this.message.error(err.message, true);
     }
 
     // empty the file picker to allow the upload of new files with the same name
-    if (target) target.value = null;
+    if (target) target.value = '';
   }
 
   removeAttachmentByExpectedName(expectedAttachmentName: string, event?: Event): void {
     if (event) event.stopPropagation();
-    this.userApplication.attachments[expectedAttachmentName] = null;
-    this.attachmentUploadErros[expectedAttachmentName] = null;
+    if (this.userApplication) delete this.userApplication.attachments[expectedAttachmentName];
+    delete this.attachmentUploadErrors[expectedAttachmentName];
   }
 
   startApplication(): void {
@@ -135,30 +138,32 @@ export class OpportunityPage {
   }
 
   cancelApplication(): void {
-    if (!this.userApplication.applicationId) this.userApplication = null;
+    if (!this.userApplication?.applicationId) this.userApplication = undefined;
     this.writingApplication = false;
   }
 
   async sendApplication(): Promise<void> {
+    if (!this.userApplication || !this.opportunity) return;
     this.errors = new Set(this.userApplication.validate(this.opportunity));
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
     const doSend = async (): Promise<void> => {
+      if (!this.userApplication || !this.opportunity) return;
       try {
         await this.loading.show();
         if (this.userApplication.applicationId)
           this.userApplication.load(await this._applications.update(this.opportunity, this.userApplication));
         else {
           this.userApplication.load(await this._applications.insert(this.opportunity, this.userApplication));
-          this.applications.unshift(this.userApplication);
+          this.applications?.unshift(this.userApplication);
         }
         this.writingApplication = false;
-        this.content.scrollToTop(500);
-        this.message.success('OPPORTUNITIES.APPLICATION_SENT');
+        await this.content.scrollToTop(500);
+        await this.message.success('OPPORTUNITIES.APPLICATION_SENT');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -168,7 +173,7 @@ export class OpportunityPage {
       { text: this.t._('COMMON.SEND'), handler: doSend }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -176,18 +181,20 @@ export class OpportunityPage {
   }
 
   async withdrawUserApplication(): Promise<void> {
+    if (!this.userApplication || !this.opportunity) return;
     const doDelete = async (): Promise<void> => {
+      if (!this.userApplication || !this.opportunity) return;
       try {
         await this.loading.show();
         await this._applications.delete(this.opportunity, this.userApplication);
-        const index = this.applications.findIndex(x => x.applicationId === this.userApplication.applicationId);
-        if (index !== -1) this.applications.splice(index, 1);
-        this.userApplication = null;
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        const index = this.applications?.findIndex(x => x.applicationId === this.userApplication?.applicationId) ?? -1;
+        if (index !== -1) this.applications?.splice(index, 1);
+        this.userApplication = undefined;
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -199,11 +206,11 @@ export class OpportunityPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async sendQuestionAsEmail(): Promise<void> {
-    if (!this.opportunity.contactEmail) return;
+    if (!this.opportunity?.contactEmail) return;
     const emailSubject = encodeURIComponent(
       this.t._('OPPORTUNITIES.QUESTION_ON_OPPORTUNITY').concat(': ', this.opportunity.name)
     );
@@ -219,10 +226,11 @@ export class OpportunityPage {
   }
 
   async reviewApplication(application: Application): Promise<void> {
+    if (!this.opportunity) return;
     const modal = await this.modalCtrl.create({
       component: ReviewApplicationStandaloneComponent,
       componentProps: { opportunity: this.opportunity, application }
     });
-    modal.present();
+    await modal.present();
   }
 }

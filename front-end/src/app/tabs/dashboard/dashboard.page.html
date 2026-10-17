@@ -39,14 +39,14 @@
           </ion-item>
           <ion-item color="white" lines="none" *ngIf="!statistic">
             <ion-label>
-              <ion-skeleton-text animated></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
             </ion-label>
           </ion-item>
         </ion-card>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col [size]="12" [sizeLg]="6">
+      <ion-col size="12" sizeLg="6">
         <ion-list class="aList" *ngIf="!app.isInMobileMode() || segment === MobileSegments.NEWS">
           <ion-list-header>
             <ion-label>
@@ -96,7 +96,7 @@
           </app-communication>
         </ion-list>
       </ion-col>
-      <ion-col [class.ion-padding-start]="!app.isInMobileMode()" [size]="12" [sizeLg]="6">
+      <ion-col [class.ion-padding-start]="!app.isInMobileMode()" size="12" sizeLg="6">
         <ion-list class="aList" *ngIf="!app.isInMobileMode() || segment === MobileSegments.DEADLINES">
           <ion-list-header>
             <ion-label>
@@ -152,7 +152,7 @@
                 fill="clear"
                 color="ESNgreen"
                 [disabled]="first"
-                (click)="swapSortUsefulLinks(link, usefulLinks[index-1], $event)"
+                (click)="swapSortUsefulLinks(link, usefulLinks![index-1], $event)"
               >
                 <ion-icon icon="arrow-up" slot="icon-only"></ion-icon>
               </ion-button>
@@ -161,7 +161,7 @@
                 fill="clear"
                 color="ESNgreen"
                 [disabled]="last"
-                (click)="swapSortUsefulLinks(link, usefulLinks[index+1], $event)"
+                (click)="swapSortUsefulLinks(link, usefulLinks![index+1], $event)"
               >
                 <ion-icon icon="arrow-down" slot="icon-only"></ion-icon>
               </ion-button>

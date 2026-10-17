@@ -1,4 +1,4 @@
-<ion-item button *ngIf="question" [detail]="!!current" [class.current]="!!current" (click)="select.emit()">
+<ion-item [button]="true" *ngIf="question" [detail]="current" [class.current]="current" (click)="select.emit()">
   <ion-avatar slot="start" class="ion-hide-lg-down">
     <ion-img
       [src]="question.creator.avatarURL ?? app.getAvatarFallbackURL()"
@@ -16,15 +16,15 @@
     </p>
   </ion-label>
   <div slot="end" class="ion-text-center questionStats" [class.mobile]="app.isInMobileMode()">
-    <ion-chip color="medium" disabled>
+    <ion-chip color="medium" [disabled]="true">
       <ion-icon name="chatbubbles"></ion-icon>
       <ion-label>{{ question.numOfAnswers }}</ion-label>
     </ion-chip>
-    <ion-chip color="success" disabled>
+    <ion-chip color="success" [disabled]="true">
       <ion-icon name="thumbs-up"></ion-icon>
       <ion-label>{{ question.numOfUpvotes }}</ion-label>
     </ion-chip>
-    <ion-chip color="ESNpink" disabled>
+    <ion-chip color="ESNpink" [disabled]="true">
       <ion-icon icon="assets/icons/clap.svg"></ion-icon>
       <ion-label>{{ question.numOfClaps }}</ion-label>
     </ion-chip>
@@ -33,9 +33,9 @@
 <!-- skeleton -->
 <ion-item *ngIf="!question">
   <ion-avatar slot="start">
-    <ion-skeleton-text animated></ion-skeleton-text>
+    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
   </ion-avatar>
   <ion-label>
-    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
   </ion-label>
 </ion-item>

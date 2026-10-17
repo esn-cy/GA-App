@@ -29,25 +29,25 @@ import { WebSocketConnectionTypes, WebSocketMessage } from '@models/webSocket.mo
   styleUrls: ['liveTopic.page.scss']
 })
 export class LiveTopicPage implements OnInit, OnDestroy {
-  @Input() topicId: string;
-  topic: Topic;
+  @Input({ required: true }) topicId!: string;
+  topic: Topic | undefined;
 
-  questions: Message[];
+  questions: Message[] | undefined;
   showCompletedQuestions = false;
   sortQuestionsBy = MessagesSortBy.CREATION_ASC;
 
-  appreciations: Message[];
+  appreciations: Message[] | undefined;
   showCompletedAppreciations = false;
   sortAppreciationsBy = MessagesSortBy.CREATION_DESC;
 
   MessageTypes = MessageTypes;
   MessagesSortBy = MessagesSortBy;
-  newMessage: Message;
+  newMessage: Message | undefined;
   errors = new Set<string>();
 
-  relatedTopics: Topic[];
+  relatedTopics: Topic[] | undefined;
 
-  showTopicDetails: boolean;
+  showTopicDetails = false;
   segment = MessageTypes.QUESTION;
   fullScreen = false;
 
@@ -91,9 +91,9 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       await this.loadResources();
       this.showTopicDetails = !this.app.isInMobileMode();
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -111,14 +111,14 @@ export class LiveTopicPage implements OnInit, OnDestroy {
   }
 
   async handleRefresh(refresh?: IonRefresher): Promise<void> {
-    this.questions = null;
-    this.appreciations = null;
+    this.questions = undefined;
+    this.appreciations = undefined;
     await this.loadResources();
-    if (refresh) refresh.complete();
+    if (refresh) await refresh.complete();
   }
 
   manageTopic(): void {
-    this.app.goToInTabs(['topics', this.topic.topicId, 'manage']);
+    if (this.topic) this.app.goToInTabs(['topics', this.topic.topicId, 'manage']);
   }
 
   async downloadAttachment(attachment: Attachment): Promise<void> {
@@ -127,41 +127,41 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       const url = await this._attachments.download(attachment);
       await this.app.openURL(url);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async filterQuestions(scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.questions?.length)
       startPaginationAfterId = this.questions[this.questions.length - 1].messageId;
 
-    this.questions = await this._messages.getListOfTopic(this.topic, {
+    this.questions = await this._messages.getListOfTopic(this.topic!, {
       force,
       filterByType: MessageTypes.QUESTION,
       showCompleted: this.showCompletedQuestions,
       sortBy: this.sortQuestionsBy,
       withPagination: true,
-      startPaginationAfterId
+      startPaginationAfterId: startPaginationAfterId
     });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }
 
   async filterAppreciations(scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.appreciations?.length)
       startPaginationAfterId = this.appreciations[this.appreciations.length - 1].messageId;
 
-    this.appreciations = await this._messages.getListOfTopic(this.topic, {
+    this.appreciations = await this._messages.getListOfTopic(this.topic!, {
       force,
       filterByType: MessageTypes.APPRECIATION,
       showCompleted: this.showCompletedAppreciations,
       sortBy: this.sortAppreciationsBy,
       withPagination: true,
-      startPaginationAfterId
+      startPaginationAfterId: startPaginationAfterId
     });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
@@ -169,13 +169,14 @@ export class LiveTopicPage implements OnInit, OnDestroy {
 
   startNewMessage(appreciation = false): void {
     this.newMessage = new Message({
-      topicId: this.topic.topicId,
+      topicId: this.topic!.topicId,
       creator: Subject.fromUser(this.app.user),
       type: appreciation ? MessageTypes.APPRECIATION : MessageTypes.QUESTION
     });
   }
 
   handleMessageMarkedAnonymous(anonymous: boolean): void {
+    if (!this.newMessage) return;
     if (anonymous) delete this.newMessage.creator;
     else this.newMessage.creator = Subject.fromUser(this.app.user);
   }
@@ -183,10 +184,10 @@ export class LiveTopicPage implements OnInit, OnDestroy {
   async cancelNewMessage(): Promise<void> {
     const doCancel = (): void => {
       this.errors = new Set();
-      this.newMessage = null;
+      this.newMessage = undefined;
     };
 
-    if (!this.newMessage.summary && !this.newMessage.text) return doCancel();
+    if (!this.newMessage?.summary && !this.newMessage?.text) return doCancel();
 
     const header = this.t._('COMMON.ARE_YOU_SURE');
     const message = this.t._('MESSAGES.YOU_WILL_LOSE_THE_CONTENT');
@@ -195,25 +196,26 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doCancel }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async sendNewMessage(): Promise<void> {
-    this.errors = new Set(this.newMessage.validate(this.topic));
+    if (!this.newMessage) return;
+    this.errors = new Set(this.newMessage.validate(this.topic!));
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
     const doSend = async (): Promise<void> => {
       try {
         await this.loading.show();
-        if (this.newMessage.creator) await this._messages.insert(this.topic, this.newMessage);
-        else await this._messages.insertAnonymous(this.topic, this.newMessage);
+        if (this.newMessage!.creator) await this._messages.insert(this.topic!, this.newMessage!);
+        else await this._messages.insertAnonymous(this.topic!, this.newMessage!);
         // message will be added to the UI by web a socket update
-        this.newMessage = null;
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        this.newMessage = undefined;
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -223,7 +225,7 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       { text: this.t._('COMMON.SEND'), role: 'destructive', handler: doSend }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -231,6 +233,7 @@ export class LiveTopicPage implements OnInit, OnDestroy {
   }
 
   async upvoteMessage(message: Message, upvote: boolean): Promise<void> {
+    if (!this.topic) return;
     try {
       this.hasUserUpvotedMessage[message.messageId] = upvote;
       if (upvote) {
@@ -242,11 +245,12 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       this.hasUserUpvotedMessage[message.messageId] = !upvote;
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     }
   }
 
   async seeMessageUpvoters(message: Message, event?: Event): Promise<void> {
+    if (!this.topic) return;
     if (event) event.stopPropagation();
     const subjectsPromise = this._messages.getUpvoters(this.topic, message);
     const popover = await this.popoverCtrl.create({
@@ -264,15 +268,15 @@ export class LiveTopicPage implements OnInit, OnDestroy {
   private async changeCompleteStatus(message: Message, complete: boolean): Promise<void> {
     try {
       await this.loading.show();
-      if (complete) await this._messages.markComplete(this.topic, message);
-      else await this._messages.undoComplete(this.topic, message);
-      if (message.type === MessageTypes.QUESTION) this.filterQuestions(null, true);
-      if (message.type === MessageTypes.APPRECIATION) this.filterAppreciations(null, true);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      if (complete) await this._messages.markComplete(this.topic!, message);
+      else await this._messages.undoComplete(this.topic!, message);
+      if (message.type === MessageTypes.QUESTION) await this.filterQuestions(undefined, true);
+      if (message.type === MessageTypes.APPRECIATION) await this.filterAppreciations(undefined, true);
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -280,13 +284,13 @@ export class LiveTopicPage implements OnInit, OnDestroy {
     const doDelete = async (): Promise<void> => {
       try {
         await this.loading.show();
-        await this._messages.delete(this.topic, message);
+        await this._messages.delete(this.topic!, message);
         // message will be removed from the UI by web a socket update
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -296,23 +300,24 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   private async deleteMessageAndBanUser(message: Message): Promise<void> {
-    if (!message.creator) return;
+    const creator = message.creator;
+    if (!creator) return;
 
     const doDelete = async (): Promise<void> => {
       try {
         await this.loading.show();
-        await this._messages.delete(this.topic, message);
+        await this._messages.delete(this.topic!, message);
         // message will be removed from the UI by web a socket update
-        await this._configurations.banUserByID(message.creator.id);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this._configurations.banUserByID(creator.id);
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -324,17 +329,17 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message: messageAlert, buttons });
-    alert.present();
+    await alert.present();
   }
 
   private async readMessageFullText(message: Message): Promise<void> {
     const buttons = [{ text: this.t._('COMMON.CLOSE') }];
     const alert = await this.alertCtrl.create({ message: message.text, buttons, cssClass: 'selectableAlert' });
-    alert.present();
+    await alert.present();
   }
 
   private openUserProfile(creator: Subject): void {
-    this.app.openURL(creator.getURL());
+    void this.app.openURL(creator.getURL());
   }
 
   async actionsOnMessage(message: Message): Promise<void> {
@@ -375,15 +380,16 @@ export class LiveTopicPage implements OnInit, OnDestroy {
       handler: (): Promise<void> => this.seeMessageUpvoters(message)
     });
 
-    if (message.creator) {
+    const creator = message.creator;
+    if (creator) {
       if (this.app.user.isAdministrator) {
         buttons.push({
           text: this.t._('MESSAGES.OPEN_PROFILE'),
           icon: 'person',
-          handler: (): void => this.openUserProfile(message.creator)
+          handler: (): void => this.openUserProfile(creator)
         });
       }
-      if (!this.topic.isClosed() || this.app.user.isAdministrator) {
+      if (!this.topic?.isClosed() || this.app.user.isAdministrator) {
         buttons.push({
           text: this.t._('MESSAGES.DELETE'),
           icon: 'trash',
@@ -404,7 +410,7 @@ export class LiveTopicPage implements OnInit, OnDestroy {
     buttons.push({ text: this.t._('COMMON.CANCEL'), role: 'cancel', icon: 'arrow-undo' });
 
     const actions = await this.actionsCtrl.create({ header, buttons });
-    actions.present();
+    await actions.present();
   }
 
   openTopic(topic: Topic): void {
@@ -415,7 +421,7 @@ export class LiveTopicPage implements OnInit, OnDestroy {
     this.fullScreen = true;
     setTimeout((): void => {
       const baseURL = window.location.protocol.concat('//', window.location.host);
-      this.generateQRCodeCanvasByURL(baseURL.concat(`/t/topics/${this.topic.topicId}/live`));
+      if (this.topic) this.generateQRCodeCanvasByURL(baseURL.concat(`/t/topics/${this.topic.topicId}/live`));
     });
   }
 
@@ -428,6 +434,7 @@ export class LiveTopicPage implements OnInit, OnDestroy {
   private generateQRCodeCanvasByURL(url: string): Promise<void> {
     return new Promise((resolve, reject): void => {
       const container = document.getElementById('qrCodeContainer');
+      if (!container) return resolve();
       container.innerHTML = '';
       toCanvas(url, { errorCorrectionLevel: 'L' }, (err: Error, canvas: HTMLCanvasElement): void => {
         if (err) return reject(err);
@@ -447,8 +454,8 @@ export class LiveTopicPage implements OnInit, OnDestroy {
     else if (webSocketMessage.action === 'MODIFY') this._messages.webSocketUpdate(message);
     else if (webSocketMessage.action === 'REMOVE') this._messages.webSocketRemoveById(message.messageId);
 
-    if (message.type === MessageTypes.QUESTION) this.filterQuestions();
-    else if (message.type === MessageTypes.APPRECIATION) this.filterAppreciations();
+    if (message.type === MessageTypes.QUESTION) void this.filterQuestions();
+    else if (message.type === MessageTypes.APPRECIATION) void this.filterAppreciations();
   }
 
   trackBy(_: number, message: Message): string {

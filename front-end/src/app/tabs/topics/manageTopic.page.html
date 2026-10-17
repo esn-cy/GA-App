@@ -42,7 +42,7 @@
         <p>{{ 'TOPICS.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone } }}</p>
       </ion-label>
     </ion-list-header>
-    <ion-radio-group [(ngModel)]="publishingOption" (ionBlur)="handleChangeOfPublishingOption()">
+    <ion-radio-group [(ngModel)]="publishingOption" (ionChange)="handleChangeOfPublishingOption()">
       <ion-item *ngFor="let option of PublishingOptions | keyvalue">
         <ion-radio slot="start" [value]="option.value" [disabled]="!editMode"></ion-radio>
         <ion-label>{{ ('TOPICS.PUBLISHING_OPTIONS_.' + option.value) | translate }}</ion-label>
@@ -148,12 +148,12 @@
         [class.fieldHasError]="hasFieldAnError('subject')"
         [class.odd]="odd"
       >
-        <ion-col *ngIf="editMode" [size]="2" [sizeSm]="1">
+        <ion-col *ngIf="editMode" size="2" sizeSm="1">
           <ion-button fill="clear" color="danger" size="small" (click)="removeSubject(subject)">
             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-col>
-        <ion-col [size]="editMode ? 10 : 12" [sizeSm]="editMode ? 5 : 6">
+        <ion-col [size]="editMode ? '10' : '12'" [sizeSm]="editMode ? '5' : '6'">
           <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].type')">
             <ion-label position="stacked">
               {{ 'SUBJECTS.TYPE' | translate }}
@@ -166,7 +166,7 @@
             </ion-select>
           </ion-item>
         </ion-col>
-        <ion-col [size]="12" [sizeSm]="6">
+        <ion-col size="12" sizeSm="6">
           <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].id')">
             <ion-label position="stacked">
               {{ 'SUBJECTS.ID' | translate }}
@@ -175,7 +175,7 @@
             <ion-input [(ngModel)]="subject.id" [disabled]="!editMode"></ion-input>
           </ion-item>
         </ion-col>
-        <ion-col [size]="12">
+        <ion-col size="12">
           <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].name')">
             <ion-label position="stacked">
               {{ 'SUBJECTS.NAME' | translate }}
@@ -185,7 +185,7 @@
           </ion-item>
         </ion-col>
         <ng-container *ngIf="subject.type === SubjectTypes.USER">
-          <ion-col [size]="12">
+          <ion-col size="12">
             <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].avatarURL')">
               <ion-label position="stacked">{{ 'SUBJECTS.AVATAR_URL' | translate }}</ion-label>
               <ion-input [(ngModel)]="subject.avatarURL" [disabled]="!editMode"></ion-input>
@@ -207,7 +207,7 @@
               </ion-button>
             </ion-item>
           </ion-col>
-          <ion-col [size]="6">
+          <ion-col size="6">
             <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].section')">
               <ion-label position="stacked">
                 {{ 'SUBJECTS.SECTION' | translate }}
@@ -217,7 +217,7 @@
             </ion-item>
           </ion-col>
         </ng-container>
-        <ion-col [size]="6" *ngIf="subject.type !== SubjectTypes.COUNTRY">
+        <ion-col size="6" *ngIf="subject.type !== SubjectTypes.COUNTRY">
           <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].country')">
             <ion-label position="stacked">
               {{ 'SUBJECTS.COUNTRY' | translate }}
@@ -226,7 +226,7 @@
             <ion-input [(ngModel)]="subject.country" [disabled]="!editMode"></ion-input>
           </ion-item>
         </ion-col>
-        <ion-col [size]="12">
+        <ion-col size="12">
           <ion-item [class.fieldHasError]="hasFieldAnError('subjects[' + index + '].email')">
             <ion-label position="stacked">{{ 'SUBJECTS.EMAIL_FOR_NOTIFICATIONS' | translate }}</ion-label>
             <ion-input type="email" [(ngModel)]="subject.email" [disabled]="!editMode"></ion-input>
@@ -234,7 +234,7 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-    <ion-item *ngIf="editMode" button (click)="addSubject()">
+    <ion-item *ngIf="editMode" [button]="true" (click)="addSubject()">
       <i>{{ 'TOPICS.TAP_TO_ADD_SUBJECT' | translate }}</i>
     </ion-item>
 

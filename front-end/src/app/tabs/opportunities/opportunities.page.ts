@@ -14,11 +14,11 @@ import { StatisticEntityTypes } from '@models/statistic.model';
   styleUrls: ['opportunities.page.scss']
 })
 export class OpportunitiesPage implements OnInit {
-  opportunities: Opportunity[];
+  opportunities: Opportunity[] | undefined;
 
-  @ViewChild('searchbar') searchbar: IonSearchbar;
+  @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
-  filterByStatus: boolean = null;
+  filterByStatus: boolean | undefined;
 
   sortBy: OpportunitiesSortBy = OpportunitiesSortBy.CREATED_DATE_DESC;
   OpportunitiesSortBy = OpportunitiesSortBy;
@@ -36,7 +36,7 @@ export class OpportunitiesPage implements OnInit {
   }
 
   ionViewDidEnter(): void {
-    this.filter(null, null, true);
+    void this.filter('', undefined, true);
   }
 
   private async loadResources(): Promise<void> {
@@ -44,13 +44,13 @@ export class OpportunitiesPage implements OnInit {
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
-    this.opportunities = null;
+    this.opportunities = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
   async filter(search = '', scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.opportunities?.length)
       startPaginationAfterId = this.opportunities[this.opportunities.length - 1].opportunityId;
 
@@ -59,7 +59,7 @@ export class OpportunitiesPage implements OnInit {
       search,
       status: this.filterByStatus,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 

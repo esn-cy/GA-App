@@ -19,12 +19,12 @@ import { UserRoles } from '@models/user.model';
 })
 export class ManageTopicPage {
   @Input() topicId = 'new-standard';
-  topic: Topic;
+  topic!: Topic;
 
   editMode = UXMode.VIEW;
   UXMode = UXMode;
   errors = new Set<string>();
-  entityBeforeChange: Topic;
+  entityBeforeChange: Topic | undefined;
 
   hasDeadlineForQuestions = false;
   hasDeadlineForAnswers = false;
@@ -32,11 +32,11 @@ export class ManageTopicPage {
   TopicTypes = TopicTypes;
   SubjectTypes = SubjectTypes;
 
-  activeTopics: Topic[];
-  relatedTopics: Topic[];
-  relatedTopicsChecks: Check[];
+  activeTopics: Topic[] = [];
+  relatedTopics: Topic[] = [];
+  relatedTopicsChecks: Check[] = [];
 
-  rolesAbleToInteractChecks: Check[];
+  rolesAbleToInteractChecks: Check[] = [];
 
   publishingOption = PublishingOptions.DRAFT;
   PublishingOptions = PublishingOptions;
@@ -58,7 +58,7 @@ export class ManageTopicPage {
     try {
       await this.loading.show();
 
-      this.activeTopics = await this._topics.getActiveList();
+      this.activeTopics = (await this._topics.getActiveList()) ?? [];
 
       this.rolesAbleToInteractChecks = Object.entries(UserRoles).map(
         role => new Check({ value: role[0], name: this.t._('USER_ROLES.'.concat(role[1])) })
@@ -95,9 +95,9 @@ export class ManageTopicPage {
         this.editMode = UXMode.INSERT;
       }
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -107,11 +107,11 @@ export class ManageTopicPage {
   }
 
   shouldResetDeadlineForQuestions(): void {
-    if (!this.hasDeadlineForQuestions) this.topic.willCloseAt = null;
+    if (!this.hasDeadlineForQuestions) delete this.topic.willCloseAt;
   }
 
   shouldResetDeadlineForAnswers(): void {
-    if (!this.hasDeadlineForAnswers) this.topic.acceptAnswersUntil = null;
+    if (!this.hasDeadlineForAnswers) delete this.topic.acceptAnswersUntil;
   }
 
   addSubject(): void {
@@ -153,11 +153,11 @@ export class ManageTopicPage {
       );
       await this.handleChangesInRelated();
       this.editMode = UXMode.VIEW;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -195,14 +195,14 @@ export class ManageTopicPage {
         await this.loading.show();
         if (open) await this._topics.open(this.topic);
         else await this._topics.close(this.topic);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['topics', this.topic.topicId, this.topic.type === TopicTypes.LIVE ? 'live' : 'standard'], {
           back: true
         });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -211,7 +211,7 @@ export class ManageTopicPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doStatusChange }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async archiveTopic(archive = true): Promise<void> {
@@ -220,14 +220,14 @@ export class ManageTopicPage {
         await this.loading.show();
         if (archive) await this._topics.archive(this.topic);
         else await this._topics.unarchive(this.topic);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['topics', this.topic.topicId, this.topic.type === TopicTypes.LIVE ? 'live' : 'standard'], {
           back: true
         });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -236,7 +236,7 @@ export class ManageTopicPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async deleteTopic(): Promise<void> {
@@ -244,13 +244,13 @@ export class ManageTopicPage {
       try {
         await this.loading.show();
         await this._topics.delete(this.topic);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['topics'], { back: true });
-      } catch (error) {
-        if (error.message === 'Unlink related topics first') this.message.error('TOPICS.CANT_DELETE_IF_LINKED_ERROR');
-        else this.message.error('COMMON.OPERATION_FAILED');
+      } catch (error: any) {
+        if (error?.message === 'Unlink related topics first') await this.message.error('TOPICS.CANT_DELETE_IF_LINKED_ERROR');
+        else await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -260,7 +260,7 @@ export class ManageTopicPage {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async duplicateTopic(): Promise<void> {
@@ -275,12 +275,12 @@ export class ManageTopicPage {
         else delete copy.closedAt;
         delete copy.archivedAt;
         copy.load(await this._topics.insert(copy));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['topics', copy.topicId, 'manage'], { root: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -289,7 +289,7 @@ export class ManageTopicPage {
       { text: this.t._('COMMON.DUPLICATE'), handler: doDuplicate }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   enterEditMode(): void {
@@ -300,7 +300,7 @@ export class ManageTopicPage {
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['topics'], { back: true });
     else {
-      this.topic = this.entityBeforeChange;
+      if (this.entityBeforeChange) this.topic = this.entityBeforeChange;
       this.errors = new Set<string>();
       this.editMode = UXMode.VIEW;
       this.setUIHelpersForComplexFields();
@@ -317,11 +317,11 @@ export class ManageTopicPage {
   }
 
   browseImagesForElementId(elementId: string): void {
-    document.getElementById(elementId).click();
+    document.getElementById(elementId)?.click();
   }
 
-  async uploadImageForSubject(subject: Subject, { target }): Promise<void> {
-    const file = target.files[0];
+  async uploadImageForSubject(subject: Subject, { target }: { target: HTMLInputElement }): Promise<void> {
+    const file = target?.files?.[0];
     if (!file) return;
 
     try {
@@ -329,10 +329,10 @@ export class ManageTopicPage {
       const imageURI = await this._media.uploadImage(file);
       subject.avatarURL = this.app.getImageURLByURI(imageURI);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
       if (target) target.value = '';
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 

@@ -58,7 +58,7 @@ export class ConfigurationsService {
   /**
    * Test the email template.
    */
-  async testEmaiTemplate(template: EmailTemplates): Promise<void> {
+  async testEmailTemplate(template: EmailTemplates): Promise<void> {
     const action = 'TEST_EMAIL_TEMPLATE';
     return await this.api.patchResource('configurations', { body: { action, template } });
   }

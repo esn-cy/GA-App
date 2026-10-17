@@ -17,13 +17,13 @@ import { Topic, TopicTypes } from '@models/topic.model';
   styleUrls: ['archive.page.scss']
 })
 export class ArchivePage implements OnInit {
-  topics: Topic[];
+  topics: Topic[] | undefined;
 
-  categories: TopicCategory[];
-  filterByCategory: string = null;
+  categories: TopicCategory[] | undefined;
+  filterByCategory: string | undefined;
 
-  events: GAEvent[];
-  filterByEvent: string = null;
+  events: GAEvent[] | undefined;
+  filterByEvent: string | undefined;
 
   sortBy: TopicsSortBy = TopicsSortBy.CREATED_DATE_DESC;
   TopicsSortBy = TopicsSortBy;
@@ -49,14 +49,14 @@ export class ArchivePage implements OnInit {
       await this.loading.show();
       await this.filter(true);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async filter(force = false, scrollToNextPage?: IonInfiniteScroll): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.topics?.length) startPaginationAfterId = this.topics[this.topics.length - 1].topicId;
 
     this.topics = await this._topics.getArchivedList({
@@ -64,7 +64,7 @@ export class ArchivePage implements OnInit {
       categoryId: this.filterByCategory,
       eventId: this.filterByEvent,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 

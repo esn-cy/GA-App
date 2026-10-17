@@ -5,7 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { IDEAStorageService, IDEATranslationsService } from '@idea-ionic/common';
 
 import { AppService } from './app.service';
-import { ConfigurationsService } from './tabs/configurations/configurations.service';
+import { ConfigurationsService } from '@tabs/configurations/configurations.service';
 
 import { ServiceLanguages } from '@models/serviceLanguages.enum';
 

@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border" *ngIf="app.isInMobileMode()">
   <ion-toolbar color="ideaToolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="currentQuestion ? selectQuestion(null) : app.goToInTabs(['topics'], { back: true })">
+      <ion-button (click)="currentQuestion ? selectQuestion() : app.goToInTabs(['topics'], { back: true })">
         <ion-icon slot="icon-only" icon="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -14,7 +14,7 @@
   </ion-refresher>
   <ion-grid class="ion-no-padding">
     <ion-row>
-      <ion-col [size]="12" [sizeLg]="6" *ngIf="!app.isInMobileMode() || !currentQuestion">
+      <ion-col size="12" sizeLg="6" *ngIf="!app.isInMobileMode() || !currentQuestion">
         <ion-card color="white" class="topicCard" *ngIf="topic">
           <ion-card-header>
             <ion-card-subtitle>{{ topic.event.name }}</ion-card-subtitle>
@@ -64,7 +64,7 @@
                 class="attachment"
                 *ngFor="let attachment of topic.attachments; let first = first"
                 [class.ion-margin-top]="first"
-                button
+                [button]="true"
                 (click)="downloadAttachment(attachment)"
               >
                 <ion-icon name="attach" slot="start" />
@@ -75,7 +75,7 @@
                 lines="inset"
                 *ngFor="let related of relatedTopics; let first = first"
                 [class.ion-margin-top]="first"
-                button
+                [button]="true"
                 (click)="openTopic(related)"
               >
                 <ion-label>
@@ -116,10 +116,10 @@
               <ion-label>
                 <h2>
                   {{ 'TOPICS.QUESTIONS' | translate }}
-                  <ion-text *ngIf="questions?.length">({{ questions.length }})</ion-text>
+                  <ion-text *ngIf="questions?.length">({{ questions!.length }})</ion-text>
                 </h2>
               </ion-label>
-              <ion-button size="small" color="medium" (click)="filterQuestions(searchbar?.value, null, true)">
+              <ion-button size="small" color="medium" (click)="filterQuestions(searchbar?.value, undefined, true)">
                 <ion-icon name="refresh" slot="icon-only"></ion-icon>
               </ion-button>
               <ion-button
@@ -142,15 +142,15 @@
               [current]="currentQuestion === question"
               (select)="selectQuestion(question)"
             ></app-question-summary>
-            <ion-infinite-scroll (ionInfinite)="filterQuestions(searchbar.value, $event.target)">
+            <ion-infinite-scroll (ionInfinite)="filterQuestions(searchbar.value ?? undefined, $event.target)">
               <ion-infinite-scroll-content></ion-infinite-scroll-content>
             </ion-infinite-scroll>
           </ion-list>
         </ng-container>
       </ion-col>
-      <ion-col [size]="12" [sizeLg]="6" *ngIf="currentQuestion">
+      <ion-col size="12" sizeLg="6" *ngIf="currentQuestion">
         <p *ngIf="!app.isInMobileMode()">
-          <ion-button color="medium" fill="clear" (click)="selectQuestion(null)">
+          <ion-button color="medium" fill="clear" (click)="selectQuestion()">
             <ion-icon slot="start" name="close"></ion-icon>
             {{ 'COMMON.CLOSE' | translate }}
           </ion-button>
@@ -161,7 +161,7 @@
           (delete)="removeCurrentQuestionFromList()"
         ></app-question>
       </ion-col>
-      <ion-col [size]="12" [sizeLg]="6" *ngIf="newQuestion">
+      <ion-col size="12" sizeLg="6" *ngIf="newQuestion">
         <ion-list id="newQuestion" class="aList" [class.ion-padding]="!app.isInMobileMode()">
           <ion-list-header [class.fieldHasError]="hasFieldAnError('summary')">
             <ion-label>

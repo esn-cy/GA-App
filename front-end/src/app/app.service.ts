@@ -37,8 +37,8 @@ export class AppService {
 
   private darkMode: boolean;
 
-  user: User;
-  configurations: Configurations;
+  user!: User;
+  configurations!: Configurations;
 
   constructor(
     private platform: Platform,
@@ -70,7 +70,7 @@ export class AppService {
   async getTokenId(): Promise<void> {
     const message = this.api.authToken as string;
     const alert = await this.alertCtrl.create({ message, buttons: ['Thanks 🙌'], cssClass: 'selectable' });
-    alert.present();
+    await alert.present();
   }
 
   /**
@@ -81,7 +81,7 @@ export class AppService {
   }
 
   /**
-   * Whether the current color scheme preference is set to dark.
+   * Whether the current colour scheme preference is set to dark.
    */
   isInDarkMode(): boolean {
     return this.darkMode;
@@ -98,9 +98,9 @@ export class AppService {
    * Navigate to a page by its path.
    */
   goTo(path: string[], options: { back?: boolean; root?: boolean; queryParams?: Params } = {}): void {
-    if (options.back) this.navCtrl.navigateBack(path, options);
-    else if (options.root) this.navCtrl.navigateRoot(path, options);
-    else this.navCtrl.navigateForward(path, options);
+    if (options.back) void this.navCtrl.navigateBack(path, options);
+    else if (options.root) void this.navCtrl.navigateRoot(path, options);
+    else void this.navCtrl.navigateForward(path, options);
   }
 
   /**
@@ -114,11 +114,11 @@ export class AppService {
    * Close the current page and navigate back, optionally displaying an error message.
    */
   closePage(errorMessage?: string, pathBack?: string[]): void {
-    if (errorMessage) this.message.error(errorMessage);
+    if (errorMessage) void this.message.error(errorMessage);
     try {
       this.navCtrl.back();
     } catch (_) {
-      this.navCtrl.navigateBack(pathBack || []);
+      void this.navCtrl.navigateBack(pathBack || []);
     }
   }
 
@@ -158,7 +158,7 @@ export class AppService {
     ];
 
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   /**
@@ -178,7 +178,7 @@ export class AppService {
     ];
 
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   /**

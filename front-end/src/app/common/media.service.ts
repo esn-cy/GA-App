@@ -17,4 +17,4 @@ export class MediaService {
 }
 
 const sleepForNumSeconds = (numSeconds = 1): Promise<void> =>
-  new Promise(resolve => setTimeout((): void => resolve(null), 1000 * numSeconds));
+  new Promise(resolve => setTimeout((): void => resolve(), 1000 * numSeconds));

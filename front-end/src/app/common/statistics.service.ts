@@ -20,7 +20,7 @@ export class StatisticsService {
     entityId?: string;
   }): Promise<Statistic> {
     const params: Record<string, string> = {};
-    for (const attr in options) if (options[attr]) params[attr] = options[attr];
+    for (const [key, value] of Object.entries(options)) if (value) params[key] = value;
     return await this.api.getResource('statistics', { params });
   }
 

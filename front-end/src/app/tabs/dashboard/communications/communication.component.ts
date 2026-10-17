@@ -13,16 +13,16 @@ import { Communication } from '@models/communication.model';
   selector: 'app-communication',
   template: `
     <ion-card [color]="color" *ngIf="!communication">
-      <ion-skeleton-text animated style="height: 180px"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="height: 180px"></ion-skeleton-text>
       <ion-card-header>
         <ion-card-subtitle>
-          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 30%"></ion-skeleton-text>
         </ion-card-subtitle>
         <ion-card-title>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text>
         </ion-card-title>
         <ion-card-subtitle>
-          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
         </ion-card-subtitle>
       </ion-card-header>
     </ion-card>
@@ -69,9 +69,9 @@ export class CommunicationComponent {
   /**
    * The communication to show; if not set, shows a skeleton instead.
    */
-  @Input() communication: Communication;
+  @Input() communication: Communication | undefined;
   /**
-   * The color for the component.
+   * The colour for the component.
    */
   @Input() color = 'white';
   /**

@@ -71,9 +71,9 @@ export class UserBadgeComponent implements OnInit {
   /**
    * The user's badge to show.
    */
-  @Input() userBadge: UserBadge;
+  @Input({ required: true }) userBadge!: UserBadge;
 
-  badge: Badge;
+  badge: Badge | undefined;
 
   private _popover = inject(PopoverController);
   private _t = inject(IDEATranslationsService);
@@ -94,6 +94,6 @@ export class UserBadgeComponent implements OnInit {
   }
 
   close(): void {
-    this._popover.dismiss();
+    void this._popover.dismiss();
   }
 }

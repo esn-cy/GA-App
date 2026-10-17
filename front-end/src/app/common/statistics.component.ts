@@ -29,11 +29,11 @@ export class StatisticsButtonComponent {
   /**
    * The entity type for which to display the statistics.
    */
-  @Input() entityType: StatisticEntityTypes;
+  @Input({ required: true }) entityType!: StatisticEntityTypes;
   /**
    * The optional entity ID for which to display the statistics.
    */
-  @Input() entityId: string = null;
+  @Input() entityId: string | undefined;
   /**
    * The period to consider for the statistics data to acquire and display.
    */
@@ -45,7 +45,7 @@ export class StatisticsButtonComponent {
   /**
    * Whether to group the statistic per ESN country.
    */
-  @Input() groupBy: 'country' | 'section' | null = null;
+  @Input() groupBy: 'country' | 'section' | undefined;
   /**
    * The type of chart to display.
    */
@@ -53,9 +53,9 @@ export class StatisticsButtonComponent {
   /**
    * An optional title to show
    */
-  @Input() title: string = null;
+  @Input() title: string | undefined;
   /**
-   * The color of the button.
+   * The colour of the button.
    */
   @Input() color: string = 'ESNpink';
 
@@ -74,7 +74,7 @@ export class StatisticsButtonComponent {
     };
     const cssClass = 'modalFullScreen';
     const popover = await this.modalCtrl.create({ component: StatisticsComponent, componentProps, cssClass });
-    popover.present();
+    await popover.present();
   }
 }
 
@@ -84,22 +84,22 @@ export class StatisticsButtonComponent {
   styleUrls: ['statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
-  @Input({ required: true }) entityType: StatisticEntityTypes;
-  @Input({ required: true }) entityId: string | null;
-  @Input({ required: true }) period: StatisticPeriods;
-  @Input({ required: true }) granularity: StatisticGranularities;
-  @Input({ required: true }) groupBy: 'country' | 'section' | null;
-  @Input({ required: true }) chartType: 'bar' | 'line';
-  @Input({ required: true }) title: string | null;
+  @Input({ required: true }) entityType!: StatisticEntityTypes;
+  @Input() entityId: string | undefined;
+  @Input({ required: true }) period!: StatisticPeriods;
+  @Input({ required: true }) granularity!: StatisticGranularities;
+  @Input() groupBy: 'country' | 'section' | undefined;
+  @Input({ required: true }) chartType!: 'bar' | 'line';
+  @Input() title: string | undefined;
 
-  statistic: Statistic;
+  statistic: Statistic | undefined;
 
   GranularitiesList = Object.keys(StatisticGranularities);
   Granularities = StatisticGranularities;
   Periods = StatisticPeriods;
   PeriodsList = Object.keys(StatisticPeriods).filter(x => isNaN(Number(x)));
 
-  chart: Chart;
+  chart: Chart | undefined;
 
   constructor(
     private modalCtrl: ModalController,
@@ -125,14 +125,15 @@ export class StatisticsComponent implements OnInit {
         entityId: this.entityId
       });
     } catch (error) {
-      this.message.error('COMMON.SOMETHING_WENT_WRONG');
+      await this.message.error('COMMON.SOMETHING_WENT_WRONG');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
     this.buildChart();
   }
 
   buildChart(): void {
+    if (!this.statistic) return;
     this.chart?.destroy();
 
     const datasets: { label: string; data: number[] }[] = [];
@@ -157,9 +158,11 @@ export class StatisticsComponent implements OnInit {
         datasets.push({ label: section, data })
       );
     } else {
-      const data = [];
+      const data: number[] = [];
       Object.values(this.statistic.byCountry).forEach(valuesOfCountry =>
-        valuesOfCountry.forEach((value, index): void => (data[index] = (data[index] ?? 0) + value))
+        valuesOfCountry.forEach((value, index): void => {
+          data[index] = (data[index] ?? 0) + value;
+        })
       );
       datasets.push({ label: this.t._('STATISTICS.ALL_USERS'), data });
     }
@@ -180,12 +183,12 @@ export class StatisticsComponent implements OnInit {
     });
   }
 
-  getFirstDateOfStatistic(): Date {
-    return this.statistic.timePoints.length ? new Date(this.statistic.timePoints[0].slice(0, 10)) : null;
+  getFirstDateOfStatistic(): Date | undefined {
+    return this.statistic?.timePoints?.length ? new Date(this.statistic.timePoints[0].slice(0, 10)) : undefined;
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }
 

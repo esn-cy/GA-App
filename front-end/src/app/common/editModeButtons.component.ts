@@ -19,7 +19,7 @@ export class EditModeButtonsComponent {
   /**
    * A title to show.
    */
-  @Input() title: string;
+  @Input() title: string | undefined;
   /**
    * Trigger for entering in edit mode.
    */

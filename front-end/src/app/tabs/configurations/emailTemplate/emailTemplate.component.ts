@@ -17,12 +17,12 @@ export class EmailTemplateComponent implements OnInit {
   /**
    * The email template to manage.
    */
-  @Input() template: EmailTemplates;
+  @Input({ required: true }) template!: EmailTemplates;
 
-  subject: string;
-  content: string;
+  subject: string | undefined;
+  content: string | undefined;
 
-  @Input() variables: { code: string; description: string }[];
+  variables: { code: string; description: string }[] = [];
 
   errors: Set<string> = new Set();
 
@@ -57,16 +57,16 @@ export class EmailTemplateComponent implements OnInit {
     this.errors = new Set();
     if (isEmpty(this.subject)) this.errors.add('subject');
     if (isEmpty(this.content)) this.errors.add('content');
-    if (this.errors.size) return this.message.warning('COMMON.FORM_HAS_ERROR_TO_CHECK');
+    if (this.errors.size || !this.subject || !this.content) return this.message.warning('COMMON.FORM_HAS_ERROR_TO_CHECK');
     try {
       await this.loading.show();
       await this._configurations.setEmailTemplate(this.template, this.subject, this.content);
-      this.message.success('COMMON.OPERATION_COMPLETED');
-      this.modalCtrl.dismiss();
+      await this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.modalCtrl.dismiss();
     } catch (error) {
-      this.message.error('COMMON.SOMETHING_WENT_WRONG');
+      await this.message.error('COMMON.SOMETHING_WENT_WRONG');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -80,7 +80,7 @@ export class EmailTemplateComponent implements OnInit {
     if (!file) return this.message.error('COMMON.SOMETHING_WENT_WRONG');
     const fileReader = new FileReader();
     fileReader.onerror = (): Promise<void> => this.message.error('COMMON.SOMETHING_WENT_WRONG');
-    fileReader.onload = event => (this.content = String(event.target.result));
+    fileReader.onload = event => (this.content = String(event.target?.result ?? ''));
     fileReader.readAsText(file, 'utf-8');
   }
 
@@ -89,12 +89,12 @@ export class EmailTemplateComponent implements OnInit {
       try {
         await this.loading.show();
         await this._configurations.resetEmailTemplate(this.template);
-        this.message.success('COMMON.OPERATION_COMPLETED');
-        this.modalCtrl.dismiss();
+        await this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.modalCtrl.dismiss();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -104,7 +104,7 @@ export class EmailTemplateComponent implements OnInit {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doReset }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async downloadTemplate(): Promise<void> {
@@ -117,9 +117,10 @@ export class EmailTemplateComponent implements OnInit {
       await this.loading.show();
       return await this._configurations.getEmailTemplate(this.template);
     } catch (error) {
-      this.message.error('COMMON.SOMETHING_WENT_WRONG');
+      await this.message.error('COMMON.SOMETHING_WENT_WRONG');
+      throw error;
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -127,12 +128,12 @@ export class EmailTemplateComponent implements OnInit {
     const doSend = async (): Promise<void> => {
       try {
         await this.loading.show();
-        await this._configurations.testEmaiTemplate(this.template);
-        this.message.success('EMAIL_TEMPLATE.EMAIL_SENT');
+        await this._configurations.testEmailTemplate(this.template);
+        await this.message.success('EMAIL_TEMPLATE.EMAIL_SENT');
       } catch (error) {
-        this.message.error('EMAIL_TEMPLATE.BAD_TEMPLATE');
+        await this.message.error('EMAIL_TEMPLATE.BAD_TEMPLATE');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -144,10 +145,10 @@ export class EmailTemplateComponent implements OnInit {
     ];
 
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }

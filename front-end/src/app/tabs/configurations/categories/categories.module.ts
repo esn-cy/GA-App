@@ -8,7 +8,7 @@ import { CategoriesRoutingModule } from './categories.routing.module';
 import { CategoriesPage } from './categories.page';
 import { CategoryPage } from './category.page';
 
-import { EditModeButtonsModule } from 'src/app/common/editModeButtons.module';
+import { EditModeButtonsModule } from '@common/editModeButtons.module';
 
 @NgModule({
   imports: [

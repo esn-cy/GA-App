@@ -8,7 +8,7 @@
     (save)="save()"
   />
   <ion-toolbar color="ideaToolbar" *ngIf="votingSession">
-    <ion-segment scrollable="true" [(ngModel)]="pageSection" (ionChange)="handleChangePageSection()">
+    <ion-segment [scrollable]="true" [(ngModel)]="pageSection" (ionChange)="handleChangePageSection()">
       <ion-segment-button [value]="PageSections.GENERAL">
         <ion-label>{{ 'VOTING.GENERAL' | translate }}</ion-label>
       </ion-segment-button>
@@ -76,13 +76,13 @@
           {{ 'VOTING.TYPE' | translate }}
           <ion-text class="obligatoryDot"></ion-text>
         </ion-label>
-        <ion-input readonly>{{ ('VOTING.TYPES.' + votingSession.type) | translate }}</ion-input>
+        <ion-input [readonly]="true">{{ ('VOTING.TYPES.' + votingSession.type) | translate }}</ion-input>
       </ion-item>
       <ion-item [class.fieldHasError]="hasFieldAnError('isWeighted')">
         <ion-checkbox
           slot="end"
           [(ngModel)]="votingSession.isWeighted"
-          [disabled]="!editMode || votingSession.sessionId"
+          [disabled]="!editMode"
         />
         <ion-label>
           {{ 'VOTING.IS_WEIGHTED' | translate }}
@@ -96,7 +96,7 @@
           <p>{{ 'VOTING.DATES_IN_DEFAULT_TIMEZONE' | translate: { timezone: app.configurations.timezone } }}</p>
         </ion-label>
       </ion-list-header>
-      <ion-radio-group [(ngModel)]="publishingOption" (ionBlur)="handleChangeOfPublishingOption()">
+      <ion-radio-group [(ngModel)]="publishingOption" (ionChange)="handleChangeOfPublishingOption()">
         <ion-item *ngFor="let option of PublishingOptions | keyvalue">
           <ion-radio slot="start" [value]="option.value" [disabled]="!editMode"></ion-radio>
           <ion-label>{{ ('VOTING.PUBLISHING_OPTIONS_.' + option.value) | translate }}</ion-label>
@@ -520,7 +520,7 @@
                 <idea-select
                   lines="none"
                   [data]="timezones"
-                  [description]="extendDurationTimezone"
+                  [description]="extendDurationTimezone ?? ''"
                   [label]="'VOTING.TIMEZONE' | translate"
                   [hideClearButton]="true"
                   [class.fieldHasError]="hasFieldAnError('extendDurationTimezone')"
@@ -533,7 +533,7 @@
                 {{ 'VOTING.EXTEND_DURATION' | translate }}
                 <ion-icon slot="end" icon="play-forward" />
               </ion-button>
-              <ion-button disabled color="dark" fill="clear">{{ 'COMMON.OR' | translate }}</ion-button>
+              <ion-button [disabled]="true" color="dark" fill="clear">{{ 'COMMON.OR' | translate }}</ion-button>
               <ion-button color="danger" fill="clear" (click)="stopSessionPrematurely()">
                 {{ 'VOTING.STOP_PREMATURELY' | translate }}
                 <ion-icon slot="end" icon="stop" />
@@ -604,7 +604,7 @@
         <ion-accordion-group #immediateAccordion class="immediateBallotsGroup">
           <ion-accordion
             *ngFor="let ballot of votingSession.ballots; let bIndex = index; let bLast = last"
-            [value]="bIndex"
+            [value]="bIndex.toString()"
           >
             <ion-item slot="header">
               <ion-label class="ion-text-wrap">

@@ -8,7 +8,7 @@ import { EventsRoutingModule } from './events.routing.module';
 import { EventsPage } from './events.page';
 import { EventPage } from './event.page';
 
-import { EditModeButtonsModule } from 'src/app/common/editModeButtons.module';
+import { EditModeButtonsModule } from '@common/editModeButtons.module';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, EventsRoutingModule, EditModeButtonsModule],

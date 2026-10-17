@@ -20,7 +20,7 @@ import { Badge } from '@models/badge.model';
   styleUrls: ['configurations.page.scss']
 })
 export class ConfigurationsPage implements OnInit {
-  configurations: Configurations;
+  configurations: Configurations | undefined;
 
   pageSection = PageSections.CONTENTS;
   PageSections = PageSections;
@@ -30,9 +30,9 @@ export class ConfigurationsPage implements OnInit {
 
   timezones = (Intl as any).supportedValuesOf('timeZone');
 
-  badges: Badge[];
+  badges: Badge[] | undefined;
 
-  @ViewChild('badgesSearchbar') badgesSearchbar: IonSearchbar;
+  @ViewChild('badgesSearchbar') badgesSearchbar: IonSearchbar | undefined;
 
   constructor(
     private modalCtrl: ModalController,
@@ -48,28 +48,31 @@ export class ConfigurationsPage implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.configurations = await this._configurations.get();
-    this.filterBadges(null, null, true);
+    await this.filterBadges(undefined, undefined, true);
   }
 
   addAdministrator(): void {
-    this.addUserToList('administratorsIds', 'ADD_ADMINISTRATOR');
+    void this.addUserToList('administratorsIds', 'ADD_ADMINISTRATOR');
   }
 
   addOpportunitiesManager(): void {
-    this.addUserToList('opportunitiesManagersIds', 'ADD_OPPORTUNITIES_MANAGER');
+    void this.addUserToList('opportunitiesManagersIds', 'ADD_OPPORTUNITIES_MANAGER');
   }
 
   addDashboardManager(): void {
-    this.addUserToList('dashboardManagersIds', 'ADD_DASHBOARD_MANAGER');
+    void this.addUserToList('dashboardManagersIds', 'ADD_DASHBOARD_MANAGER');
   }
 
   addBannedUser(): void {
-    this.addUserToList('bannedUsersIds', 'ADD_BANNED_USER');
+    void this.addUserToList('bannedUsersIds', 'ADD_BANNED_USER');
   }
 
-  private async addUserToList(listKey: string, translationKey: string): Promise<void> {
-    const doAdd = async ({ userId }): Promise<void> => {
-      if (!userId) return;
+  private async addUserToList(
+    listKey: 'administratorsIds' | 'opportunitiesManagersIds' | 'dashboardManagersIds' | 'bannedUsersIds',
+    translationKey: string
+  ): Promise<void> {
+    const doAdd = async ({ userId }: { userId: string }): Promise<void> => {
+      if (!userId || !this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
       newConfigurations[listKey].push(userId);
       await this.updateConfigurations(newConfigurations);
@@ -88,23 +91,27 @@ export class ConfigurationsPage implements OnInit {
   }
 
   removeAdministratorById(userId: string): void {
-    this.removeUserFromListById(userId, 'administratorsIds');
+    void this.removeUserFromListById(userId, 'administratorsIds');
   }
 
   removeOpportunitiesManagerById(userId: string): void {
-    this.removeUserFromListById(userId, 'opportunitiesManagersIds');
+    void this.removeUserFromListById(userId, 'opportunitiesManagersIds');
   }
 
   removeDashboardManagerById(userId: string): void {
-    this.removeUserFromListById(userId, 'dashboardManagersIds');
+    void this.removeUserFromListById(userId, 'dashboardManagersIds');
   }
 
   removeBannedUserById(userId: string): void {
-    this.removeUserFromListById(userId, 'bannedUsersIds');
+    void this.removeUserFromListById(userId, 'bannedUsersIds');
   }
 
-  private async removeUserFromListById(userId: string, listKey: string): Promise<void> {
+  private async removeUserFromListById(
+    userId: string,
+    listKey: 'administratorsIds' | 'opportunitiesManagersIds' | 'dashboardManagersIds' | 'bannedUsersIds'
+  ): Promise<void> {
     const doRemove = async (): Promise<void> => {
+      if (!this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
       newConfigurations[listKey].splice(newConfigurations[listKey].indexOf(userId), 1);
       await this.updateConfigurations(newConfigurations);
@@ -116,19 +123,21 @@ export class ConfigurationsPage implements OnInit {
       { text: this.t._('COMMON.REMOVE'), role: 'destructive', handler: doRemove }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
-  async updateConfigurations(newConfigurations: Configurations = this.configurations): Promise<void> {
+  async updateConfigurations(newConfigurations?: Configurations): Promise<void> {
+    const toUpdate = newConfigurations ?? this.configurations;
+    if (!toUpdate) return;
     try {
       await this.loading.show();
-      this.configurations = await this._configurations.update(newConfigurations);
+      this.configurations = await this._configurations.update(toUpdate);
       this.app.configurations.load(this.configurations);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -140,9 +149,9 @@ export class ConfigurationsPage implements OnInit {
 
   async changeAppTitle(): Promise<void> {
     const header = this.t._('CONFIGURATIONS.APP_TITLE');
-    const inputs: any[] = [{ name: 'appTitle', type: 'text', value: this.configurations.appTitle }];
-    const doChange = async ({ appTitle }): Promise<void> => {
-      if (!appTitle) return;
+    const inputs: any[] = [{ name: 'appTitle', type: 'text', value: this.configurations?.appTitle }];
+    const doChange = async ({ appTitle }: { appTitle: string }): Promise<void> => {
+      if (!appTitle || !this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
       newConfigurations.appTitle = appTitle;
       await this.updateConfigurations(newConfigurations);
@@ -157,9 +166,9 @@ export class ConfigurationsPage implements OnInit {
 
   async changeAppSubtitle(): Promise<void> {
     const header = this.t._('CONFIGURATIONS.APP_SUBTITLE');
-    const inputs: any[] = [{ name: 'appSubtitle', type: 'text', value: this.configurations.appSubtitle }];
-    const doChange = async ({ appSubtitle }): Promise<void> => {
-      if (!appSubtitle) return;
+    const inputs: any[] = [{ name: 'appSubtitle', type: 'text', value: this.configurations?.appSubtitle }];
+    const doChange = async ({ appSubtitle }: { appSubtitle: string }): Promise<void> => {
+      if (!appSubtitle || !this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
       newConfigurations.appSubtitle = appSubtitle;
       await this.updateConfigurations(newConfigurations);
@@ -174,9 +183,9 @@ export class ConfigurationsPage implements OnInit {
 
   async changeSupportEmail(): Promise<void> {
     const header = this.t._('CONFIGURATIONS.SUPPORT_EMAIL');
-    const inputs: any[] = [{ name: 'supportEmail', type: 'text', value: this.configurations.supportEmail }];
-    const doChange = async ({ supportEmail }): Promise<void> => {
-      if (!supportEmail) return;
+    const inputs: any[] = [{ name: 'supportEmail', type: 'text', value: this.configurations?.supportEmail }];
+    const doChange = async ({ supportEmail }: { supportEmail: string }): Promise<void> => {
+      if (!supportEmail || !this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
       newConfigurations.supportEmail = supportEmail;
       await this.updateConfigurations(newConfigurations);
@@ -189,9 +198,9 @@ export class ConfigurationsPage implements OnInit {
     await alert.present();
   }
 
-  async uploadAppLogo({ target }, darkMode = false): Promise<void> {
-    const file = target.files[0];
-    if (!file) return;
+  async uploadAppLogo({ target }: { target: HTMLInputElement }, darkMode = false): Promise<void> {
+    const file = target.files ? target.files[0] : undefined;
+    if (!file || !this.configurations) return;
 
     try {
       await this.loading.show();
@@ -199,20 +208,21 @@ export class ConfigurationsPage implements OnInit {
       const newConfigurations = new Configurations(this.configurations);
       if (darkMode) newConfigurations.appLogoURLDarkMode = this.app.getImageURLByURI(imageURI);
       else newConfigurations.appLogoURL = this.app.getImageURLByURI(imageURI);
-      this.updateConfigurations(newConfigurations);
+      await this.updateConfigurations(newConfigurations);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
       if (target) target.value = '';
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async resetAppLogo(darkMode = false): Promise<void> {
     const doReset = async (): Promise<void> => {
+      if (!this.configurations) return;
       const newConfigurations = new Configurations(this.configurations);
-      if (darkMode) newConfigurations.appLogoURLDarkMode = null;
-      else newConfigurations.appLogoURL = null;
+      if (darkMode) delete newConfigurations.appLogoURLDarkMode;
+      else delete newConfigurations.appLogoURL;
       await this.updateConfigurations(newConfigurations);
     };
     const header = this.t._('CONFIGURATIONS.RESET_APP_LOGO');
@@ -222,38 +232,47 @@ export class ConfigurationsPage implements OnInit {
       { text: this.t._('COMMON.RESET'), role: 'destructive', handler: doReset }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async setVisibilityQATopicsFeature(show: boolean): Promise<void> {
+    if (!this.configurations) return;
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideQATopics = !show;
     await this.updateConfigurations(newConfigurations);
   }
 
   async setVisibilityOpportunitiesFeature(show: boolean): Promise<void> {
+    if (!this.configurations) return;
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideOpportunities = !show;
     await this.updateConfigurations(newConfigurations);
   }
 
   async setVisibilityVotingFeature(show: boolean): Promise<void> {
+    if (!this.configurations) return;
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideVoting = !show;
     await this.updateConfigurations(newConfigurations);
   }
 
   async setVisibilityBadgesFeature(show: boolean): Promise<void> {
+    if (!this.configurations) return;
     const newConfigurations = new Configurations(this.configurations);
     newConfigurations.hideBadges = !show;
     await this.updateConfigurations(newConfigurations);
   }
 
   async filterBadges(search = '', scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.badges?.length) startPaginationAfterId = this.badges[this.badges.length - 1].badgeId;
 
-    this.badges = await this._badges.getList({ force, search, withPagination: true, startPaginationAfterId });
+    this.badges = await this._badges.getList({
+      force: force,
+      search: search,
+      withPagination: true,
+      startPaginationAfterId: startPaginationAfterId
+    });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }
@@ -272,10 +291,10 @@ export class ConfigurationsPage implements OnInit {
     const modal = await this.modalCtrl.create({ component: ManageBadgesComponent, componentProps });
     modal.onDidDismiss().then(({ data }): void => {
       if (!data) return;
-      this.badges = null;
-      this.filterBadges(this.badgesSearchbar?.value, null, true);
+      this.badges = undefined;
+      this.filterBadges(this.badgesSearchbar?.value ?? '', undefined, true);
     });
-    modal.present();
+    await modal.present();
   }
 }
 

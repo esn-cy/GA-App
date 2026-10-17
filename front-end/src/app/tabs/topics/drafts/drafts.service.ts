@@ -21,7 +21,7 @@ export class UserDraftsService {
   /**
    * Get the user's drafted answer for a question.
    */
-  async getAnswerOfQuestion(question: Question): Promise<UserDraft> {
+  async getAnswerOfQuestion(question: Question): Promise<UserDraft | undefined> {
     const params = { questionId: question.questionId };
     const drafts: UserDraft[] = await this.api.getResource('drafts', { params });
     return drafts.map(x => new UserDraft(x))[0];

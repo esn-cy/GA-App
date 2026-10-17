@@ -14,11 +14,11 @@
   </ion-refresher>
   <ion-grid class="ion-no-padding" *ngIf="topic">
     <ion-row>
-      <ion-col [size]="12" [sizeLg]="6" *ngIf="!fullScreen">
+      <ion-col size="12" sizeLg="6" *ngIf="!fullScreen">
         <ion-card color="white" class="topicCard">
           <ion-card-header>
             <ion-row class="ion-align-items-center">
-              <ion-col [size]="10" [sizeMd]="9">
+              <ion-col size="10" sizeMd="9">
                 <ion-card-subtitle>{{ topic.event.name }}</ion-card-subtitle>
                 <ion-card-title>{{ topic.name }}</ion-card-title>
                 <p class="badges">
@@ -30,7 +30,7 @@
                   <ion-badge color="warning" *ngIf="topic.isArchived()">{{ 'COMMON.ARCHIVED' | translate }}</ion-badge>
                 </p>
               </ion-col>
-              <ion-col class="ion-text-right" [size]="2" [sizeMd]="3">
+              <ion-col class="ion-text-right" size="2" sizeMd="3">
                 <ion-button color="medium" size="small" fill="clear" (click)="showTopicDetails = !showTopicDetails">
                   <ng-container *ngIf="!app.isInMobileMode()">{{ 'TOPICS.DETAILS' | translate }}</ng-container>
                   <ion-icon
@@ -67,7 +67,7 @@
                 class="attachment"
                 *ngFor="let attachment of topic.attachments; let first = first"
                 [class.ion-margin-top]="first"
-                button
+                [button]="true"
                 (click)="downloadAttachment(attachment)"
               >
                 <ion-icon name="attach" slot="start" />
@@ -78,7 +78,7 @@
                 lines="inset"
                 *ngFor="let related of relatedTopics; let first = first"
                 [class.ion-margin-top]="first"
-                button
+                [button]="true"
                 (click)="openTopic(related)"
               >
                 <ion-label>
@@ -183,8 +183,8 @@
         </ng-container>
       </ion-col>
       <ion-col
-        [size]="12"
-        [sizeLg]="fullScreen ? 12 : 6"
+        size="12"
+        [sizeLg]="fullScreen ? '12' : '6'"
         [style.background-color]="app.isInMobileMode() ? 'var(--ion-color-light)' : 'none'"
       >
         <ion-toolbar *ngIf="!fullScreen" [color]="app.isInMobileMode() ? 'light' : 'transparent'">
@@ -228,7 +228,7 @@
                     </ion-select>
                   </ion-item>
                 </ion-col>
-                <ion-col [size]="2" [sizeSm]="1">
+                <ion-col size="2" sizeSm="1">
                   <ion-item color="transparent" lines="none">
                     <ion-label><b>{{ questions?.length }}</b></ion-label>
                   </ion-item>
@@ -236,7 +236,7 @@
               </ion-row>
               <ion-item *ngIf="!questions">
                 <ion-label>
-                  <ion-skeleton-text animated></ion-skeleton-text>
+                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
                 </ion-label>
               </ion-item>
               <ion-item class="noElements" *ngIf="questions && !questions.length">
@@ -250,7 +250,7 @@
               >
                 <ion-card-header>
                   <ion-row class="ion-align-items-center">
-                    <ion-col [size]="12" [sizeLg]="9">
+                    <ion-col size="12" sizeLg="9">
                       <ion-card-title>
                         <ion-icon icon="checkmark-done" class="ion-padding-end" *ngIf="question.completedAt" />
                         <ion-text *ngIf="question.creator">
@@ -264,8 +264,8 @@
                     <ion-col
                       *ngIf="!topic.isArchived()"
                       [class.ion-text-right]="!app.isInMobileMode()"
-                      [size]="12"
-                      [sizeLg]="3"
+                      size="12"
+                      sizeLg="3"
                     >
                       <ion-button
                         fill="clear"
@@ -338,7 +338,7 @@
                     </ion-select>
                   </ion-item>
                 </ion-col>
-                <ion-col [size]="2" [sizeSm]="1">
+                <ion-col size="2" sizeSm="1">
                   <ion-item color="transparent" lines="none">
                     <ion-label><b>{{ appreciations?.length }}</b></ion-label>
                   </ion-item>
@@ -346,7 +346,7 @@
               </ion-row>
               <ion-item *ngIf="!appreciations">
                 <ion-label>
-                  <ion-skeleton-text animated></ion-skeleton-text>
+                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
                 </ion-label>
               </ion-item>
               <ion-item class="noElements" *ngIf="appreciations && !appreciations.length">
@@ -360,7 +360,7 @@
               >
                 <ion-card-header>
                   <ion-row class="ion-align-items-center">
-                    <ion-col [size]="12" [sizeLg]="9">
+                    <ion-col size="12" sizeLg="9">
                       <ion-card-title>
                         <ion-icon icon="checkmark-done" class="ion-padding-end" *ngIf="appreciation.completedAt" />
                         <ion-text *ngIf="appreciation.creator">
@@ -374,8 +374,8 @@
                     <ion-col
                       *ngIf="!topic.isArchived()"
                       [class.ion-text-right]="!app.isInMobileMode()"
-                      [size]="12"
-                      [sizeLg]="3"
+                      size="12"
+                      sizeLg="3"
                     >
                       <ion-button
                         fill="clear"
@@ -410,7 +410,7 @@
                 <ion-card-content>{{ appreciation.text }}</ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col *ngIf="fullScreen" [size]="2">
+            <ion-col *ngIf="fullScreen" size="2">
               <div id="qrCodeContainer"></div>
             </ion-col>
           </ion-row>
@@ -455,7 +455,7 @@
   <ion-fab-button
     color="medium"
     size="small"
-    *ngIf="fullScreen && topic.appreciations"
+    *ngIf="fullScreen && topic?.appreciations"
     [title]="'MESSAGES.TOGGLE_QUESTIONS' | translate"
     (click)="hideQuestions = !hideQuestions"
   >
@@ -464,7 +464,7 @@
   <ion-fab-button
     color="medium"
     size="small"
-    *ngIf="fullScreen && topic.appreciations"
+    *ngIf="fullScreen && topic?.appreciations"
     [title]="'MESSAGES.TOGGLE_APPRECIATIONS' | translate"
     (click)="hideAppreciations = !hideAppreciations"
   >

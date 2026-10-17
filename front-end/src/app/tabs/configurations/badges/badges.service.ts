@@ -10,7 +10,7 @@ const BADGE_NOT_FOUND_URL = 'assets/imgs/badges/NOT_FOUND.svg';
 
 @Injectable({ providedIn: 'root' })
 export class BadgesService {
-  private badges: Badge[];
+  private badges: Badge[] | undefined;
 
   /**
    * The number of badges to consider for the pagination, when active.
@@ -42,9 +42,9 @@ export class BadgesService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Badge[]> {
+  ): Promise<Badge[] | undefined> {
     if (!this.badges || options.force) await this.loadList();
-    if (!this.badges) return null;
+    if (!this.badges) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
@@ -52,7 +52,7 @@ export class BadgesService {
 
     if (options.search)
       filteredList = filteredList.filter(x =>
-        options.search
+        options.search!
           .split(' ')
           .every(searchTerm => [x.name, x.description].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
@@ -138,14 +138,14 @@ export class BadgesService {
   /**
    * Get the detail of a badge from a user badge.
    */
-  getDetailOfUserBadge(userBadge: UserBadge): Badge | null {
-    return this.badges?.find(x => x.badgeId === userBadge.badge) ?? null;
+  getDetailOfUserBadge(userBadge: UserBadge): Badge | undefined {
+    return this.badges?.find(x => x.badgeId === userBadge.badge);
   }
 
   /**
    * Get the image of a user badge.
    */
-  getImageURLOfUserBadge(userBadge: UserBadge): string | null {
+  getImageURLOfUserBadge(userBadge: UserBadge): string {
     if (Badge.isBuiltIn(userBadge.badge)) return 'assets/imgs/badges/' + userBadge.badge + '.svg';
     const badge = this.getDetailOfUserBadge(userBadge);
     return badge ? badge.imageURL : BADGE_NOT_FOUND_URL;

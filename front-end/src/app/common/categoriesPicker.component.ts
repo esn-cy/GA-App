@@ -24,7 +24,7 @@ import { TopicCategoryAttached } from '@models/category.model';
         (ngModelChange)="categoryChange.emit($event)"
         [disabled]="!editMode || !categories"
       >
-        <ion-select-option *ngIf="!obligatory" [value]="null"></ion-select-option>
+        <ion-select-option *ngIf="!obligatory" [value]="undefined"></ion-select-option>
         <ion-select-option *ngFor="let category of categories" [value]="category">
           {{ category.name }}
         </ion-select-option>
@@ -37,16 +37,16 @@ export class CategoriesPickerComponent implements OnInit {
   /**
    * The category picked.
    */
-  @Input() category: TopicCategoryAttached;
-  @Output() categoryChange = new EventEmitter<TopicCategoryAttached>();
+  @Input() category: TopicCategoryAttached | undefined;
+  @Output() categoryChange = new EventEmitter<TopicCategoryAttached | undefined>();
   /**
-   * The color of the item.
+   * The colour of the item.
    */
-  @Input() color: string;
+  @Input() color: string | undefined;
   /**
    * The lines attribute of the item.
    */
-  @Input() lines: string;
+  @Input() lines: 'full' | 'inset' | 'none' | undefined;
   /**
    * Whether the component is editable.
    */
@@ -56,7 +56,7 @@ export class CategoriesPickerComponent implements OnInit {
    */
   @Input() obligatory = false;
 
-  categories: TopicCategoryAttached[];
+  categories: TopicCategoryAttached[] | undefined;
 
   constructor(private _categories: TopicCategoryService) {}
 

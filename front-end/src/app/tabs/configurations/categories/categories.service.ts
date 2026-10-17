@@ -5,12 +5,12 @@ import { TopicCategory } from '@models/category.model';
 
 @Injectable({ providedIn: 'root' })
 export class TopicCategoryService {
-  private categories: TopicCategory[];
+  private categories: TopicCategory[] | undefined;
 
   /**
    * Whether in the cache we loaded all the categories or only the NOT archived ones.
    */
-  all: boolean;
+  all: boolean = false;
 
   /**
    * The number of categories to consider for the pagination, when active.
@@ -42,9 +42,9 @@ export class TopicCategoryService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<TopicCategory[]> {
+  ): Promise<TopicCategory[] | undefined> {
     if (!this.categories || options.force || options.all !== this.all) await this.loadList(options.all);
-    if (!this.categories) return null;
+    if (!this.categories) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
@@ -52,7 +52,7 @@ export class TopicCategoryService {
 
     if (options.search)
       filteredList = filteredList.filter(x =>
-        options.search
+        options.search!
           .split(' ')
           .every(searchTerm => [x.name].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );

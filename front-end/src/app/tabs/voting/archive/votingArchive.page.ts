@@ -15,10 +15,10 @@ import { GAEvent } from '@models/event.model';
   styleUrls: ['votingArchive.page.scss']
 })
 export class VotingArchivePage implements OnInit {
-  votingSessions: VotingSession[];
+  votingSessions: VotingSession[] | undefined;
 
-  events: GAEvent[];
-  filterByEvent: string = null;
+  events: GAEvent[] | undefined;
+  filterByEvent: string | undefined;
 
   sortBy: VotingSessionsSortBy = VotingSessionsSortBy.CREATED_DATE_DESC;
   SortBy = VotingSessionsSortBy;
@@ -40,22 +40,22 @@ export class VotingArchivePage implements OnInit {
       await this.loading.show();
       await this.filter(true);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async filter(force = false, scrollToNextPage?: IonInfiniteScroll): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.votingSessions?.length)
       startPaginationAfterId = this.votingSessions[this.votingSessions.length - 1].sessionId;
 
     this.votingSessions = await this._voting.getArchivedList({
-      force,
-      eventId: this.filterByEvent,
+      force: force,
+      eventId: this.filterByEvent ?? undefined,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 

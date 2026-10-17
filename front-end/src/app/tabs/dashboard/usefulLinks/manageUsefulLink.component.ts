@@ -9,7 +9,7 @@ import {
   IDEATranslationsService
 } from '@idea-ionic/common';
 
-import { EventsPickerComponent } from 'src/app/common/eventsPicker.component';
+import { EventsPickerComponent } from '@common/eventsPicker.component';
 
 import { UsefulLinksService } from './usefulLinks.service';
 
@@ -67,7 +67,7 @@ export class ManageUsefulLinkComponent {
   /**
    * The useful link to manage.
    */
-  @Input() link: UsefulLink;
+  @Input({ required: true }) link!: UsefulLink;
 
   errors = new Set<string>();
 
@@ -94,17 +94,17 @@ export class ManageUsefulLinkComponent {
       if (!this.link.linkId) result = await this._usefulLinks.insert(this.link);
       else result = await this._usefulLinks.update(this.link);
       this.link.load(result);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
       this.close();
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async askAndDelete(): Promise<void> {
@@ -112,12 +112,12 @@ export class ManageUsefulLinkComponent {
       try {
         await this.loading.show();
         await this._usefulLinks.delete(this.link);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -127,6 +127,6 @@ export class ManageUsefulLinkComponent {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
-    alert.present();
+    await alert.present();
   }
 }

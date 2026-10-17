@@ -14,7 +14,7 @@
   </ion-refresher>
   <ion-grid class="ion-no-padding" *ngIf="votingSession">
     <ion-row>
-      <ion-col [size]="12" [sizeLg]="6">
+      <ion-col size="12" sizeLg="6">
         <ion-card color="white" class="votingSessionCard">
           <ion-card-header>
             <ion-card-subtitle *ngIf="votingSession.event">{{ votingSession.event?.name }}</ion-card-subtitle>
@@ -53,7 +53,7 @@
                 <ion-label>
                   <p>{{ 'VOTING.PARTICIPATION' | translate }}</p>
                   {{
-                    ((votingSession.voters.length - absentVoters.length) / votingSession.voters.length) | percent :
+                    ((votingSession.voters.length - (absentVoters?.length ?? 0)) / votingSession.voters.length) | percent :
                       '1.0-2'
                   }}
                 </ion-label>
@@ -65,7 +65,7 @@
                     <ion-label>
                       <p>{{ 'VOTING.PARTICIPATION' | translate }}</p>
                       {{
-                        ((votingSession.voters.length - absentVoters.length) / votingSession.voters.length) | percent :
+                        ((votingSession.voters.length - (absentVoters?.length ?? 0)) / votingSession.voters.length) | percent :
                           '1.0-2'
                       }}
                     </ion-label>
@@ -105,7 +105,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col [size]="12" [sizeLg]="6" *ngIf="votingSession.type !== VotingSessionTypes.ROLL_CALL">
+      <ion-col size="12" sizeLg="6" *ngIf="votingSession.type !== VotingSessionTypes.ROLL_CALL">
         <ion-list class="aList" style="max-width: 600px">
           <ion-list-header>
             <ion-label class="ion-margin-start">

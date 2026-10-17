@@ -5,7 +5,7 @@ import { UsefulLink } from '@models/usefulLink.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsefulLinksService {
-  private usefulLinks: UsefulLink[];
+  private usefulLinks: UsefulLink[] | undefined;
 
   /**
    * The number of useful links to consider for the pagination, when active.
@@ -33,17 +33,17 @@ export class UsefulLinksService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<UsefulLink[]> {
+  ): Promise<UsefulLink[] | undefined> {
     if (!this.usefulLinks || options.force) await this.loadList();
-    if (!this.usefulLinks) return null;
+    if (!this.usefulLinks) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.usefulLinks.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm => [x.name, x.url].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
@@ -93,7 +93,7 @@ export class UsefulLinksService {
   }
 
   /**
-   * Delete an useful link.
+   * Delete a useful link.
    */
   async delete(usefulLink: UsefulLink): Promise<void> {
     await this.api.deleteResource(['usefulLinks', usefulLink.linkId]);

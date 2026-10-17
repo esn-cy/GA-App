@@ -15,9 +15,9 @@ const FIRST_YEAR_FOR_ARCHIVE = 2023;
   styleUrls: ['archive.page.scss']
 })
 export class ArchivePage implements OnInit {
-  opportunities: Opportunity[];
+  opportunities: Opportunity[] | undefined;
 
-  years: number[];
+  years!: number[];
   archivedFromYear = new Date().getFullYear();
 
   sortBy: OpportunitiesSortBy = OpportunitiesSortBy.CREATED_DATE_DESC;
@@ -39,21 +39,21 @@ export class ArchivePage implements OnInit {
       await this.loading.show();
       await this.filter(true);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async filter(force = false, scrollToNextPage?: IonInfiniteScroll): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.opportunities?.length)
       startPaginationAfterId = this.opportunities[this.opportunities.length - 1].opportunityId;
 
     this.opportunities = await this._opportunities.getArchivedListFromYear(this.archivedFromYear, {
       force,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 

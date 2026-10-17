@@ -32,10 +32,10 @@ const NEXT_DEADLINES_NUM_DAYS = 30;
   styleUrls: ['dashboard.page.scss']
 })
 export class DashboardPage implements OnInit {
-  communications: Communication[];
-  deadlines: Deadline[];
-  nextDeadlines: Deadline[];
-  usefulLinks: UsefulLink[];
+  communications: Communication[] | undefined;
+  deadlines: Deadline[] | undefined;
+  nextDeadlines: Deadline[] | undefined;
+  usefulLinks: UsefulLink[] | undefined;
 
   segment = MobileSegments.NEWS;
   MobileSegments = MobileSegments;
@@ -47,7 +47,7 @@ export class DashboardPage implements OnInit {
   SET = StatisticEntityTypes;
   Granularities = StatisticGranularities;
   Periods = StatisticPeriods;
-  statistic: Statistic;
+  statistic: Statistic | undefined;
 
   constructor(
     private modalCtrl: ModalController,
@@ -67,7 +67,7 @@ export class DashboardPage implements OnInit {
       this._usefulLinks.getList(),
       this.app.user.isAdministrator
         ? this._statistics.recapOfLastNumDays(StatisticPeriods.ONE_MONTH)
-        : Promise.resolve(null)
+        : Promise.resolve(undefined)
     ]);
     this.nextDeadlines = this.getNextDeadlines();
   }
@@ -82,7 +82,7 @@ export class DashboardPage implements OnInit {
       component: CommunicationDetailComponent,
       componentProps: { communication }
     });
-    modal.present();
+    await modal.present();
 
     // request the communication so that it counts in the statistics (even if we don't need it)
     try {
@@ -135,7 +135,7 @@ export class DashboardPage implements OnInit {
   }
 
   private getNextDeadlines(): Deadline[] {
-    return this.deadlines.filter(x => isBefore(new Date(x.at), addDays(new Date(), NEXT_DEADLINES_NUM_DAYS)));
+    return this.deadlines?.filter(x => isBefore(new Date(x.at), addDays(new Date(), NEXT_DEADLINES_NUM_DAYS))) ?? [];
   }
 
   //
@@ -145,7 +145,7 @@ export class DashboardPage implements OnInit {
   async openUsefulLink(usefulLink: UsefulLink): Promise<void> {
     if (this.editMode) return;
 
-    this.app.openURL(usefulLink.url);
+    await this.app.openURL(usefulLink.url);
 
     // request the link so that it counts in the statistics (even if we don't need it)
     try {
@@ -162,9 +162,9 @@ export class DashboardPage implements OnInit {
       await this._usefulLinks.swapSort(usefulLinkA, usefulLinkB);
       this.usefulLinks = await this._usefulLinks.getList();
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 

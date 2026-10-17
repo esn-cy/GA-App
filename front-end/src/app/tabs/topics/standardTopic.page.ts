@@ -5,7 +5,7 @@ import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from 
 
 import { AppService } from '@app/app.service';
 import { TopicsService } from './topics.service';
-import { PublicAttachmentsService } from 'src/app/common/attachments.service';
+import { PublicAttachmentsService } from '@common/attachments.service';
 import { QuestionsService } from './questions/questions.service';
 import { UserDraftsService } from './drafts/drafts.service';
 
@@ -20,22 +20,22 @@ import { UserDraft } from '@models/userDraft.model';
   styleUrls: ['standardTopic.page.scss']
 })
 export class StandardTopicPage {
-  @Input() topicId: string;
+  @Input({ required: true }) topicId!: string;
   topic: Topic;
-  questions: Question[];
+  questions: Question[] | undefined;
 
-  currentQuestion: Question;
+  currentQuestion: Question | undefined;
 
-  newQuestion: Question;
+  newQuestion: Question | undefined;
   errors = new Set<string>();
 
-  @ViewChild('searchbar') searchbar: IonSearchbar;
-  @ViewChild(IonContent) content: IonContent;
+  @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
+  @ViewChild(IonContent) content!: IonContent;
 
-  relatedTopics: Topic[];
+  relatedTopics: Topic[] | undefined;
 
-  drafts: UserDraft[];
-  fromDraft: UserDraft;
+  drafts: UserDraft[] | undefined;
+  fromDraft: UserDraft | undefined;
 
   constructor(
     private alertCtrl: AlertController,
@@ -54,40 +54,40 @@ export class StandardTopicPage {
       await this.loading.show();
       await this.loadResources();
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   private async loadResources(): Promise<void> {
     this.topic = await this._topics.getById(this.topicId);
     [, this.relatedTopics, this.drafts] = await Promise.all([
-      this.filterQuestions(this.searchbar?.value, null, true),
+      this.filterQuestions(this.searchbar?.value ?? '', undefined, true),
       this._topics.getRelated(this.topic),
       this._drafts.getQuestionsOfTopic(this.topic)
     ]);
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
-    this.questions = null;
-    this.drafts = null;
+    this.questions = undefined;
+    this.drafts = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
-  selectQuestion(question: Question): void {
+  selectQuestion(question?: Question): void {
     this.currentQuestion = question;
-    if (this.currentQuestion) this.content.scrollToTop(500);
+    if (this.currentQuestion) void this.content.scrollToTop(500);
   }
 
   async removeCurrentQuestionFromList(): Promise<void> {
-    this.currentQuestion = null;
-    await this.filterQuestions(this.searchbar?.value, null, true);
+    this.currentQuestion = undefined;
+    await this.filterQuestions(this.searchbar?.value ?? '', undefined, true);
   }
 
   manageTopic(): void {
-    this.app.goToInTabs(['topics', this.topic.topicId, 'manage']);
+    if (this.topic) this.app.goToInTabs(['topics', this.topic.topicId, 'manage']);
   }
 
   async downloadAttachment(attachment: Attachment): Promise<void> {
@@ -96,49 +96,49 @@ export class StandardTopicPage {
       const url = await this._attachments.download(attachment);
       await this.app.openURL(url);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async filterQuestions(search = '', scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.questions?.length)
       startPaginationAfterId = this.questions[this.questions.length - 1].questionId;
 
-    this.questions = await this._questions.getListOfTopic(this.topic, {
-      force,
-      search,
+    this.questions = await this._questions.getListOfTopic(this.topic!, {
+      force: force,
+      search: search,
       withPagination: true,
-      startPaginationAfterId
+      startPaginationAfterId: startPaginationAfterId
     });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }
 
   startNewQuestion(draft?: UserDraft): void {
-    this.selectQuestion(null);
-    this.newQuestion = new Question({ creator: Subject.fromUser(this.app.user), topicId: this.topic.topicId });
-    this.fromDraft = null;
+    this.selectQuestion(undefined);
+    this.newQuestion = new Question({ creator: Subject.fromUser(this.app.user), topicId: this.topic!.topicId });
+    this.fromDraft = undefined;
     if (draft) {
       this.fromDraft = draft;
-      this.newQuestion.summary = draft.summary;
-      this.newQuestion.text = draft.text;
+      this.newQuestion.summary = draft.summary ?? '';
+      this.newQuestion.text = draft.text ?? '';
     }
     setTimeout((): void => {
       const newQuestionElement = document.getElementById('newQuestion');
-      if (newQuestionElement) this.content.scrollToPoint(0, newQuestionElement.getBoundingClientRect().top - 100, 500);
+      if (newQuestionElement) void this.content.scrollToPoint(0, newQuestionElement.getBoundingClientRect().top - 100, 500);
     }, 100);
   }
 
   async cancelNewQuestion(): Promise<void> {
     const doCancel = (): void => {
-      this.newQuestion = null;
-      this.fromDraft = null;
+      this.newQuestion = undefined;
+      this.fromDraft = undefined;
     };
 
-    if (!this.newQuestion.summary && !this.newQuestion.text) return doCancel();
+    if (!this.newQuestion?.summary && !this.newQuestion?.text) return doCancel();
 
     const header = this.t._('COMMON.ARE_YOU_SURE');
     const message = this.t._('QUESTIONS.YOU_WILL_LOSE_THE_CONTENT');
@@ -147,33 +147,34 @@ export class StandardTopicPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doCancel }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async sendNewQuestion(): Promise<void> {
+    if (!this.newQuestion) return;
     this.errors = new Set(this.newQuestion.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
     const doSend = async (): Promise<void> => {
       try {
         await this.loading.show();
-        await this._questions.insert(this.topic, this.newQuestion);
-        await this.filterQuestions(this.searchbar?.value, null, true);
-        this.newQuestion = null;
+        await this._questions.insert(this.topic!, this.newQuestion!);
+        await this.filterQuestions(this.searchbar?.value ?? '', undefined, true);
+        this.newQuestion = undefined;
         try {
           if (this.fromDraft) {
             await this._drafts.delete(this.fromDraft);
-            this.drafts.splice(this.drafts.indexOf(this.fromDraft), 1);
-            this.fromDraft = null;
+            this.drafts?.splice(this.drafts.indexOf(this.fromDraft), 1);
+            this.fromDraft = undefined;
           }
         } catch (error) {
           // no problem
         }
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -184,7 +185,7 @@ export class StandardTopicPage {
       { text: this.t._('COMMON.SEND'), role: 'destructive', handler: doSend }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -192,6 +193,7 @@ export class StandardTopicPage {
   }
 
   async saveNewQuestionAsDraft(): Promise<void> {
+    if (!this.newQuestion) return;
     this.errors = new Set(this.newQuestion.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
@@ -201,15 +203,15 @@ export class StandardTopicPage {
       if (this.fromDraft.draftId) await this._drafts.update(this.fromDraft);
       else {
         const newDraft = await this._drafts.insert(this.fromDraft);
-        this.drafts.push(newDraft);
+        this.drafts?.push(newDraft);
       }
-      this.newQuestion = null;
-      this.fromDraft = null;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      this.newQuestion = undefined;
+      this.fromDraft = undefined;
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -218,11 +220,11 @@ export class StandardTopicPage {
       try {
         await this.loading.show();
         await this._drafts.delete(draft);
-        this.drafts.splice(this.drafts.indexOf(draft), 1);
+        this.drafts?.splice(this.drafts.indexOf(draft), 1);
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -233,7 +235,7 @@ export class StandardTopicPage {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   openTopic(topic: Topic): void {

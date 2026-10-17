@@ -58,9 +58,9 @@ const FIRST_YEAR_FOR_COMMUNICATIONS = 2023;
           <ion-label>{{ 'COMMON.NO_ELEMENTS' | translate }}</ion-label>
         </ion-item>
         <ion-item *ngIf="!communications">
-          <ion-label><ion-skeleton-text animated /></ion-label>
+          <ion-label><ion-skeleton-text [animated]="true" /></ion-label>
         </ion-item>
-        <ion-item button *ngFor="let communication of communications" (click)="openCommunication(communication)">
+        <ion-item [button]="true" *ngFor="let communication of communications" (click)="openCommunication(communication)">
           <ion-label class="ion-text-wrap">
             <p *ngIf="communication.event">{{ communication.event.name }}</p>
             {{ communication.name }}
@@ -91,9 +91,9 @@ const FIRST_YEAR_FOR_COMMUNICATIONS = 2023;
   ]
 })
 export class CommunicationsComponent implements OnInit {
-  communications: Communication[];
+  communications: Communication[] | undefined;
 
-  years: number[];
+  years: number[] = [];
   filterByYear = new Date().getFullYear();
 
   constructor(
@@ -108,17 +108,17 @@ export class CommunicationsComponent implements OnInit {
     await this.loadListOfYear(this.filterByYear);
   }
 
-  async loadListOfYear(year: number | null): Promise<void> {
+  async loadListOfYear(year: number | undefined): Promise<void> {
     try {
-      this.communications = null;
+      this.communications = undefined;
       this.communications = await this._communications.getList({ force: true, year });
     } catch (error) {
-      this.message.error('COMMON.COULDNT_LOAD_LIST');
+      await this.message.error('COMMON.COULDNT_LOAD_LIST');
     }
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async openCommunication(communication: Communication): Promise<void> {
@@ -126,7 +126,7 @@ export class CommunicationsComponent implements OnInit {
       component: CommunicationDetailComponent,
       componentProps: { communication }
     });
-    modal.present();
+    await modal.present();
 
     // request the communication so that it counts in the statistics (even if we don't need it)
     try {

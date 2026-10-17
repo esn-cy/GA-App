@@ -13,9 +13,9 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 })
 export class TopicComponent {
   /**
-   * The topic to show. If null, load a skeleton instead.
+   * The topic to show. If undefined, load a skeleton instead.
    */
-  @Input() topic: Topic | null;
+  @Input() topic: Topic | undefined;
   /**
    * Whether to display the topic as a grid row.
    */

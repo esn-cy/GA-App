@@ -9,7 +9,7 @@ import { Subject } from '@models/subject.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnswersService {
-  private answers: Answer[];
+  private answers: Answer[] | undefined;
 
   /**
    * The number of answers to consider for the pagination, when active.
@@ -39,9 +39,9 @@ export class AnswersService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Answer[]> {
+  ): Promise<Answer[] | undefined> {
     if (!this.answers || options.force) await this.loadListOfQuestion(question);
-    if (!this.answers) return null;
+    if (!this.answers) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
@@ -49,12 +49,12 @@ export class AnswersService {
 
     if (options.search)
       filteredList = filteredList.filter(x =>
-        options.search
+        options.search!
           .split(' ')
           .every(searchTerm =>
             [x.text, x.creator.name, x.creator.section, x.creator.country]
               .filter(f => f)
-              .some(f => f.toLowerCase().includes(searchTerm))
+              .some(f => f?.toLowerCase().includes(searchTerm))
           )
       );
 

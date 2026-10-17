@@ -10,11 +10,11 @@
 </ion-header>
 <ion-content color="white">
   <ion-row class="ion-align-items-center infoRow">
-    <ion-col [size]="12" [sizeSm]="8" [sizeLg]="9">
+    <ion-col size="12" sizeSm="8" sizeLg="9">
       <ion-item lines="none">
         <ion-label class="ion-text-wrap">
           <b *ngIf="title">{{ title }}</b>
-          <p *ngIf="statistic?.timePoints.length">
+          <p *ngIf="statistic?.timePoints?.length">
             {{ 'STATISTICS.SINCE' | translate | lowercase }}
             <ion-badge color="ESNpink">{{ getFirstDateOfStatistic() | dateTz }}</ion-badge>
             {{ 'STATISTICS.TO' | translate | lowercase }}
@@ -25,18 +25,18 @@
         </ion-label>
       </ion-item>
     </ion-col>
-    <ion-col [size]="12" [sizeSm]="4" [sizeLg]="3" *ngIf="statistic">
+    <ion-col size="12" sizeSm="4" sizeLg="3" *ngIf="statistic">
       <ion-item lines="none">
         <ion-label class="ion-text-right ion-hide-md-down">{{ 'STATISTICS.TOTALS' | translate }}:</ion-label>
-        <ion-chip slot="end" disabled>
+        <ion-chip slot="end" [disabled]="true">
           <ion-icon name="person"></ion-icon>
           <ion-label>{{ statistic.totals.users }}</ion-label>
         </ion-chip>
-        <ion-chip slot="end" disabled>
+        <ion-chip slot="end" [disabled]="true">
           <ion-icon name="home"></ion-icon>
           <ion-label>{{ statistic.totals.sections }}</ion-label>
         </ion-chip>
-        <ion-chip slot="end" disabled>
+        <ion-chip slot="end" [disabled]="true">
           <ion-icon name="earth"></ion-icon>
           <ion-label>{{ statistic.totals.countries }}</ion-label>
         </ion-chip>
@@ -90,7 +90,7 @@
         [(ngModel)]="groupBy"
         (ionChange)="buildChart()"
       >
-        <ion-select-option [value]="null">
+        <ion-select-option [value]="undefined">
           {{ 'STATISTICS.GROUP_BYS.NONE' | translate }}
         </ion-select-option>
         <ion-select-option value="country">

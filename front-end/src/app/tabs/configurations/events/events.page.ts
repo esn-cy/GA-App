@@ -12,7 +12,7 @@ import { GAEvent } from '@models/event.model';
   styleUrls: ['events.page.scss']
 })
 export class EventsPage {
-  events: GAEvent[];
+  events: GAEvent[] | undefined;
 
   constructor(private _events: GAEventsService, public app: AppService) {}
 
@@ -21,10 +21,13 @@ export class EventsPage {
   }
 
   async paginate(scrollToNextPage?: IonInfiniteScroll): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.events?.length) startPaginationAfterId = this.events[this.events.length - 1].eventId;
 
-    this.events = await this._events.getList({ withPagination: true, startPaginationAfterId });
+    this.events = await this._events.getList({
+      withPagination: true,
+      startPaginationAfterId
+    });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }

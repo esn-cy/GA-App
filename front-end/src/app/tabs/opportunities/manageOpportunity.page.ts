@@ -15,12 +15,12 @@ import { Opportunity, OpportunityApplicationAttachment } from '@models/opportuni
 })
 export class ManageOpportunityPage {
   @Input() opportunityId = 'new';
-  opportunity: Opportunity;
+  opportunity!: Opportunity;
 
   editMode = UXMode.VIEW;
   UXMode = UXMode;
   errors = new Set<string>();
-  entityBeforeChange: Opportunity;
+  entityBeforeChange: Opportunity | undefined;
 
   hasDeadline = false;
 
@@ -52,9 +52,9 @@ export class ManageOpportunityPage {
         this.editMode = UXMode.INSERT;
       }
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -64,11 +64,11 @@ export class ManageOpportunityPage {
   }
 
   shouldResetDeadlineForApplications(): void {
-    if (!this.hasDeadline) this.opportunity.willCloseAt = null;
+    if (!this.hasDeadline) delete this.opportunity.willCloseAt;
   }
 
   async addExpectedAttachment(): Promise<void> {
-    const doAdd = ({ name }): void => {
+    const doAdd = ({ name }: { name: string }): void => {
       if (!name) return;
       this.opportunity.expectedAttachments.push(new OpportunityApplicationAttachment({ name }));
     };
@@ -81,19 +81,19 @@ export class ManageOpportunityPage {
     ];
 
     const alert = await this.alertCtrl.create({ header, inputs, buttons });
-    alert.present();
+    await alert.present();
   }
 
   removeExpectedAttachment(expectedAttachment: OpportunityApplicationAttachment): void {
     this.opportunity.expectedAttachments.splice(this.opportunity.expectedAttachments.indexOf(expectedAttachment), 1);
   }
 
-  reorderExpectedAttachments({ detail }): void {
+  reorderExpectedAttachments({ detail }: CustomEvent): void {
     this.opportunity.expectedAttachments = detail.complete(this.opportunity.expectedAttachments);
   }
 
   async addOpportunityManager(): Promise<void> {
-    const doAdd = async ({ userId }): Promise<void> => {
+    const doAdd = async ({ userId }: { userId: string }): Promise<void> => {
       if (!userId) return;
       userId = userId.toLowerCase();
       if (this.opportunity.additionalManagersIds.includes(userId)) return;
@@ -129,11 +129,11 @@ export class ManageOpportunityPage {
       this.opportunity.load(result);
       this.location.replaceState(this.location.path().replace('/new', '/'.concat(this.opportunity.opportunityId)));
       this.editMode = UXMode.VIEW;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -147,12 +147,12 @@ export class ManageOpportunityPage {
         await this.loading.show();
         if (open) await this._opportunities.open(this.opportunity);
         else await this._opportunities.close(this.opportunity);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['opportunities', this.opportunity.opportunityId], { back: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -161,7 +161,7 @@ export class ManageOpportunityPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doStatusChange }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async archiveOpportunity(archive = true): Promise<void> {
@@ -170,12 +170,12 @@ export class ManageOpportunityPage {
         await this.loading.show();
         if (archive) await this._opportunities.archive(this.opportunity);
         else await this._opportunities.unarchive(this.opportunity);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['opportunities', this.opportunity.opportunityId], { back: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -184,7 +184,7 @@ export class ManageOpportunityPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async deleteOpportunity(): Promise<void> {
@@ -192,12 +192,12 @@ export class ManageOpportunityPage {
       try {
         await this.loading.show();
         await this._opportunities.delete(this.opportunity);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['opportunities'], { back: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -207,7 +207,7 @@ export class ManageOpportunityPage {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async duplicateOpportunity(): Promise<void> {
@@ -221,12 +221,12 @@ export class ManageOpportunityPage {
         delete copy.closedAt;
         delete copy.archivedAt;
         copy.load(await this._opportunities.insert(copy));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['opportunities', copy.opportunityId, 'manage'], { root: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -235,7 +235,7 @@ export class ManageOpportunityPage {
       { text: this.t._('COMMON.DUPLICATE'), handler: doDuplicate }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   enterEditMode(): void {
@@ -245,7 +245,7 @@ export class ManageOpportunityPage {
 
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['opportunities'], { back: true });
-    else {
+    else if (this.entityBeforeChange) {
       this.opportunity = this.entityBeforeChange;
       this.errors = new Set<string>();
       this.editMode = UXMode.VIEW;

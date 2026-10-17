@@ -21,7 +21,7 @@ export class UsefulLink extends Resource {
   /**
    * The event to which the link refers to (if any).
    */
-  event: GAEventAttached | null;
+  event?: GAEventAttached;
   /**
    * The sort index to order the link in lists.
    */
@@ -32,7 +32,7 @@ export class UsefulLink extends Resource {
     this.linkId = this.clean(x.linkId, String);
     this.name = this.clean(x.name, String);
     this.url = this.clean(x.url, String);
-    this.event = x.event?.eventId ? new GAEventAttached(x.event) : null;
+    this.event = x.event?.eventId ? new GAEventAttached(x.event) : undefined;
     this.sort = this.clean(x.sort, Number, Date.now());
   }
 

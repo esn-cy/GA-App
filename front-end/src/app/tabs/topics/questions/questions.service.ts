@@ -9,7 +9,7 @@ import { Subject } from '@models/subject.model';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionsService {
-  private questions: Question[];
+  private questions: Question[] | undefined;
 
   /**
    * The number of questions to consider for the pagination, when active.
@@ -39,21 +39,21 @@ export class QuestionsService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Question[]> {
+  ): Promise<Question[] | undefined> {
     if (!this.questions || options.force) await this.loadListOfTopic(topic);
-    if (!this.questions) return null;
+    if (!this.questions) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.questions.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm =>
             [x.summary, x.text, x.creator.name, x.creator.section, x.creator.country]
-              .filter(f => f)
+              .filter((f): f is string => !!f)
               .some(f => f.toLowerCase().includes(searchTerm))
           )
       );
@@ -132,7 +132,7 @@ export class QuestionsService {
   async userClaps(topic: Topic, question: Question): Promise<{ [answerId: string]: boolean }> {
     const path = ['topics', topic.topicId, 'questions', question.questionId];
     const answersIds: string[] = await this.api.patchResource(path, { body: { action: 'USER_CLAPS' } });
-    const clapMap = {};
+    const clapMap: Record<string, boolean> = {};
     answersIds.forEach(a => (clapMap[a] = true));
     return clapMap;
   }

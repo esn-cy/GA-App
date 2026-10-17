@@ -203,7 +203,7 @@ export class Topic extends Resource {
    */
   isClosed(): boolean {
     if (this.isArchived()) return true;
-    return !!this.closedAt || (this.willCloseAt && this.willCloseAt < new Date().toISOString());
+    return !!this.closedAt || !!(this.willCloseAt && this.willCloseAt < new Date().toISOString());
   }
 
   /**
@@ -219,7 +219,7 @@ export class Topic extends Resource {
    */
   isLiveTodayOrInFuture(): boolean {
     if (this.type !== TopicTypes.LIVE) return false;
-    return this.shouldBeLiveAt && this.shouldBeLiveAt.slice(0, 10) >= new Date().toISOString().slice(0, 10);
+    return !!(this.shouldBeLiveAt && this.shouldBeLiveAt.slice(0, 10) >= new Date().toISOString().slice(0, 10));
   }
 }
 

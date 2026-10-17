@@ -52,18 +52,18 @@ import { Deadline } from '@models/deadline.model';
           </ion-label>
           <ion-input [(ngModel)]="deadline.name"></ion-input>
         </ion-item>
-        <ion-item [class.fieldHasError]="hasFieldAnError('action')" counter>
+        <ion-item [class.fieldHasError]="hasFieldAnError('action')">
           <ion-label position="stacked">
             {{ 'DEADLINES.ACTION' | translate }}
           </ion-label>
-          <ion-input [(ngModel)]="deadline.action" maxlength="15"></ion-input>
+          <ion-input [(ngModel)]="deadline.action" [maxlength]="15" [counter]="true"></ion-input>
         </ion-item>
         <ion-item *ngIf="deadline.action" [class.fieldHasError]="hasFieldAnError('actionColor')">
           <ion-label position="stacked">
             {{ 'DEADLINES.ACTION_COLOR' | translate }}
           </ion-label>
           <ion-select interface="popover" [(ngModel)]="deadline.actionColor">
-            <ion-select-option [value]="null"></ion-select-option>
+            <ion-select-option [value]="undefined"></ion-select-option>
             <ion-select-option *ngFor="let color of COLORS" [value]="color">{{ color }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -104,7 +104,7 @@ export class ManageDeadlineComponent {
   /**
    * The deadline to manage.
    */
-  @Input() deadline: Deadline;
+  @Input({ required: true }) deadline!: Deadline;
 
   errors = new Set<string>();
 
@@ -149,17 +149,17 @@ export class ManageDeadlineComponent {
       if (!this.deadline.deadlineId) result = await this._deadlines.insert(this.deadline);
       else result = await this._deadlines.update(this.deadline);
       this.deadline.load(result);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
       this.close();
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async askAndDelete(): Promise<void> {
@@ -167,12 +167,12 @@ export class ManageDeadlineComponent {
       try {
         await this.loading.show();
         await this._deadlines.delete(this.deadline);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -182,6 +182,6 @@ export class ManageDeadlineComponent {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
-    alert.present();
+    await alert.present();
   }
 }

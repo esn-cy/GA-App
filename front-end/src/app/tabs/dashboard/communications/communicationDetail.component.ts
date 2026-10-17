@@ -76,11 +76,11 @@ export class CommunicationDetailComponent {
   /**
    * The communication to show.
    */
-  @Input() communication: Communication;
+  @Input({ required: true }) communication!: Communication;
 
   constructor(private modalCtrl: ModalController) {}
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }

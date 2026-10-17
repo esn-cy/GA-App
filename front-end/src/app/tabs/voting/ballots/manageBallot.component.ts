@@ -71,7 +71,7 @@ import { VotingBallot, VotingMajorityTypes } from '@models/votingSession.model';
         </ion-reorder-group>
         <ion-item>
           <ion-badge slot="start" color="light">{{ ballot.options.length + 1 }}</ion-badge>
-          <ion-input readonly [value]="'VOTING.ABSTAIN' | translate" />
+          <ion-input [readonly]="true" [value]="'VOTING.ABSTAIN' | translate" />
         </ion-item>
       </ion-list>
     </ion-content>
@@ -81,7 +81,7 @@ export class ManageBallotStandaloneComponent implements OnInit {
   /**
    * The voting ballot to manage.
    */
-  @Input() ballot: VotingBallot;
+  @Input({ required: true }) ballot!: VotingBallot;
 
   errors = new Set<string>();
 
@@ -101,7 +101,7 @@ export class ManageBallotStandaloneComponent implements OnInit {
     this.ballot.options.push('');
   }
 
-  handleOptionsReorder({ detail }): void {
+  handleOptionsReorder({ detail }: CustomEvent): void {
     this.ballot.options = detail.complete(this.ballot.options);
   }
 
@@ -118,10 +118,10 @@ export class ManageBallotStandaloneComponent implements OnInit {
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
     this.ballot.options = this.ballot.options.filter(x => x?.trim());
-    this.modalCtrl.dismiss(this.ballot);
+    await this.modalCtrl.dismiss(this.ballot);
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }

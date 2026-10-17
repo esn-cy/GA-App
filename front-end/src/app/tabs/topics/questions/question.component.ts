@@ -24,25 +24,25 @@ export class QuestionComponent implements OnChanges {
   /**
    * The question's topic.
    */
-  @Input() topic: Topic;
+  @Input({ required: true }) topic!: Topic;
   /**
    * The question to show.
    */
-  @Input() question: Question;
+  @Input({ required: true }) question!: Question;
 
   /**
    * Trigger for deleting the question.
    */
   @Output() delete = new EventEmitter<void>();
 
-  answers: Answer[];
-  userUpvoted: boolean;
+  answers: Answer[] | undefined;
+  userUpvoted = false;
   userClapped: { [answerId: string]: boolean } = {};
 
-  newAnswer: Answer;
+  newAnswer: Answer | undefined;
   errors = new Set<string>();
 
-  fromDraft: UserDraft;
+  fromDraft: UserDraft | undefined;
 
   constructor(
     private alertCtrl: AlertController,
@@ -78,7 +78,7 @@ export class QuestionComponent implements OnChanges {
       }
     } catch (error) {
       this.userUpvoted = !upvote;
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     }
   }
 
@@ -94,7 +94,7 @@ export class QuestionComponent implements OnChanges {
       }
     } catch (error) {
       this.userClapped[answer.answerId] = !clap;
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     }
   }
 
@@ -103,12 +103,12 @@ export class QuestionComponent implements OnChanges {
       try {
         await this.loading.show();
         await this._questions.delete(this.topic, this.question);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.delete.emit();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -118,7 +118,7 @@ export class QuestionComponent implements OnChanges {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   writeAnswer(): void {
@@ -127,8 +127,8 @@ export class QuestionComponent implements OnChanges {
   }
 
   async cancelNewAnswer(): Promise<void> {
-    if (!this.newAnswer.text) {
-      this.newAnswer = null;
+    if (!this.newAnswer?.text) {
+      this.newAnswer = undefined;
       return;
     }
 
@@ -136,36 +136,41 @@ export class QuestionComponent implements OnChanges {
     const message = this.t._('QUESTIONS.YOU_WILL_LOSE_THE_CONTENT');
     const buttons = [
       { text: this.t._('COMMON.CANCEL'), role: 'cancel' },
-      { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: (): void => (this.newAnswer = null) }
+      {
+        text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: (): void => {
+          this.newAnswer = undefined;
+        }
+      }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async sendNewAnswer(): Promise<void> {
+    if (!this.newAnswer) return;
     this.errors = new Set(this.newAnswer.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
     const doSend = async (): Promise<void> => {
       try {
         await this.loading.show();
-        const answer = await this._answers.insert(this.question, this.newAnswer);
+        const answer = await this._answers.insert(this.question, this.newAnswer!);
         this.question.numOfAnswers++;
-        this.answers.push(answer);
-        this.newAnswer = null;
+        this.answers?.push(answer);
+        this.newAnswer = undefined;
         try {
           if (this.fromDraft) {
             await this._drafts.delete(this.fromDraft);
-            this.fromDraft = null;
+            this.fromDraft = undefined;
           }
         } catch (error) {
           // no problem
         }
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -176,7 +181,7 @@ export class QuestionComponent implements OnChanges {
       { text: this.t._('COMMON.SEND'), role: 'destructive', handler: doSend }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -184,6 +189,7 @@ export class QuestionComponent implements OnChanges {
   }
 
   async saveNewAnswerAsDraft(): Promise<void> {
+    if (!this.newAnswer) return;
     this.errors = new Set(this.newAnswer.validate());
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
 
@@ -192,25 +198,26 @@ export class QuestionComponent implements OnChanges {
       this.fromDraft = UserDraft.fromAnswer(this.newAnswer, this.fromDraft);
       if (this.fromDraft.draftId) this.fromDraft = await this._drafts.update(this.fromDraft);
       else this.fromDraft = await this._drafts.insert(this.fromDraft);
-      this.newAnswer = null;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      this.newAnswer = undefined;
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   async deleteDraft(): Promise<void> {
+    if (!this.fromDraft) return;
     const doDelete = async (): Promise<void> => {
       try {
         await this.loading.show();
-        await this._drafts.delete(this.fromDraft);
-        this.fromDraft = null;
+        await this._drafts.delete(this.fromDraft!);
+        this.fromDraft = undefined;
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -221,11 +228,11 @@ export class QuestionComponent implements OnChanges {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
-  getLastAnswer(): Answer {
-    return this.answers?.length ? this.answers[this.answers.length - 1] : null;
+  getLastAnswer(): Answer | undefined {
+    return this.answers?.length ? this.answers[this.answers.length - 1] : undefined;
   }
 
   async deleteLastAnswer(): Promise<void> {
@@ -236,13 +243,13 @@ export class QuestionComponent implements OnChanges {
       try {
         await this.loading.show();
         await this._answers.delete(this.question, lastAnswer);
-        this.answers.splice(this.answers.indexOf(lastAnswer), 1);
+        if (this.answers) this.answers.splice(this.answers.indexOf(lastAnswer), 1);
         this.question.numOfAnswers--;
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -252,7 +259,7 @@ export class QuestionComponent implements OnChanges {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async seeQuestionUpvoters(event: Event): Promise<void> {

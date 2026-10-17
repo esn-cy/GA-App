@@ -29,7 +29,7 @@
   </ion-button>
 </ion-item>
 <!----->
-<ion-item button *ngIf="editMode" (click)="browseFiles()">
+<ion-item [button]="true" *ngIf="editMode" (click)="browseFiles()">
   <input
     id="attachmentPicker"
     type="file"

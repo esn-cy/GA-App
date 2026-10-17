@@ -66,7 +66,7 @@ export class ManageBadgesComponent implements OnInit {
   /**
    * The badge to manage.
    */
-  @Input() badge: Badge;
+  @Input({ required: true }) badge!: Badge;
 
   errors = new Set<string>();
 
@@ -99,17 +99,17 @@ export class ManageBadgesComponent implements OnInit {
       if (!this.badge.badgeId) result = await this._badges.insert(this.badge);
       else result = await this._badges.update(this.badge);
       this.badge.load(result);
-      this.modalCtrl.dismiss(true);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.modalCtrl.dismiss(true);
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
-  async uploadImage({ target }): Promise<void> {
-    const file = target.files[0];
+  async uploadImage({ target }: { target: HTMLInputElement }): Promise<void> {
+    const file = target.files ? target.files[0] : undefined;
     if (!file) return;
 
     try {
@@ -118,10 +118,10 @@ export class ManageBadgesComponent implements OnInit {
 
       this.badge.imageURL = this.app.getImageURLByURI(imageURI);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
       if (target) target.value = '';
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -130,12 +130,12 @@ export class ManageBadgesComponent implements OnInit {
       try {
         await this.loading.show();
         await this._badges.delete(this.badge);
-        this.message.success('COMMON.OPERATION_COMPLETED');
-        this.modalCtrl.dismiss(true);
+        await this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.modalCtrl.dismiss(true);
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -146,10 +146,10 @@ export class ManageBadgesComponent implements OnInit {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }

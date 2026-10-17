@@ -14,17 +14,17 @@ export class SubjectsReactionsComponent implements AfterViewInit {
   /**
    * The subject to show.
    */
-  @Input() subjectsPromise: Promise<Subject[]>;
+  @Input({ required: true }) subjectsPromise!: Promise<Subject[]>;
   /**
    * The reaction.
    */
-  @Input() reaction: 'upvote' | 'clap' | 'appreciation';
+  @Input({ required: true }) reaction!: 'upvote' | 'clap' | 'appreciation';
 
   showSpinner = true;
-  subjects: Subject[];
+  subjects: Subject[] | undefined;
 
-  icon: string;
-  color: string;
+  icon: string | undefined;
+  color: string | undefined;
 
   constructor(private popoverCtrl: PopoverController, public app: AppService) {}
 
@@ -39,15 +39,17 @@ export class SubjectsReactionsComponent implements AfterViewInit {
     if (this.reaction === 'upvote') return 'thumbs-up';
     if (this.reaction === 'clap') return '/assets/icons/clap.svg';
     if (this.reaction === 'appreciation') return 'heart';
+    return '';
   }
 
   private getColor(): string {
     if (this.reaction === 'upvote') return 'ESNgreen';
     if (this.reaction === 'clap') return 'ESNpink';
     if (this.reaction === 'appreciation') return 'ESNpink';
+    return '';
   }
 
   close(): void {
-    this.popoverCtrl.dismiss();
+    void this.popoverCtrl.dismiss();
   }
 }

@@ -11,7 +11,7 @@ import { environment as env } from '@env';
   styleUrls: ['auth.page.scss']
 })
 export class AuthPage implements OnInit {
-  @Input() token: string;
+  @Input() token: string | undefined;
 
   version = env.idea.app.version;
 

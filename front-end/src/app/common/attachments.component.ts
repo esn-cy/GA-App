@@ -18,7 +18,7 @@ export class AttachmentsComponent {
   /**
    * The array in which we want to add/remove attachments.
    */
-  @Input() attachments: Attachment[];
+  @Input({ required: true }) attachments!: Attachment[];
   /**
    * Whether we are editing or viewing the attachments.
    */
@@ -38,7 +38,7 @@ export class AttachmentsComponent {
 
   browseFiles(event?: any): void {
     if (event) event.stopPropagation();
-    document.getElementById('attachmentPicker').click();
+    document.getElementById('attachmentPicker')!.click();
   }
 
   addAttachmentFromFile(ev: any): void {
@@ -47,15 +47,17 @@ export class AttachmentsComponent {
 
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
-      const fullName = file.name.split('.');
-      const format = fullName.pop();
-      const name = fullName.join('.');
+      if (file instanceof File) {
+        const fullName = file.name.split('.');
+        const format = fullName.pop()!;
+        const name = fullName.join('.');
 
-      this.addAttachment(name, format, file);
+        void this.addAttachment(name, format, file);
+      }
     }
 
     // empty the file picker to allow the upload of new files with the same name
-    if (ev.target) ev.target.value = null;
+    if (ev.target) ev.target.value = '';
   }
 
   private async addAttachment(name: string, format: string, file: File): Promise<void> {
@@ -66,10 +68,10 @@ export class AttachmentsComponent {
       if (bytesToMegaBytes(file.size) > env.idea.app.maxFileUploadSizeMB)
         throw new Error(this.t._('ATTACHMENTS.FILE_IS_TOO_BIG', { maxSize: env.idea.app.maxFileUploadSizeMB }));
       attachment.attachmentId = await this._attachments.upload(file);
-    } catch (err) {
+    } catch (err: any) {
       this.uploadErrors.push({ file: name, error: err.message });
       this.removeAttachment(attachment);
-      this.message.error(err.message, true);
+      await this.message.error(err.message, true);
     }
   }
 
@@ -88,9 +90,9 @@ export class AttachmentsComponent {
       const url = await this._attachments.download(attachment);
       await this.app.openURL(url);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 }

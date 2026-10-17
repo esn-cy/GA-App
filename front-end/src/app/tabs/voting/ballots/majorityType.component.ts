@@ -26,5 +26,5 @@ export class MajorityTypeStandaloneComponent {
   /**
    * The majority type to show.
    */
-  @Input() majorityType: string;
+  @Input({ required: true }) majorityType!: string;
 }

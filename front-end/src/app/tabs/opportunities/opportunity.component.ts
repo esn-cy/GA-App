@@ -12,9 +12,9 @@ import { StatisticEntityTypes } from '@models/statistic.model';
 })
 export class OpportunityComponent {
   /**
-   * The opportunity to show. If null, load a skeleton instead.
+   * The opportunity to show. If undefined, load a skeleton instead.
    */
-  @Input() opportunity: Opportunity | null;
+  @Input() opportunity: Opportunity | undefined;
   /**
    * Whether to display the opportunity as a grid row.
    */
@@ -24,7 +24,7 @@ export class OpportunityComponent {
    */
   @Input() header = false;
   /**
-   * Trigger when a opportunity is selected.
+   * Trigger when an opportunity is selected.
    */
   @Output() select = new EventEmitter<void>();
 

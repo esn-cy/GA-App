@@ -13,15 +13,15 @@ export class SubjectComponent {
   /**
    * The subject to show.
    */
-  @Input() subject: Subject;
+  @Input() subject: Subject | undefined;
   /**
-   * The color of the item.
+   * The colour of the item.
    */
-  @Input() color: string;
+  @Input() color: string | undefined;
   /**
    * The lines attribute of the item.
    */
-  @Input() lines: string;
+  @Input() lines: 'full' | 'inset' | 'none' | undefined;
   /**
    * The size for the component.
    */
@@ -32,7 +32,7 @@ export class SubjectComponent {
   constructor(public app: AppService) {}
 
   async openOnESNAccounts(): Promise<void> {
-    if (!this.subject.id) return;
+    if (!this.subject?.id) return;
     const url = this.subject.getURL();
     await this.app.openURL(url);
   }

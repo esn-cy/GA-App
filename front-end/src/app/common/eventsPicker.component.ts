@@ -24,7 +24,7 @@ import { GAEvent, GAEventAttached } from '@models/event.model';
         (ngModelChange)="eventChange.emit($event)"
         [disabled]="!editMode || !events"
       >
-        <ion-select-option *ngIf="!obligatory" [value]="null"></ion-select-option>
+        <ion-select-option *ngIf="!obligatory" [value]="undefined"></ion-select-option>
         <ion-select-option *ngFor="let event of events" [value]="event">{{ event.name }}</ion-select-option>
       </ion-select>
     </ion-item>
@@ -35,16 +35,16 @@ export class EventsPickerComponent implements OnInit {
   /**
    * The event picked.
    */
-  @Input() event: GAEventAttached;
-  @Output() eventChange = new EventEmitter<GAEventAttached>();
+  @Input() event: GAEventAttached | undefined;
+  @Output() eventChange = new EventEmitter<GAEventAttached | undefined>();
   /**
-   * The color of the item.
+   * The colour of the item.
    */
-  @Input() color: string;
+  @Input() color: string | undefined;
   /**
    * The lines attribute of the item.
    */
-  @Input() lines: string;
+  @Input() lines: 'full' | 'inset' | 'none' | undefined;
   /**
    * Whether the component is editable.
    */
@@ -54,7 +54,7 @@ export class EventsPickerComponent implements OnInit {
    */
   @Input() obligatory = false;
 
-  events: GAEvent[];
+  events: GAEvent[] | undefined;
 
   constructor(private _events: GAEventsService) {}
 

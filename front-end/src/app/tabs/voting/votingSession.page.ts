@@ -13,10 +13,10 @@ import { Voter, VotingSession, VotingSessionTypes } from '@models/votingSession.
   styleUrls: ['votingSession.page.scss']
 })
 export class VotingSessionPage {
-  @Input() sessionId: string;
-  votingSession: VotingSession;
+  @Input({ required: true }) sessionId!: string;
+  votingSession: VotingSession | undefined;
 
-  absentVoters: Voter[];
+  absentVoters: Voter[] | undefined;
 
   showRawResults = false;
 
@@ -35,9 +35,9 @@ export class VotingSessionPage {
       await this.loading.show();
       await this.loadResources();
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -51,20 +51,23 @@ export class VotingSessionPage {
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
+    this.votingSession = undefined;
+    this.absentVoters = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
   manageSession(): void {
+    if (!this.votingSession) return;
     this.app.goToInTabs(['voting', this.votingSession.sessionId, 'manage']);
   }
 
   wasVoterAbsent(voter: Voter): boolean {
-    return this.absentVoters.some(x => x.id === voter.id);
+    return !!this.absentVoters?.some(x => x.id === voter.id);
   }
 
   downloadResults(): void {
-    if (!this.votingSession.results) return;
+    if (!this.votingSession?.results) return;
 
     const sessionName = this.votingSession.name.replace(/[^\w\s]/g, '');
     const filename = `${sessionName} - ${this.t._('VOTING.RESULTS')}.xlsx`;
@@ -72,6 +75,7 @@ export class VotingSessionPage {
   }
 
   getColorByType(): string {
+    if (!this.votingSession) return 'ESNdarkBlue';
     if (this.votingSession.type === VotingSessionTypes.FORM_SECRET) return 'ESNpink';
     if (this.votingSession.type === VotingSessionTypes.IMMEDIATE) return 'ESNcyan';
     if (this.votingSession.type === VotingSessionTypes.ROLL_CALL) return 'secondary';

@@ -15,12 +15,12 @@ import { VotingSession, VotingSessionTypes } from '@models/votingSession.model';
   styleUrls: ['votingSessions.page.scss']
 })
 export class VotingSessionsPage implements OnInit {
-  votingSessions: VotingSession[];
+  votingSessions: VotingSession[] | undefined;
 
-  @ViewChild('searchbar') searchbar: IonSearchbar;
+  @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
-  events: GAEvent[];
-  filterByEvent: string = null;
+  events: GAEvent[] | undefined;
+  filterByEvent: string | undefined;
 
   sortBy: VotingSessionsSortBy = VotingSessionsSortBy.CREATED_DATE_DESC;
   SortBy = VotingSessionsSortBy;
@@ -38,7 +38,7 @@ export class VotingSessionsPage implements OnInit {
   }
 
   ionViewDidEnter(): void {
-    this.filter(null, null, true);
+    void this.filter('', undefined, true);
   }
 
   private async loadResources(): Promise<void> {
@@ -49,13 +49,13 @@ export class VotingSessionsPage implements OnInit {
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
-    this.votingSessions = null;
+    this.votingSessions = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
   async filter(search = '', scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.votingSessions?.length)
       startPaginationAfterId = this.votingSessions[this.votingSessions.length - 1].sessionId;
 
@@ -64,7 +64,7 @@ export class VotingSessionsPage implements OnInit {
       search,
       eventId: this.filterByEvent,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 
@@ -102,6 +102,6 @@ export class VotingSessionsPage implements OnInit {
     ];
 
     const actions = await this.actionsCtrl.create({ header, buttons });
-    actions.present();
+    await actions.present();
   }
 }

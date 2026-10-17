@@ -15,13 +15,13 @@ import { CATEGORY_COLORS, TopicCategory } from '@models/category.model';
 })
 export class CategoryPage {
   @Input() categoryId = 'new';
-  category: TopicCategory;
+  category!: TopicCategory;
   colors = CATEGORY_COLORS;
 
   editMode = UXMode.VIEW;
   UXMode = UXMode;
   errors = new Set<string>();
-  entityBeforeChange: TopicCategory;
+  entityBeforeChange: TopicCategory | undefined;
 
   constructor(
     private location: Location,
@@ -44,9 +44,9 @@ export class CategoryPage {
         this.editMode = UXMode.INSERT;
       }
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -62,11 +62,11 @@ export class CategoryPage {
       this.category.load(result);
       this.location.replaceState(this.location.path().replace('/new', '/'.concat(this.category.categoryId)));
       this.editMode = UXMode.VIEW;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -80,12 +80,12 @@ export class CategoryPage {
         await this.loading.show();
         if (archive) await this._categories.archive(this.category);
         else await this._categories.unarchive(this.category);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.closePage();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -94,7 +94,7 @@ export class CategoryPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async deleteCategory(): Promise<void> {
@@ -102,13 +102,13 @@ export class CategoryPage {
       try {
         await this.loading.show();
         await this._categories.delete(this.category);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.closePage();
-      } catch (error) {
-        if (error.message === 'Category is used') this.message.error('CATEGORIES.CANT_DELETE_IF_USED_ERROR');
-        else this.message.error('COMMON.OPERATION_FAILED');
+      } catch (error: any) {
+        if (error.message === 'Category is used') await this.message.error('CATEGORIES.CANT_DELETE_IF_USED_ERROR');
+        else await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -119,7 +119,7 @@ export class CategoryPage {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   enterEditMode(): void {
@@ -129,7 +129,7 @@ export class CategoryPage {
 
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.closePage();
-    else {
+    else if (this.entityBeforeChange) {
       this.category = this.entityBeforeChange;
       this.errors = new Set<string>();
       this.editMode = UXMode.VIEW;

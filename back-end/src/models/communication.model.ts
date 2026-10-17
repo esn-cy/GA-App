@@ -29,11 +29,11 @@ export class Communication extends Resource {
   /**
    * The URL to the communication's image (if any).
    */
-  imageURL: string | null;
+  imageURL?: string;
   /**
    * The event to which the communication refers to (if any).
    */
-  event: GAEventAttached | null;
+  event?: GAEventAttached;
   /**
    * The timestamp when the communication was archived (if so).
    */
@@ -47,7 +47,7 @@ export class Communication extends Resource {
     this.content = this.clean(x.content, String);
     this.date = this.clean(x.date, d => new Date(d).toISOString(), new Date().toISOString());
     this.imageURL = this.clean(x.imageURL, String);
-    this.event = x.event?.eventId ? new GAEventAttached(x.event) : null;
+    this.event = x.event?.eventId ? new GAEventAttached(x.event) : undefined;
     if (x.archivedAt) this.archivedAt = this.clean(x.archivedAt, d => new Date(d).toISOString());
   }
 

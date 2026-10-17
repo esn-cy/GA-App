@@ -14,7 +14,7 @@
   </ion-refresher>
   <ion-grid class="ion-no-padding" *ngIf="opportunity">
     <ion-row>
-      <ion-col [size]="12" [sizeLg]="6">
+      <ion-col size="12" sizeLg="6">
         <ion-card color="white" class="opportunityCard">
           <ion-card-header>
             <ion-card-title>{{ opportunity.name }}</ion-card-title>
@@ -59,7 +59,7 @@
                 class="attachment"
                 *ngFor="let attachment of opportunity.attachments; let first = first"
                 [class.ion-margin-top]="first"
-                button
+                [button]="true"
                 (click)="downloadOpportunityAttachment(attachment)"
               >
                 <ion-icon name="attach" slot="start" />
@@ -70,7 +70,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col [size]="12" [sizeLg]="6">
+      <ion-col size="12" sizeLg="6">
         <ion-list class="aList ion-padding-bottom" *ngIf="applications && !userApplication && !opportunity.isClosed()">
           <ion-list-header>
             <ion-label class="ion-margin-start">
@@ -172,7 +172,7 @@
                 </ion-item>
                 <ion-item
                   color="white"
-                  button
+                  [button]="true"
                   [class.fieldHasError]="hasFieldAnError('attachments[' + att.name + ']')"
                   (click)="browseFilesForInputId('attachmentPicker-' + index)"
                 >
@@ -200,8 +200,8 @@
                         userApplication.attachments[att.name].format
                       }}
                     </ion-text>
-                    <p *ngIf="attachmentUploadErros[att.name]">
-                      <ion-text color="danger">{{ attachmentUploadErros[att.name] }}</ion-text>
+                    <p *ngIf="attachmentUploadErrors[att.name]">
+                      <ion-text color="danger">{{ attachmentUploadErrors[att.name] }}</ion-text>
                     </p>
                   </ion-label>
                   <ion-button
@@ -234,9 +234,9 @@
           </ion-list-header>
           <ion-item *ngIf="!applications">
             <ion-label>
-              <ion-skeleton-text animated></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
               <p>
-                <ion-skeleton-text animated></ion-skeleton-text>
+                <ion-skeleton-text [animated]="true"></ion-skeleton-text>
               </p>
             </ion-label>
           </ion-item>
@@ -246,7 +246,7 @@
           <app-application
             *ngFor="let apl of applications; let index = index"
             [application]="apl"
-            [index]="applications.length - index - 1"
+            [index]="applications!.length - index - 1"
             (select)="reviewApplication(apl)"
           />
         </ion-list>

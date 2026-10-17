@@ -9,7 +9,7 @@ import { Subject } from '@models/subject.model';
 
 @Injectable({ providedIn: 'root' })
 export class MessagesService {
-  private messages: Message[];
+  private messages: Message[] | undefined;
 
   /**
    * The number of messages to consider for the pagination, when active.
@@ -41,22 +41,22 @@ export class MessagesService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = { sortBy: MessagesSortBy.CREATION_ASC }
-  ): Promise<Message[]> {
+  ): Promise<Message[] | undefined> {
     if (!this.messages || options.force) await this.loadListOfTopic(topic);
-    if (!this.messages) return null;
+    if (!this.messages) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.messages.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm =>
-            [x.summary, x.text, x.creator.name, x.creator.section, x.creator.country]
+            [x.summary, x.text, x.creator?.name, x.creator?.section, x.creator?.country]
               .filter(f => f)
-              .some(f => f.toLowerCase().includes(searchTerm))
+              .some(f => f?.toLowerCase().includes(searchTerm))
           )
       );
 
@@ -171,24 +171,26 @@ export class MessagesService {
   }
 
   /**
-   * Add a message signaled from a web socket update.
+   * Add a message signalled from a web socket update.
    */
   webSocketAdd(message: Message): void {
-    this.messages.push(message);
+    this.messages?.push(message);
   }
 
   /**
-   * Update a message signaled from a web socket update.
+   * Update a message signalled from a web socket update.
    */
   webSocketUpdate(message: Message): void {
+    if (!this.messages) return;
     const index = this.messages.findIndex(x => x.messageId === message.messageId);
     if (index !== -1) this.messages[index] = message;
   }
 
   /**
-   * Remove a message signaled from a web socket update.
+   * Remove a message signalled from a web socket update.
    */
   webSocketRemoveById(messageId: string): void {
+    if (!this.messages) return;
     const index = this.messages.findIndex(x => x.messageId === messageId);
     if (index !== -1) this.messages.splice(index, 1);
   }

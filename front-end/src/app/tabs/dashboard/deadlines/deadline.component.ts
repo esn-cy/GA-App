@@ -16,7 +16,7 @@ import { Deadline } from '@models/deadline.model';
   selector: 'app-deadline',
   template: `
     <ion-item [color]="color" *ngIf="!deadline">
-      <ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+      <ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
     </ion-item>
     <ion-item [color]="color" *ngIf="deadline">
       <ion-badge slot="start" class="deadlineDate" *ngIf="!app.isInMobileMode()" [color]="getDeadlineColor()">
@@ -33,7 +33,7 @@ import { Deadline } from '@models/deadline.model';
           {{ deadline.target }}
         </p>
       </ion-label>
-      <ion-badge slot="end" mode="ios" *ngIf="deadline.action" [color]="deadline.actionColor">
+      <ion-badge slot="end" mode="ios" *ngIf="deadline.action" [color]="deadline.actionColor ?? undefined">
         {{ deadline.action }}
       </ion-badge>
       <ion-badge class="deadlineTime" slot="end">{{ deadline.at | dateTz : 'time' }}</ion-badge>
@@ -81,15 +81,16 @@ export class DeadlineComponent {
   /**
    * The deadline to show; if not set, shows a skeleton instead.
    */
-  @Input() deadline: Deadline;
+  @Input() deadline: Deadline | undefined;
   /**
-   * The color for the component.
+   * The colour for the component.
    */
   @Input() color = 'white';
 
   constructor(private t: IDEATranslationsService, public app: AppService) {}
 
   getDeadlineColor(): string {
+    if (!this.deadline) return 'light';
     const date = new Date(this.deadline.at);
     if (isToday(date)) return 'danger';
     if (isTomorrow(date)) return 'warning';
@@ -97,9 +98,10 @@ export class DeadlineComponent {
   }
 
   getDeadlineLabel(): string {
+    if (!this.deadline) return '';
     const date = new Date(this.deadline.at);
     if (isToday(date)) return this.t._('DEADLINES.TODAY');
     if (isTomorrow(date)) return this.t._('DEADLINES.TOMORROW');
-    else return formatDateWithLocaleAndTimeZone(date, this.t.getCurrentLang(), this.app.configurations.timezone);
+    else return formatDateWithLocaleAndTimeZone(date, this.t.getCurrentLang(), this.app.configurations.timezone) ?? '';
   }
 }

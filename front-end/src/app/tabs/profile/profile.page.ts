@@ -18,7 +18,7 @@ import { UserBadge } from '@models/badge.model';
 export class ProfilePage implements OnInit {
   version = env.idea.app.version;
 
-  userBadges: UserBadge[];
+  userBadges: UserBadge[] | undefined;
 
   private _popover = inject(PopoverController);
   private _t = inject(IDEATranslationsService);
@@ -45,6 +45,6 @@ export class ProfilePage implements OnInit {
       componentProps: { userBadge },
       cssClass: 'badgePopover'
     });
-    popover.present();
+    await popover.present();
   }
 }

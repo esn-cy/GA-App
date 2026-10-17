@@ -9,7 +9,7 @@ import {
   IDEATranslationsService
 } from '@idea-ionic/common';
 
-import { EventsPickerComponent } from 'src/app/common/eventsPicker.component';
+import { EventsPickerComponent } from '@common/eventsPicker.component';
 import { HTMLEditorModule } from '@app/common/htmlEditor.module';
 
 import { AppService } from '@app/app.service';
@@ -100,7 +100,7 @@ export class ManageCommunicationComponent {
   /**
    * The communication to manage.
    */
-  @Input() communication: Communication;
+  @Input({ required: true }) communication!: Communication;
 
   errors = new Set<string>();
 
@@ -120,11 +120,11 @@ export class ManageCommunicationComponent {
   }
 
   browseImagesForElementId(elementId: string): void {
-    document.getElementById(elementId).click();
+    document.getElementById(elementId)?.click();
   }
 
-  async uploadImage({ target }): Promise<void> {
-    const file = target.files[0];
+  async uploadImage({ target }: { target: HTMLInputElement }): Promise<void> {
+    const file = target.files ? target.files[0] : undefined;
     if (!file) return;
 
     try {
@@ -132,10 +132,10 @@ export class ManageCommunicationComponent {
       const imageURI = await this._media.uploadImage(file);
       this.communication.imageURL = this.app.getImageURLByURI(imageURI);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
       if (target) target.value = '';
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -149,17 +149,17 @@ export class ManageCommunicationComponent {
       if (!this.communication.communicationId) result = await this._communications.insert(this.communication);
       else result = await this._communications.update(this.communication);
       this.communication.load(result);
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
       this.close();
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async duplicateCommunication(): Promise<void> {
@@ -171,12 +171,12 @@ export class ManageCommunicationComponent {
         copy.date = new Date().toISOString();
         delete copy.archivedAt;
         copy.load(await this._communications.insert(copy));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -185,7 +185,7 @@ export class ManageCommunicationComponent {
       { text: this.t._('COMMON.DUPLICATE'), handler: doDuplicate }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async askAndArchive(archive = true): Promise<void> {
@@ -194,12 +194,12 @@ export class ManageCommunicationComponent {
         await this.loading.show();
         if (archive) await this._communications.archive(this.communication);
         else await this._communications.unarchive(this.communication);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -208,7 +208,7 @@ export class ManageCommunicationComponent {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async askAndDelete(): Promise<void> {
@@ -216,12 +216,12 @@ export class ManageCommunicationComponent {
       try {
         await this.loading.show();
         await this._communications.delete(this.communication);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -231,6 +231,6 @@ export class ManageCommunicationComponent {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 }

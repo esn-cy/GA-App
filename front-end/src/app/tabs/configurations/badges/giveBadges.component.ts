@@ -53,7 +53,7 @@ import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
             fill="clear"
             color="medium"
             *ngIf="usersBadges"
-            (click)="usersBadges = null"
+            (click)="usersBadges = undefined"
           >
             <ion-icon icon="arrow-undo" slot="icon-only" />
           </ion-button>
@@ -62,7 +62,7 @@ import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
             class="ion-margin-top"
             fill="clear"
             *ngIf="usersBadges"
-            (click)="app.openUserProfileById(userId)"
+            (click)="app.openUserProfileById(userId!)"
           >
             <ion-icon slot="icon-only" icon="open-outline" />
           </ion-button>
@@ -75,12 +75,12 @@ import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
                 (ionError)="_badges.fallbackBadgeImage($event?.target)"
                 (click)="openUserBadgeDetails(userBadge)"
               />
-              <ion-button fill="clear" color="danger" (click)="removeBadgeFromUser(userId, userBadge)">
+              <ion-button fill="clear" color="danger" (click)="removeBadgeFromUser(userId!, userBadge)">
                 <ion-icon slot="icon-only" icon="trash" />
               </ion-button>
             </ion-col>
             <ion-col class="ion-text-center">
-              <ion-button shape="round" (click)="addBadgeToUser(userId)">
+              <ion-button shape="round" (click)="addBadgeToUser(userId!)">
                 <ion-icon slot="icon-only" icon="add" />
               </ion-button>
             </ion-col>
@@ -101,9 +101,9 @@ import { Badge, BuiltInBadges, UserBadge } from '@models/badge.model';
   ]
 })
 export class GiveBadgesComponent implements OnInit {
-  userId: string;
-  usersBadges: UserBadge[];
-  badges: Badge[];
+  userId: string | undefined;
+  usersBadges: UserBadge[] | undefined;
+  badges: Badge[] | undefined;
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -120,17 +120,17 @@ export class GiveBadgesComponent implements OnInit {
     this.badges = await this._badges.getList();
   }
 
-  async getUserBadges(userId: string): Promise<void> {
+  async getUserBadges(userId?: string): Promise<void> {
     if (!userId) return;
     userId = userId.toLowerCase();
-    this.usersBadges = null;
+    this.usersBadges = undefined;
     try {
       await this.loading.show();
       this.usersBadges = await this._badges.getListOfUserById(userId);
     } catch (error) {
-      this.message.error('COMMON.SOMETHING_WENT_WRONG');
+      await this.message.error('COMMON.SOMETHING_WENT_WRONG');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -140,12 +140,12 @@ export class GiveBadgesComponent implements OnInit {
       try {
         await this.loading.show();
         await this._badges.removeBadgeFromUser(userId, userBadge.badge);
-        this.usersBadges.splice(this.usersBadges.indexOf(userBadge), 1);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        this.usersBadges?.splice(this.usersBadges.indexOf(userBadge), 1);
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -169,7 +169,7 @@ export class GiveBadgesComponent implements OnInit {
           description: this.t._('BADGES.BUILT_IN_BADGES_I.'.concat(badge))
         })
     );
-    const data = [...builtInBadges, ...this.badges]
+    const data = [...builtInBadges, ...(this.badges ?? [])]
       .map(
         badge =>
           new Suggestion({
@@ -197,15 +197,15 @@ export class GiveBadgesComponent implements OnInit {
       try {
         await this.loading.show();
         await this._badges.addBadgeToUser(userId, badge);
-        this.usersBadges.unshift(new UserBadge({ userId, badge }));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        this.usersBadges?.unshift(new UserBadge({ userId, badge }));
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     });
-    modal.present();
+    await modal.present();
   }
 
   async openUserBadgeDetails(userBadge: UserBadge): Promise<void> {
@@ -214,10 +214,10 @@ export class GiveBadgesComponent implements OnInit {
       componentProps: { userBadge },
       cssClass: 'badgePopover'
     });
-    popover.present();
+    await popover.present();
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }

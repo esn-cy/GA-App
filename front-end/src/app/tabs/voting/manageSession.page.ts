@@ -36,12 +36,12 @@ import { VotingResults } from '@models/votingResult.model';
 })
 export class ManageVotingSessionPage implements OnDestroy {
   @Input() sessionId = VotingSessionTypes.FORM_PUBLIC;
-  votingSession: VotingSession;
+  votingSession!: VotingSession;
 
   editMode = UXMode.VIEW;
   UXMode = UXMode;
   errors = new Set<string>();
-  entityBeforeChange: VotingSession;
+  entityBeforeChange: VotingSession | undefined;
 
   publishingOption = PublishingOptions.DRAFT;
   PublishingOptions = PublishingOptions;
@@ -50,10 +50,10 @@ export class ManageVotingSessionPage implements OnDestroy {
   pageSection = PageSections.GENERAL;
   PageSections = PageSections;
 
-  @ViewChild('votersSearchbar') searchbar: IonSearchbar;
-  @ViewChild('votersTable') table: DatatableComponent;
+  @ViewChild('votersSearchbar') searchbar: IonSearchbar | undefined;
+  @ViewChild('votersTable') table: DatatableComponent | undefined;
 
-  col: TableColumn[];
+  col: TableColumn[] = [];
   selectionType = SelectionType.single;
   trackByProp = 'id';
   columnMode = ColumnMode.force;
@@ -62,19 +62,19 @@ export class ManageVotingSessionPage implements OnDestroy {
   headerHeight = 56;
   footerHeight = 80;
 
-  filteredVoters: Voter[];
-  numMissingEmails: number;
-  numDuplicatedNames: number;
-  numDuplicatedEmails: number;
-  totalWeights: number;
+  filteredVoters: Voter[] | undefined;
+  numMissingEmails = 0;
+  numDuplicatedNames = 0;
+  numDuplicatedEmails = 0;
+  totalWeights = 0;
 
   sessionReady = false;
   timezones = (Intl as any).supportedValuesOf('timeZone');
-  extendDurationAt: ISOString;
-  extendDurationTimezone: string;
+  extendDurationAt: ISOString | undefined;
+  extendDurationTimezone: string | undefined;
 
-  votingTickets: VotingTicket[];
-  results: VotingResults;
+  votingTickets: VotingTicket[] | undefined;
+  results: VotingResults | undefined;
   showRawResults = true;
 
   rollCallInProgress = false;
@@ -82,7 +82,7 @@ export class ManageVotingSessionPage implements OnDestroy {
 
   immediateInProgress = false;
   immediateByBallot: Record<string, number>[] = [];
-  @ViewChild('immediateAccordion') immediateAccordion: IonAccordionGroup;
+  @ViewChild('immediateAccordion') immediateAccordion: IonAccordionGroup | undefined;
 
   constructor(
     private location: Location,
@@ -111,7 +111,7 @@ export class ManageVotingSessionPage implements OnDestroy {
         if (this.votingSession.hasStarted()) {
           this.votingTickets = await this._voting.getVotingTicketsStatus(this.votingSession);
           if (this.votingSession.isInProgress()) {
-            this.checkWhetherSessionShouldEndEarly();
+            await this.checkWhetherSessionShouldEndEarly();
             this.openWebSocketForVotingTicketsStatus();
           }
         }
@@ -124,9 +124,9 @@ export class ManageVotingSessionPage implements OnDestroy {
         this.editMode = UXMode.INSERT;
       }
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -153,11 +153,11 @@ export class ManageVotingSessionPage implements OnDestroy {
         this.location.path().replace('/'.concat(this.votingSession.type), '/'.concat(this.votingSession.sessionId))
       );
       this.editMode = UXMode.VIEW;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -175,12 +175,12 @@ export class ManageVotingSessionPage implements OnDestroy {
   async exitEditMode(): Promise<void> {
     const doExit = (): void => {
       if (this.editMode === UXMode.INSERT) this.app.goToInTabs(['voting'], { back: true });
-      else {
+      else if (this.entityBeforeChange) {
         this.votingSession = this.entityBeforeChange;
         this.errors = new Set<string>();
         this.editMode = UXMode.VIEW;
         this.setUIHelpersForComplexFields();
-        this.filterVoters(this.searchbar?.value);
+        this.filterVoters(this.searchbar?.value ?? undefined);
       }
     };
 
@@ -193,7 +193,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doExit }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   //
@@ -223,12 +223,12 @@ export class ManageVotingSessionPage implements OnDestroy {
         await this.loading.show();
         if (archive) await this._voting.archive(this.votingSession);
         else await this._voting.unarchive(this.votingSession);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['voting', this.votingSession.sessionId], { back: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -237,7 +237,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async deleteSession(): Promise<void> {
@@ -245,12 +245,12 @@ export class ManageVotingSessionPage implements OnDestroy {
       try {
         await this.loading.show();
         await this._voting.delete(this.votingSession);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['voting'], { back: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -260,7 +260,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async duplicateSession(): Promise<void> {
@@ -272,12 +272,12 @@ export class ManageVotingSessionPage implements OnDestroy {
         delete copy.publishedSince;
         delete copy.archivedAt;
         copy.load(await this._voting.insert(copy));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.goToInTabs(['voting', copy.sessionId, 'manage'], { root: true });
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -286,11 +286,11 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.DUPLICATE'), handler: doDuplicate }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async addScrutineer(): Promise<void> {
-    const doAdd = async ({ userId }): Promise<void> => {
+    const doAdd = async ({ userId }: { userId: string }): Promise<void> => {
       if (!userId) return;
       userId = userId.toLowerCase();
       if (this.votingSession.scrutineersIds.includes(userId)) return;
@@ -337,7 +337,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     ];
 
     const actions = await this.actionsCtrl.create({ header, buttons });
-    actions.present();
+    await actions.present();
   }
 
   private async addBallotFromTemplate(template: 'blank' | 'yes-no' | 'candidates'): Promise<void> {
@@ -367,7 +367,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       ballot.load(data);
       if (isNew) this.votingSession.ballots.push(ballot);
     });
-    modal.present();
+    await modal.present();
   }
 
   async removeBallot(ballot: VotingBallot): Promise<void> {
@@ -381,7 +381,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.REMOVE'), role: 'destructive', handler: doRemove }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   //
@@ -395,13 +395,13 @@ export class ManageVotingSessionPage implements OnDestroy {
         prop: 'id',
         name: this.t._('VOTING.STARTED_VOTING').split(' ')[0],
         maxWidth: 100,
-        pipe: { transform: id => (this.votingTickets?.find(v => id === v.voterId).signedInAt ? '✔️' : '') }
+        pipe: { transform: id => (this.votingTickets?.find(v => id === v.voterId)?.signedInAt ? '✔️' : '') }
       });
       this.col.push({
         prop: 'id',
         name: this.t._('VOTING.VOTED'),
         maxWidth: 100,
-        pipe: { transform: id => (this.votingTickets?.find(v => id === v.voterId).votedAt ? '✔️' : '') }
+        pipe: { transform: id => (this.votingTickets?.find(v => id === v.voterId)?.votedAt ? '✔️' : '') }
       });
     }
     this.col.push({ prop: 'id', name: this.t._('VOTING.VOTER_ID'), maxWidth: 150 });
@@ -416,13 +416,13 @@ export class ManageVotingSessionPage implements OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   setVotersTableHeight(event?: Event): void {
-    const toolbarBottom = document.getElementById('votersTableToolbar')?.getBoundingClientRect().bottom;
+    const toolbarBottom = document.getElementById('votersTableToolbar')?.getBoundingClientRect().bottom ?? 0;
     const currentPageHeight = event?.target ? (event.target as Window).innerHeight : window.innerHeight;
     const heightAvailableInPx = currentPageHeight - toolbarBottom - this.headerHeight - this.footerHeight;
     this.limit = Math.floor(heightAvailableInPx / this.rowHeight);
   }
 
-  filterVoters(searchText?: string, stayInPage = false): void {
+  filterVoters(searchText?: string | null, stayInPage = false): void {
     searchText = (searchText ?? '').toLowerCase();
 
     this.filteredVoters = this.votingSession.voters.filter(x =>
@@ -458,11 +458,11 @@ export class ManageVotingSessionPage implements OnDestroy {
         this.votingSession.voters.push(voter);
       this.filterVoters(this.searchbar?.value, true);
     });
-    modal.present();
+    await modal.present();
   }
 
   async addVoter(): Promise<void> {
-    await this.manageVoter(new Voter(null, this.votingSession), true);
+    await this.manageVoter(new Voter(undefined, this.votingSession), true);
   }
 
   async actionsOnVoters(): Promise<void> {
@@ -489,7 +489,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     buttons.push({ text: this.t._('COMMON.CANCEL'), role: 'cancel', icon: 'arrow-undo' });
 
     const actions = await this.actionsCtrl.create({ header, buttons });
-    actions.present();
+    await actions.present();
   }
 
   private async importVoters(): Promise<void> {
@@ -502,7 +502,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       this.votingSession.voters = voters;
       this.filterVoters();
     });
-    modal.present();
+    await modal.present();
   }
 
   private exportVoters(): void {
@@ -522,7 +522,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.REMOVE'), handler: doRemove }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   //
@@ -543,15 +543,15 @@ export class ManageVotingSessionPage implements OnDestroy {
   }
 
   getVotersDuplicatedIds(): string[] {
-    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.id?.trim()));
+    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.id?.trim()).filter((x): x is string => !!x));
   }
 
   getVotersDuplicatedNames(): string[] {
-    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.name?.trim().toLowerCase()));
+    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.name?.trim().toLowerCase()).filter((x): x is string => !!x));
   }
 
   getVotersDuplicatedEmails(): string[] {
-    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.email?.trim().toLowerCase()));
+    return this.getDuplicatesOfList(this.votingSession.voters.map(x => x.email?.trim().toLowerCase()).filter((x): x is string => !!x));
   }
 
   getNameOfVotersWithoutEmail(): string[] {
@@ -576,14 +576,14 @@ export class ManageVotingSessionPage implements OnDestroy {
         try {
           await this.loading.show();
           this.votingSession.load(await this._voting.start(session));
-          this.message.success('VOTING.VOTE_IS_STARTING');
+          await this.message.success('VOTING.VOTE_IS_STARTING');
           this.pageSection = PageSections.ANALYTICS;
           this.votingTickets = await this._voting.getVotingTicketsStatus(this.votingSession);
           this.openWebSocketForVotingTicketsStatus();
         } catch (error) {
-          this.message.error('COMMON.OPERATION_FAILED');
+          await this.message.error('COMMON.OPERATION_FAILED');
         } finally {
-          this.loading.hide();
+          await this.loading.hide();
         }
       };
       const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -593,7 +593,7 @@ export class ManageVotingSessionPage implements OnDestroy {
         { text: this.t._('COMMON.CONFIRM'), handler: doStart }
       ];
       const alert = await this.alertCtrl.create({ header, message, buttons });
-      alert.present();
+      await alert.present();
     }
   }
 
@@ -620,7 +620,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     if (!this.votingSession.isInProgress()) return;
 
     this.errors = new Set();
-    if (!this.votingSession.endsAt || this.extendDurationAt < this.votingSession.endsAt)
+    if (!this.votingSession.endsAt || !this.extendDurationAt || this.extendDurationAt < this.votingSession.endsAt)
       this.errors.add('extendDurationAt');
     if (!this.votingSession.timezone) this.errors.add('extendDurationTimezone');
 
@@ -631,13 +631,13 @@ export class ManageVotingSessionPage implements OnDestroy {
         await this.loading.show();
         const session = new VotingSession(this.votingSession);
         session.endsAt = this.extendDurationAt;
-        session.timezone = this.extendDurationTimezone;
+        if (this.extendDurationTimezone) session.timezone = this.extendDurationTimezone;
         this.votingSession.load(await this._voting.extendDuration(session));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -648,7 +648,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), handler: doExtend }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async stopSessionPrematurely(): Promise<void> {
@@ -658,11 +658,11 @@ export class ManageVotingSessionPage implements OnDestroy {
       try {
         await this.loading.show();
         this.votingSession.load(await this._voting.stopPrematurely(this.votingSession));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -673,7 +673,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), handler: doEnd }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   private openWebSocketForVotingTicketsStatus(): void {
@@ -686,16 +686,16 @@ export class ManageVotingSessionPage implements OnDestroy {
 
   private handleMessageFromWebSocket(webSocketMessage: WebSocketMessage): void {
     const votingTicket = new VotingTicket(webSocketMessage.item);
-    this.votingTickets.find(x => x.voterId === votingTicket.voterId)?.load(votingTicket);
-    this.checkWhetherSessionShouldEndEarly();
+    this.votingTickets?.find(x => x.voterId === votingTicket.voterId)?.load(votingTicket);
+    void this.checkWhetherSessionShouldEndEarly();
   }
 
   getNumVotersWhoSignedIn(): number {
-    return this.votingTickets?.filter(x => x.signedInAt).length;
+    return this.votingTickets?.filter(x => x.signedInAt).length ?? 0;
   }
 
   getNumVotersWhoVoted(): number {
-    return this.votingTickets?.filter(x => x.votedAt).length;
+    return this.votingTickets?.filter(x => x.votedAt).length ?? 0;
   }
 
   private async checkWhetherSessionShouldEndEarly(): Promise<void> {
@@ -711,9 +711,9 @@ export class ManageVotingSessionPage implements OnDestroy {
       await this.loading.show();
       this.results = await this._voting.getVotesBeforeTheyArePublished(this.votingSession);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -723,11 +723,11 @@ export class ManageVotingSessionPage implements OnDestroy {
         await this.loading.show();
         this.votingSession.load(await this._voting.publishVotingFormResults(this.votingSession));
         this.results = this.votingSession.results;
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -737,7 +737,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), handler: doPublish }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   downloadResults(): void {
@@ -779,7 +779,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const sumOfWeights = this.votingSession.getTotWeights();
     const balancedWeights: Record<string, number> = {};
     this.votingSession.voters.forEach(
-      voter => (balancedWeights[voter.id] = (this.votingSession.isWeighted ? voter.voteWeight : 1) / sumOfWeights)
+      voter => (balancedWeights[voter.id] = (this.votingSession.isWeighted ? (voter.voteWeight ?? 1) : 1) / sumOfWeights)
     );
     this.votingSession.ballots.forEach((_, bIndex): void => {
       results[bIndex] = [];
@@ -792,6 +792,7 @@ export class ManageVotingSessionPage implements OnDestroy {
         const oResult = immediateOfBallot[voter.id] ?? absentIndex;
         const vRes = results[bIndex][oResult];
         vRes.value += balancedWeights[voter.id];
+        vRes.voters = vRes.voters ?? [];
         vRes.voters.push(voter.name);
         if (oResult !== absentIndex) participantVoters.add(voter.name);
       });
@@ -799,13 +800,13 @@ export class ManageVotingSessionPage implements OnDestroy {
     return { results, participantVoters: Array.from(participantVoters) };
   }
 
-  setImmediateFromResults(results: VotingResults): void {
+  setImmediateFromResults(results?: VotingResults): void {
     this.immediateByBallot = [];
     if (!results) return;
     results.forEach((bResult, bIndex): void => {
       this.immediateByBallot[bIndex] = {};
       bResult.forEach((oResult, oIndex): void => {
-        oResult.voters.forEach(voterName => {
+        oResult.voters?.forEach(voterName => {
           const voter = this.votingSession.voters.find(x => x.name === voterName);
           if (voter) this.immediateByBallot[bIndex][voter.id] = oIndex;
         });
@@ -825,7 +826,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doCancel }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async saveImmediate(publish = false, nextIndex?: number): Promise<void> {
@@ -841,12 +842,12 @@ export class ManageVotingSessionPage implements OnDestroy {
         } else {
           this.immediateInProgress = false;
           this.setImmediateFromResults(this.results);
-          this.message.success('COMMON.OPERATION_COMPLETED');
+          await this.message.success('COMMON.OPERATION_COMPLETED');
         }
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._(publish ? 'VOTING.PUBLISH_RESULTS' : 'COMMON.SAVE');
@@ -861,7 +862,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._(publish ? 'VOTING.PUBLISH_RESULTS' : 'COMMON.SAVE'), handler: doSave }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   //
@@ -876,7 +877,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     const increment = 1 / this.votingSession.voters.length;
     // roll calls have a static 1-ballot 1-option in terms of data structure
     const results: VotingResults = [[{ value: 0, voters: [] }]];
-    const participantVoters = [];
+    const participantVoters: string[] = [];
     this.votingSession.voters
       .filter(x => this.rollCall[x.id])
       .forEach(x => {
@@ -886,7 +887,7 @@ export class ManageVotingSessionPage implements OnDestroy {
     return { results, participantVoters };
   }
 
-  setRollCallFromParticipantVoters(participantVoters: string[]): void {
+  setRollCallFromParticipantVoters(participantVoters?: string[]): void {
     this.rollCall = {};
     if (!participantVoters) return;
     participantVoters.forEach(voterName => {
@@ -907,7 +908,7 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doCancel }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async saveRollCall(publish = false): Promise<void> {
@@ -920,11 +921,11 @@ export class ManageVotingSessionPage implements OnDestroy {
         this.results = this.votingSession.results;
         this.rollCallInProgress = false;
         this.setRollCallFromParticipantVoters(this.votingSession.participantVoters);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._(publish ? 'VOTING.PUBLISH_RESULTS' : 'COMMON.SAVE');
@@ -937,8 +938,10 @@ export class ManageVotingSessionPage implements OnDestroy {
       { text: this.t._(publish ? 'VOTING.PUBLISH_RESULTS' : 'COMMON.SAVE'), handler: doSave }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
+
+  protected readonly Boolean = Boolean;
 }
 
 enum UXMode {

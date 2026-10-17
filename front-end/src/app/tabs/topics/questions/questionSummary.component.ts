@@ -11,9 +11,9 @@ import { Question } from '@models/question.model';
 })
 export class QuestionSummaryComponent {
   /**
-   * The question to show. If null, load a skeleton instead.
+   * The question to show. If undefined, load a skeleton instead.
    */
-  @Input() question: Question | null;
+  @Input() question: Question | undefined;
   /**
    * Whether the question is currently selected.
    */

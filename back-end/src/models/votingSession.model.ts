@@ -31,7 +31,7 @@ export class VotingSession extends Resource {
   /**
    * The event for which the voting session is taken (if any).
    */
-  event: GAEventAttached | null;
+  event?: GAEventAttached;
   /**
    * The timestamp of creation.
    */
@@ -64,12 +64,12 @@ export class VotingSession extends Resource {
    * The timestamp when the voting session started. If not set, or in the future, the session hasn't started yet.
    * Only form-like sessions have a start and an end.
    */
-  startsAt: ISOString | null;
+  startsAt?: ISOString;
   /**
    * The timestamp of end of the voting session. If set and past, the voting session has ended.
    * Only form-like sessions have a start and an end.
    */
-  endsAt: ISOString | null;
+  endsAt?: ISOString;
   /**
    * A timezone for the timestamps of start and end of the voting session.
    */
@@ -100,7 +100,7 @@ export class VotingSession extends Resource {
     this.type = this.clean(x.type, String, VotingSessionTypes.FORM_PUBLIC);
     if (!x.type && x.isSecret) this.type = VotingSessionTypes.FORM_SECRET; // backwards compatibility prior #88
     this.isWeighted = this.clean(x.isWeighted, Boolean, false);
-    this.event = x.event?.eventId ? new GAEventAttached(x.event) : null;
+    this.event = x.event?.eventId ? new GAEventAttached(x.event) : undefined;
     this.createdAt = this.clean(x.createdAt, d => new Date(d).toISOString(), new Date().toISOString());
     if (x.updatedAt) this.updatedAt = this.clean(x.updatedAt, d => new Date(d).toISOString());
     if (x.publishedSince) this.publishedSince = this.clean(x.publishedSince, d => new Date(d).toISOString());
@@ -158,7 +158,7 @@ export class VotingSession extends Resource {
     if (this.voters.length > 1000) e.push('voters');
 
     if (checkIfReady || this.startsAt) {
-      if (this.iE(this.publishedSince, 'datetime') || this.publishedSince > new Date().toISOString())
+      if (this.iE(this.publishedSince, 'datetime') || !this.publishedSince || this.publishedSince > new Date().toISOString())
         e.push('publishedSince');
       if (this.type !== VotingSessionTypes.ROLL_CALL && this.iE(this.ballots)) e.push('ballots');
       if (this.iE(this.voters)) e.push('voters');
@@ -169,7 +169,7 @@ export class VotingSession extends Resource {
       if (this.startsAt) {
         const tenMinutes = new Date();
         tenMinutes.setMinutes(tenMinutes.getMinutes() + 10);
-        if (this.iE(this.endsAt, 'datetime') || this.startsAt > this.endsAt || tenMinutes.toISOString() > this.endsAt)
+        if (this.iE(this.endsAt, 'datetime') || !this.endsAt || this.startsAt > this.endsAt || tenMinutes.toISOString() > this.endsAt)
           e.push('endsAt');
         if (this.iE(this.timezone)) e.push('timezone');
       }
@@ -209,14 +209,14 @@ export class VotingSession extends Resource {
    * Whether the voting session has ended. Note: it returns true even if the session ended (but it has started).
    */
   hasStarted(): boolean {
-    return this.startsAt && this.startsAt < new Date().toISOString();
+    return !!(this.startsAt && this.startsAt < new Date().toISOString());
   }
 
   /**
    * Whether the voting session has started and ended.
    */
   hasEnded(): boolean {
-    return this.hasStarted() && this.endsAt < new Date().toISOString();
+    return !!(this.hasStarted() && this.endsAt && this.endsAt < new Date().toISOString());
   }
 
   /**
@@ -238,7 +238,7 @@ export class VotingSession extends Resource {
    */
   getTotWeights(): number {
     if (!this.isWeighted) return this.voters.length;
-    else return this.voters.reduce((tot, acc): number => (tot + acc.voteWeight), 0);
+    else return this.voters.reduce((tot, acc): number => tot + (acc.voteWeight ?? 0), 0);
   }
 
   /**
@@ -265,8 +265,8 @@ export class VotingSession extends Resource {
    * Get the voters who didn't vote (absent).
    * Note: either a voter is present for all the ballots or they are absents for all the ballots.
    */
-  getAbsentVoters(): Voter[] {
-    if (!this.participantVoters) return;
+  getAbsentVoters(): Voter[] | undefined {
+    if (!this.participantVoters) return undefined;
     const votersPresent = new Set(this.participantVoters);
     return this.voters.filter(x => !votersPresent.has(x.name)).sort((a, b): number => a.name.localeCompare(b.name));
   }
@@ -341,12 +341,12 @@ export class Voter extends Resource {
    * The email address to which the voting tokens will be sent (in case of form-type voting sessions).
    * If not set, no email will be sent; without a voting link, the voter can't vote and will result absent.
    */
-  email: string | null;
+  email?: string;
   /**
    * A number with high precision that represents the weight of the voter.
-   * If the vote is not weighted, it equals `null`.
+   * If the vote is not weighted, it's undefined.
    */
-  voteWeight: number | null;
+  voteWeight?: number;
 
   load(x: any, votingSession: VotingSession): void {
     super.load(x);
@@ -354,7 +354,7 @@ export class Voter extends Resource {
     this.name = this.clean(x.name, String);
     if (votingSession.isForm()) this.email = this.clean(x.email, String);
     if (votingSession.isWeighted) this.voteWeight = this.clean(x.voteWeight, w => Math.round(Number(w)));
-    else this.voteWeight = null;
+    else delete this.voteWeight;
   }
 
   validate(votingSession: VotingSession): string[] {
@@ -362,7 +362,7 @@ export class Voter extends Resource {
     if (this.iE(this.id)) e.push('id');
     if (this.iE(this.name)) e.push('name');
     if (votingSession.isForm() && this.email && this.iE(this.email, 'email')) e.push('email');
-    if (votingSession.isWeighted && (this.voteWeight < 1 || this.voteWeight > 999_999)) e.push('voteWeight');
+    if (votingSession.isWeighted && (!this.voteWeight || this.voteWeight < 1 || this.voteWeight > 999_999)) e.push('voteWeight');
     return e;
   }
 }

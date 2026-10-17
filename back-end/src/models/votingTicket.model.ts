@@ -70,4 +70,5 @@ export interface ExportableVotingTicket {
   'IP address': string;
   'User agent': string;
   'Vote date/time': string;
+  'Fraud detection'?: string;
 }

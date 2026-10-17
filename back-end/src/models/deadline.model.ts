@@ -21,26 +21,26 @@ export class Deadline extends Resource {
   /**
    * The event to which the deadline refers to (if any).
    */
-  event: GAEventAttached | null;
+  event?: GAEventAttached;
   /**
    * A descriptive field to help users identify the target group/people of the deadline (if any).
    */
-  target: string | null;
+  target?: string;
   /**
    * A descriptive field to help users identify the kind of action related to the deadline (if any).
    */
-  action: string | null;
+  action?: string;
   /**
    * A colour to help users visually understand the kind of action related to the deadline (if any).
    */
-  actionColor: string | null;
+  actionColor?: string;
 
   load(x: any): void {
     super.load(x);
     this.deadlineId = this.clean(x.deadlineId, String);
     this.name = this.clean(x.name, String);
     this.at = this.clean(x.at, d => new Date(d).toISOString());
-    this.event = x.event?.eventId ? new GAEventAttached(x.event) : null;
+    this.event = x.event?.eventId ? new GAEventAttached(x.event) : undefined;
     this.target = this.clean(x.target, String);
     this.action = this.clean(x.action, String);
     this.actionColor = this.clean(x.actionColor, String);

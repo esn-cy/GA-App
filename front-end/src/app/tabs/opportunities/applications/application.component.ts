@@ -45,7 +45,7 @@ import { Application, ApplicationStatuses } from '@models/application.model';
         <app-html-editor [content]="application.motivation" [editMode]="false"></app-html-editor>
         <ion-item
           *ngFor="let att of application.attachments | keyvalue"
-          button
+          [button]="true"
           [color]="color"
           (click)="downloadApplicationAttachment(att.key)"
         >
@@ -55,8 +55,8 @@ import { Application, ApplicationStatuses } from '@models/application.model';
       </ion-card-content>
     </ion-card>
     <!---->
-    <ion-item *ngIf="!card" button detail (click)="select.emit()">
-      <ion-note slot="start">#{{ index + 1 }}</ion-note>
+    <ion-item *ngIf="!card" [button]="true" [detail]="true" (click)="select.emit()">
+      <ion-note slot="start">#{{ (index ?? 0) + 1 }}</ion-note>
       <ion-label class="ion-text-wrap">
         {{ application.subject.name }}
         <p>{{ application.subject.getOrigin() }}</p>
@@ -81,7 +81,7 @@ export class ApplicationStandaloneComponent {
   /**
    * The application to show.
    */
-  @Input() application: Application;
+  @Input({ required: true }) application!: Application;
   /**
    * Whether to display the full application as a card.
    */
@@ -89,15 +89,15 @@ export class ApplicationStandaloneComponent {
   /**
    * The index to display if the element is shown as an item.
    */
-  @Input() index: number;
+  @Input() index: number | undefined;
   /**
-   * The color of the item.
+   * The colour of the item.
    */
-  @Input() color: string;
+  @Input() color: string | undefined;
   /**
    * The lines attribute of the item.
    */
-  @Input() lines: string;
+  @Input() lines: 'full' | 'inset' | 'none' | undefined;
   /**
    * Whether the component is editable.
    */
@@ -139,9 +139,9 @@ export class ApplicationStandaloneComponent {
       const url = await this._applications.downloadAttachment(this.application, expectedName);
       await this.app.openURL(url);
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 }

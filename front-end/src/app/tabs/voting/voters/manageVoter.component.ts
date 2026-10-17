@@ -41,7 +41,7 @@ import { Voter, VotingSession } from '@models/votingSession.model';
           <ion-label position="stacked">
             {{ 'VOTING.VOTER_ID' | translate }} <ion-text class="obligatoryDot" />
           </ion-label>
-          <ion-input readonly [value]="voter.id" />
+          <ion-input [readonly]="true" [value]="voter.id" />
         </ion-item>
         <ion-item [class.fieldHasError]="hasFieldAnError('name')">
           <ion-label position="stacked">
@@ -60,7 +60,7 @@ import { Voter, VotingSession } from '@models/votingSession.model';
           <ion-input
             type="number"
             pattern="[0-9]{1,6}"
-            [step]="1"
+            step="1"
             [min]="1"
             [max]="999999"
             [disabled]="!editMode"
@@ -95,11 +95,11 @@ export class ManageVoterStandaloneComponent implements OnInit {
   /**
    * The voter to manage.
    */
-  @Input() voter: Voter;
+  @Input({ required: true }) voter!: Voter;
   /**
    * The related voting session.
    */
-  @Input() votingSession: VotingSession;
+  @Input({ required: true }) votingSession!: VotingSession;
   /**
    * Whether the component is in edit mode.
    */
@@ -128,31 +128,31 @@ export class ManageVoterStandaloneComponent implements OnInit {
   async save(): Promise<void> {
     this.errors = new Set(this.voter.validate(this.votingSession));
     if (this.errors.size) return this.message.error('COMMON.FORM_HAS_ERROR_TO_CHECK');
-    this.modalCtrl.dismiss(this.voter);
+    await this.modalCtrl.dismiss(this.voter);
   }
 
   removeVoter(): void {
     this.voter.id = 'DELETE';
-    this.modalCtrl.dismiss(this.voter);
+    void this.modalCtrl.dismiss(this.voter);
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async resendVotingLink(): Promise<void> {
     const header = this.t._('VOTING.RESEND_VOTING_LINK');
     const inputs: any[] = [{ name: 'email', type: 'email', value: this.voter.email }];
-    const doSend = async ({ email }): Promise<void> => {
+    const doSend = async ({ email }: { email?: string }): Promise<void> => {
       if (!email) return;
       try {
         await this.loading.show();
         await this._voting.resendVotingTicketToVoter(this.votingSession, this.voter, email);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const buttons = [
@@ -170,11 +170,11 @@ export class ManageVoterStandaloneComponent implements OnInit {
       const header = this.t._('VOTING.SHOW_VOTING_TOKEN');
       const buttons = [{ text: this.t._('COMMON.CLOSE') }];
       const alert = await this.alertCtrl.create({ header, message: token, buttons, cssClass: 'selectableAlert' });
-      alert.present();
+      await alert.present();
     } catch (error) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 }

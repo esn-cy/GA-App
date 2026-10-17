@@ -17,7 +17,7 @@ const FIRST_YEAR_FOR_DEADLINES = 2023;
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, IDEATranslationsModule, DeadlineComponent],
-  selector: 'app-dealines',
+  selector: 'app-deadlines',
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="medium">
@@ -49,7 +49,7 @@ const FIRST_YEAR_FOR_DEADLINES = 2023;
               [(ngModel)]="filterByYear"
               (ionChange)="loadListOfYear(filterByYear)"
             >
-              <ion-select-option [value]="null">{{ 'DEADLINES.FUTURE_DEADLINES' | translate }}</ion-select-option>
+              <ion-select-option [value]="undefined">{{ 'DEADLINES.FUTURE_DEADLINES' | translate }}</ion-select-option>
               <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -85,14 +85,14 @@ export class DeadlinesComponent implements OnInit {
   /**
    * The deadlines to show.
    */
-  @Input() deadlines: Deadline[];
+  @Input() deadlines: Deadline[] | undefined;
   /**
    * Whether the component should be in edit mode.
    */
   @Input() editMode = false;
 
-  years: number[];
-  filterByYear: number = null;
+  years: number[] = [];
+  filterByYear: number | undefined;
 
   constructor(
     private modalCtrl: ModalController,
@@ -105,17 +105,17 @@ export class DeadlinesComponent implements OnInit {
     this.years = this.app.getYearsSince(FIRST_YEAR_FOR_DEADLINES);
   }
 
-  async loadListOfYear(year: number | null): Promise<void> {
+  async loadListOfYear(year: number | undefined): Promise<void> {
     try {
-      this.deadlines = null;
+      this.deadlines = undefined;
       this.deadlines = await this._deadlines.getList({ force: true, year });
     } catch (error) {
-      this.message.error('COMMON.COULDNT_LOAD_LIST');
+      await this.message.error('COMMON.COULDNT_LOAD_LIST');
     }
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async addDeadline(): Promise<void> {

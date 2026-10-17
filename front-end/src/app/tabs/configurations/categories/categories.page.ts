@@ -12,7 +12,7 @@ import { TopicCategory } from '@models/category.model';
   styleUrls: ['categories.page.scss']
 })
 export class CategoriesPage {
-  categories: TopicCategory[];
+  categories: TopicCategory[] | undefined;
 
   constructor(private _categories: TopicCategoryService, public app: AppService) {}
 
@@ -21,11 +21,14 @@ export class CategoriesPage {
   }
 
   async paginate(scrollToNextPage?: IonInfiniteScroll): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.categories?.length)
       startPaginationAfterId = this.categories[this.categories.length - 1].categoryId;
 
-    this.categories = await this._categories.getList({ withPagination: true, startPaginationAfterId });
+    this.categories = await this._categories.getList({
+      withPagination: true,
+      startPaginationAfterId: startPaginationAfterId
+    });
 
     if (scrollToNextPage) setTimeout((): Promise<void> => scrollToNextPage.complete(), 100);
   }

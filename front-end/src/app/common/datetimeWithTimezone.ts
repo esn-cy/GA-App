@@ -38,25 +38,25 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
   /**
    * The date to manage.
    */
-  @Input() date: ISOString;
-  @Output() dateChange = new EventEmitter<ISOString>();
+  @Input() date: ISOString | undefined;
+  @Output() dateChange = new EventEmitter<ISOString | undefined>();
   /**
    * The timezone to consider.
    * Fallback to the default value set in the configurations.
    */
-  @Input() timezone: string;
+  @Input() timezone: string | undefined;
   /**
    * A label for the item.
    */
-  @Input() label: string;
+  @Input() label: string | undefined;
   /**
-   * The color of the item.
+   * The colour of the item.
    */
-  @Input() color: string;
+  @Input() color: string | undefined;
   /**
    * The lines attribute of the item.
    */
-  @Input() lines: string;
+  @Input() lines: 'full' | 'inset' | 'none' | undefined;
   /**
    * Whether the component is disabled or editable.
    */
@@ -66,15 +66,15 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
    */
   @Input() obligatory = false;
 
-  initialValue: ISOString;
+  initialValue: ISOString = '';
 
-  @ViewChild('dateTime') dateTime: ElementRef;
+  @ViewChild('dateTime') dateTime!: ElementRef;
 
   constructor(public app: AppService) {}
 
   async ngOnInit(): Promise<void> {
     this.timezone = this.timezone ?? this.app.configurations.timezone;
-    this.initialValue = this.utcToZonedTimeString(this.date);
+    this.initialValue = this.date ? this.utcToZonedTimeString(this.date) : '';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -86,11 +86,13 @@ export class DatetimeWithTimezoneStandaloneComponent implements OnInit, OnChange
     }
   }
 
-  utcToZonedTimeString(isoString: ISOString): string {
-    return formatInTimeZone(isoString, this.timezone, "yyyy-MM-dd'T'HH:mm");
+  utcToZonedTimeString(isoString?: ISOString): string {
+    if (!isoString) return '';
+    return formatInTimeZone(isoString, this.timezone!, 'yyyy-MM-dd\'T\'HH:mm');
   }
 
-  zonedTimeStringToUTC(dateLocale: string): ISOString {
-    return fromZonedTime(dateLocale, this.timezone).toISOString();
+  zonedTimeStringToUTC(dateLocale: string): ISOString | undefined {
+    if (!dateLocale) return undefined;
+    return fromZonedTime(dateLocale, this.timezone!).toISOString();
   }
 }

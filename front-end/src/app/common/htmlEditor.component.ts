@@ -25,13 +25,13 @@ export class HTMLEditorComponent implements OnInit, OnChanges {
   /**
    * The HTML content.
    */
-  @Input() content: string;
+  @Input() content: string | undefined;
   /**
    * Trigger when the HTML content changes.
    */
-  @Output() contentChange = new EventEmitter<string>();
+  @Output() contentChange = new EventEmitter<string | undefined>();
 
-  text: string;
+  text: string | undefined;
 
   editorConfig: AngularEditorConfig = {
     editable: true,
@@ -63,7 +63,7 @@ export class HTMLEditorComponent implements OnInit, OnChanges {
     ]
   };
 
-  sanitizedHtml: string;
+  sanitizedHtml: string | undefined;
 
   constructor(private sanitizer: DomSanitizer) {}
 
@@ -72,12 +72,12 @@ export class HTMLEditorComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.editMode) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.content);
+    if (changes.editMode) this.sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, this.content ?? '') ?? undefined;
   }
 
   cleanHTMLCode(): void {
     setTimeout((): void => {
-      this.text = docsSoap(this.text);
+      this.text = docsSoap(this.text ?? '');
       this.contentChange.emit(this.text);
     }, 100);
   }

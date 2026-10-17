@@ -5,12 +5,12 @@ import { GAEvent } from '@models/event.model';
 
 @Injectable({ providedIn: 'root' })
 export class GAEventsService {
-  private events: GAEvent[];
+  private events: GAEvent[] | undefined;
 
   /**
    * Whether in the cache we loaded all the events or only the NOT archived ones.
    */
-  all: boolean;
+  all: boolean = false;
 
   /**
    * The number of events to consider for the pagination, when active.
@@ -42,9 +42,9 @@ export class GAEventsService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<GAEvent[]> {
+  ): Promise<GAEvent[] | undefined> {
     if (!this.events || options.force || options.all !== this.all) await this.loadList(options.all);
-    if (!this.events) return null;
+    if (!this.events) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
@@ -52,7 +52,7 @@ export class GAEventsService {
 
     if (options.search)
       filteredList = filteredList.filter(x =>
-        options.search
+        options.search!
           .split(' ')
           .every(searchTerm => [x.name].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
@@ -68,21 +68,21 @@ export class GAEventsService {
   }
 
   /**
-   * Get a event by its id.
+   * Get an event by its id.
    */
   async getById(eventId: string): Promise<GAEvent> {
     return new GAEvent(await this.api.getResource(['events', eventId]));
   }
 
   /**
-   * Insert a event.
+   * Insert an event.
    */
   async insert(event: GAEvent): Promise<GAEvent> {
     return new GAEvent(await this.api.postResource('events', { body: event }));
   }
 
   /**
-   * Update a event.
+   * Update an event.
    */
   async update(event: GAEvent): Promise<GAEvent> {
     return new GAEvent(await this.api.putResource(['events', event.eventId], { body: event }));

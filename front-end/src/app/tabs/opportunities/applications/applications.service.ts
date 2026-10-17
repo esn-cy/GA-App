@@ -6,7 +6,7 @@ import { Application } from '@models/application.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationsService {
-  private applications: Application[];
+  private applications: Application[] | undefined;
 
   /**
    * The number of applications to consider for the pagination, when active.
@@ -28,7 +28,7 @@ export class ApplicationsService {
    * Get (and optionally filter) the list of applications to an opportunity.
    * Note: it's a slice of the array.
    */
-  async getListOfopportunity(
+  async getListOfOpportunity(
     opportunity: Opportunity,
     options: {
       force?: boolean;
@@ -37,22 +37,22 @@ export class ApplicationsService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Application[]> {
+  ): Promise<Application[] | undefined> {
     if (!this.applications || options.force) await this.loadListOfOpportunity(opportunity);
-    if (!this.applications) return null;
+    if (!this.applications) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.applications.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm =>
             [x.subject.name, x.subject.country, x.subject.section, x.motivation]
               .filter(f => f)
-              .some(f => f.toLowerCase().includes(searchTerm))
+              .some(f => f?.toLowerCase().includes(searchTerm))
           )
       );
 
@@ -84,7 +84,7 @@ export class ApplicationsService {
   }
 
   /**
-   * Widhdraw an application.
+   * Withdraw an application.
    */
   async delete(opportunity: Opportunity, application: Application): Promise<void> {
     const path = ['opportunities', opportunity.opportunityId, 'applications', application.applicationId];

@@ -12,7 +12,7 @@ import { UsefulLink } from '@models/usefulLink.model';
   template: `
     <ion-item [color]="color" *ngIf="!link">
       <ion-label>
-        <ion-skeleton-text animated></ion-skeleton-text>
+        <ion-skeleton-text [animated]="true"></ion-skeleton-text>
       </ion-label>
     </ion-item>
     <ion-item [color]="color" *ngIf="link" [button]="button" (click)="select.emit()">
@@ -44,9 +44,9 @@ export class UsefulLinkComponent {
   /**
    * The useful link to show; if not set, shows a skeleton instead.
    */
-  @Input() link: UsefulLink;
+  @Input() link: UsefulLink | undefined;
   /**
-   * The color for the component.
+   * The colour for the component.
    */
   @Input() color = 'white';
   /**

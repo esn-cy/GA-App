@@ -19,9 +19,9 @@ import { VotingSession, VotingSessionTypes } from '@models/votingSession.model';
 })
 export class VotingSessionStandaloneComponent {
   /**
-   * The voting session to show. If null, load a skeleton instead.
+   * The voting session to show. If undefined, load a skeleton instead.
    */
-  @Input() votingSession: VotingSession | null;
+  @Input() votingSession: VotingSession | undefined;
   /**
    * Whether to display the voting session as a grid row.
    */
@@ -38,6 +38,7 @@ export class VotingSessionStandaloneComponent {
   constructor(public app: AppService) {}
 
   getColorByType(): string {
+    if (!this.votingSession) return 'ESNdarkBlue';
     if (this.votingSession.type === VotingSessionTypes.FORM_SECRET) return 'ESNpink';
     if (this.votingSession.type === VotingSessionTypes.IMMEDIATE) return 'ESNcyan';
     if (this.votingSession.type === VotingSessionTypes.ROLL_CALL) return 'secondary';

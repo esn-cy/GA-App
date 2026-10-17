@@ -5,9 +5,9 @@ import { Opportunity } from '@models/opportunity.model';
 
 @Injectable({ providedIn: 'root' })
 export class OpportunitiesService {
-  private opportunities: Opportunity[];
-  private archivedOpportunities: Opportunity[];
-  private archivedFromYearPreviouslySelected: number = null;
+  private opportunities: Opportunity[] | undefined;
+  private archivedOpportunities: Opportunity[] | undefined;
+  private archivedFromYearPreviouslySelected?: number;
 
   /**
    * The number of opportunities to consider for the pagination, when active.
@@ -37,17 +37,19 @@ export class OpportunitiesService {
       startPaginationAfterId?: string;
       sortBy?: OpportunitiesSortBy;
     } = { sortBy: OpportunitiesSortBy.CREATED_DATE_DESC }
-  ): Promise<Opportunity[]> {
+  ): Promise<Opportunity[] | undefined> {
     if (!this.opportunities || options.force) await this.loadActiveList();
-    if (!this.opportunities) return null;
+    if (!this.opportunities) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
+    const search = options.search ? String(options.search).toLowerCase() : '';
+
     let filteredList = this.opportunities.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm => [x.name, x.content].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
@@ -64,12 +66,16 @@ export class OpportunitiesService {
         break;
       case OpportunitiesSortBy.CLOSING_DATE_ASC:
         filteredList = filteredList.sort(
-          (a, b): number => a.closedAt?.localeCompare(b.closedAt) || a.willCloseAt?.localeCompare(b.willCloseAt)
+          (a, b): number =>
+            (a.closedAt ?? '').localeCompare(b.closedAt ?? '') ||
+            (a.willCloseAt ?? '').localeCompare(b.willCloseAt ?? '')
         );
         break;
       case OpportunitiesSortBy.CLOSING_DATE_DESC:
         filteredList = filteredList.sort(
-          (a, b): number => b.closedAt?.localeCompare(a.closedAt) || b.willCloseAt?.localeCompare(a.willCloseAt)
+          (a, b): number =>
+            (b.closedAt ?? '').localeCompare(a.closedAt ?? '') ||
+            (b.willCloseAt ?? '').localeCompare(a.willCloseAt ?? '')
         );
         break;
     }
@@ -107,10 +113,10 @@ export class OpportunitiesService {
       startPaginationAfterId?: string;
       sortBy?: OpportunitiesSortBy;
     } = { sortBy: OpportunitiesSortBy.CREATED_DATE_DESC }
-  ): Promise<Opportunity[]> {
+  ): Promise<Opportunity[] | undefined> {
     if (!this.archivedOpportunities || options.force || year !== this.archivedFromYearPreviouslySelected)
       await this.loadArchivedList(year);
-    if (!this.archivedOpportunities) return null;
+    if (!this.archivedOpportunities) return undefined;
 
     let filteredList = this.archivedOpportunities.slice();
 
@@ -123,12 +129,16 @@ export class OpportunitiesService {
         break;
       case OpportunitiesSortBy.CLOSING_DATE_ASC:
         filteredList = filteredList.sort(
-          (a, b): number => a.closedAt?.localeCompare(b.closedAt) || a.willCloseAt?.localeCompare(b.willCloseAt)
+          (a, b): number =>
+            (a.closedAt ?? '').localeCompare(b.closedAt ?? '') ||
+            (a.willCloseAt ?? '').localeCompare(b.willCloseAt ?? '')
         );
         break;
       case OpportunitiesSortBy.CLOSING_DATE_DESC:
         filteredList = filteredList.sort(
-          (a, b): number => b.closedAt?.localeCompare(a.closedAt) || b.willCloseAt?.localeCompare(a.willCloseAt)
+          (a, b): number =>
+            (b.closedAt ?? '').localeCompare(a.closedAt ?? '') ||
+            (b.willCloseAt ?? '').localeCompare(a.willCloseAt ?? '')
         );
         break;
     }

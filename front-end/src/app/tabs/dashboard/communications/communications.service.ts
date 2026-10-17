@@ -5,8 +5,8 @@ import { Communication } from '@models/communication.model';
 
 @Injectable({ providedIn: 'root' })
 export class CommunicationsService {
-  private communications: Communication[];
-  private filterByYear: number = null;
+  private communications: Communication[] | undefined;
+  private filterByYear?: number;
 
   /**
    * The number of communications to consider for the pagination, when active.
@@ -19,7 +19,7 @@ export class CommunicationsService {
    * Load the communications from the back-end, possibly filtering by year.
    * If no year is specified, only the unarchived communications are returned.
    */
-  private async loadList(year: number = null): Promise<void> {
+  private async loadList(year?: number): Promise<void> {
     const params: any = {};
     if (year) params.year = year;
     this.filterByYear = year;
@@ -39,9 +39,9 @@ export class CommunicationsService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Communication[]> {
+  ): Promise<Communication[] | undefined> {
     if (!this.communications || options.force || options.year !== this.filterByYear) await this.loadList(options.year);
-    if (!this.communications) return null;
+    if (!this.communications) return undefined;
 
     options.search = options.search ? String(options.search).toLowerCase() : '';
 
@@ -49,12 +49,12 @@ export class CommunicationsService {
 
     if (options.search)
       filteredList = filteredList.filter(x =>
-        options.search
+        options.search!
           .split(' ')
           .every(searchTerm => [x.name].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
 
-    filteredList = filteredList.sort((a, b): number => b.date.localeCompare(b.date));
+    filteredList = filteredList.sort((a, b): number => b.date.localeCompare(a.date));
 
     if (options.withPagination && filteredList.length > this.MAX_PAGE_SIZE) {
       let indexOfLastOfPreviousPage = 0;
@@ -105,7 +105,7 @@ export class CommunicationsService {
   }
 
   /**
-   * Delete an communication.
+   * Delete a communication.
    */
   async delete(communication: Communication): Promise<void> {
     await this.api.deleteResource(['communications', communication.communicationId]);

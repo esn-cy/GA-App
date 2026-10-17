@@ -58,13 +58,13 @@ import { GAEventAttached } from '@models/event.model';
           <ion-textarea placeholder="..." [(ngModel)]="reviewMessage" [rows]="4"></ion-textarea>
         </ion-item>
         <ion-row class="ion-margin">
-          <ion-col [size]="6">
+          <ion-col size="6">
             <ion-button expand="block" color="danger" (click)="review(false)">
               <ion-icon icon="thumbs-down" slot="start" />
               {{ 'OPPORTUNITIES.REVIEW_REJECT' | translate }}
             </ion-button>
           </ion-col>
-          <ion-col [size]="6">
+          <ion-col size="6">
             <ion-button expand="block" color="success" (click)="review(true)">
               {{ 'OPPORTUNITIES.REVIEW_APPROVE' | translate }}
               <ion-icon icon="thumbs-up" slot="end" />
@@ -104,16 +104,16 @@ export class ReviewApplicationStandaloneComponent implements OnInit {
   /**
    * The opportunity to which the application refer.
    */
-  @Input() opportunity: Opportunity;
+  @Input({ required: true }) opportunity!: Opportunity;
   /**
-   * The application to to review.
+   * The application to review.
    */
-  @Input() application: Application;
+  @Input({ required: true }) application!: Application;
 
-  reviewMessage: string;
+  reviewMessage: string | undefined;
 
-  promoteTopicCategory: TopicCategoryAttached;
-  promoteTopicEvent: GAEventAttached;
+  promoteTopicCategory: TopicCategoryAttached | undefined;
+  promoteTopicEvent: GAEventAttached | undefined;
   errors = new Set<string>();
 
   constructor(
@@ -132,20 +132,20 @@ export class ReviewApplicationStandaloneComponent implements OnInit {
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 
   async review(approved: boolean): Promise<void> {
     const doReview = async (): Promise<void> => {
       try {
         await this.loading.show();
-        this.application.load(await this._applications.review(this.application, approved, this.reviewMessage));
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        this.application.load(await this._applications.review(this.application, approved, this.reviewMessage ?? ''));
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.close();
       } catch (err) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -155,7 +155,7 @@ export class ReviewApplicationStandaloneComponent implements OnInit {
       { text: this.t._('COMMON.CONFIRM'), handler: doReview }
     ];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -173,16 +173,16 @@ export class ReviewApplicationStandaloneComponent implements OnInit {
       const topic = await this._topics.insertFromApplicationToOpportunity(
         this.opportunity,
         this.application,
-        this.promoteTopicCategory,
-        this.promoteTopicEvent
+        this.promoteTopicCategory!,
+        this.promoteTopicEvent!
       );
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
       this.close();
       this.app.goToInTabs(['topics', topic.topicId, 'standard'], { root: true });
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 }

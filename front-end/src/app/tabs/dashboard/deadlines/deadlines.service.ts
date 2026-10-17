@@ -5,8 +5,8 @@ import { Deadline } from '@models/deadline.model';
 
 @Injectable({ providedIn: 'root' })
 export class DeadlinesService {
-  private deadlines: Deadline[];
-  private filterByYear: number = null;
+  private deadlines: Deadline[] | undefined;
+  private filterByYear?: number;
 
   /**
    * The number of deadlines to consider for the pagination, when active.
@@ -19,7 +19,7 @@ export class DeadlinesService {
    * Load the deadlines from the back-end, possibly filtering by year.
    * If no year is specified, only the future deadlines are returned.
    */
-  private async loadListOfYear(year: number = null): Promise<void> {
+  private async loadListOfYear(year?: number): Promise<void> {
     const params: any = {};
     if (year) params.year = year;
     this.filterByYear = year;
@@ -39,17 +39,17 @@ export class DeadlinesService {
       withPagination?: boolean;
       startPaginationAfterId?: string;
     } = {}
-  ): Promise<Deadline[]> {
+  ): Promise<Deadline[] | undefined> {
     if (!this.deadlines || options.force || options.year !== this.filterByYear) await this.loadListOfYear(options.year);
-    if (!this.deadlines) return null;
+    if (!this.deadlines) return undefined;
 
-    options.search = options.search ? String(options.search).toLowerCase() : '';
+    const search = options.search ? String(options.search).toLowerCase() : '';
 
     let filteredList = this.deadlines.slice();
 
-    if (options.search)
+    if (search)
       filteredList = filteredList.filter(x =>
-        options.search
+        search
           .split(' ')
           .every(searchTerm => [x.name].filter(f => f).some(f => f.toLowerCase().includes(searchTerm)))
       );
@@ -88,7 +88,7 @@ export class DeadlinesService {
   }
 
   /**
-   * Delete an deadline.
+   * Delete a deadline.
    */
   async delete(deadline: Deadline): Promise<void> {
     await this.api.deleteResource(['deadlines', deadline.deadlineId]);

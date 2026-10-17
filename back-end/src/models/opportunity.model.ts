@@ -122,7 +122,7 @@ export class Opportunity extends Resource {
    */
   isClosed(): boolean {
     if (this.isArchived()) return true;
-    return !!this.closedAt || (this.willCloseAt && this.willCloseAt < new Date().toISOString());
+    return !!this.closedAt || !!(this.willCloseAt && this.willCloseAt < new Date().toISOString());
   }
 
   /**

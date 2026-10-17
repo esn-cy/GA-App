@@ -9,7 +9,7 @@
       "CITY_HINT": "City",
       "COMPLETE_ADDRESS": "Address",
       "COMPLETE_ADDRESS_HINT": "Complete address; tap for details",
-      "CONTACT": "Fullname",
+      "CONTACT": "Full Name",
       "CONTACT_HINT": "Contact/receiver's full name",
       "COUNTRY": "Country",
       "COUNTRY_HINT": "Country",
@@ -282,7 +282,7 @@
     },
     "SIGNATURE": {
       "CANCEL": "Cancel",
-      "CHOOSE_FROM_CONTACTS": "Scegli dai contatti",
+      "CHOOSE_FROM_CONTACTS": "Choose from contracts",
       "CLEAR_SIGNATURE": "Clear the signature",
       "NAME_AND_SURNAME": "Name and surname",
       "SAVE_SIGNATURE": "Save the signature",

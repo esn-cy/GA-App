@@ -5,5 +5,5 @@
 <ng-content></ng-content>
 <!--skeleton-->
 <div class="bubble" *ngIf="!text" [class.bubbleSender]="isSender">
-  <ion-skeleton-text animated></ion-skeleton-text>
+  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
 </div>

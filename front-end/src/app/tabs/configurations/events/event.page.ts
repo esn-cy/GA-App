@@ -15,12 +15,12 @@ import { GAEvent } from '@models/event.model';
 })
 export class EventPage {
   @Input() eventId = 'new';
-  event: GAEvent;
+  event!: GAEvent;
 
   editMode = UXMode.VIEW;
   UXMode = UXMode;
   errors = new Set<string>();
-  entityBeforeChange: GAEvent;
+  entityBeforeChange: GAEvent | undefined;
 
   constructor(
     private location: Location,
@@ -43,9 +43,9 @@ export class EventPage {
         this.editMode = UXMode.INSERT;
       }
     } catch (error) {
-      this.message.error('COMMON.NOT_FOUND');
+      await this.message.error('COMMON.NOT_FOUND');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -61,11 +61,11 @@ export class EventPage {
       this.event.load(result);
       this.location.replaceState(this.location.path().replace('/new', '/'.concat(this.event.eventId)));
       this.editMode = UXMode.VIEW;
-      this.message.success('COMMON.OPERATION_COMPLETED');
+      await this.message.success('COMMON.OPERATION_COMPLETED');
     } catch (err) {
-      this.message.error('COMMON.OPERATION_FAILED');
+      await this.message.error('COMMON.OPERATION_FAILED');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
@@ -79,12 +79,12 @@ export class EventPage {
         await this.loading.show();
         if (archive) await this._events.archive(this.event);
         else await this._events.unarchive(this.event);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.closePage();
       } catch (error) {
-        this.message.error('COMMON.OPERATION_FAILED');
+        await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -93,7 +93,7 @@ export class EventPage {
       { text: this.t._('COMMON.CONFIRM'), role: 'destructive', handler: doArchive }
     ];
     const alert = await this.alertCtrl.create({ header, buttons });
-    alert.present();
+    await alert.present();
   }
 
   async deleteEvent(): Promise<void> {
@@ -101,13 +101,13 @@ export class EventPage {
       try {
         await this.loading.show();
         await this._events.delete(this.event);
-        this.message.success('COMMON.OPERATION_COMPLETED');
+        await this.message.success('COMMON.OPERATION_COMPLETED');
         this.app.closePage();
-      } catch (error) {
-        if (error.message === 'Event is used') this.message.error('EVENTS.CANT_DELETE_IF_USED_ERROR');
-        else this.message.error('COMMON.OPERATION_FAILED');
+      } catch (error: any) {
+        if (error.message === 'Event is used') await this.message.error('EVENTS.CANT_DELETE_IF_USED_ERROR');
+        else await this.message.error('COMMON.OPERATION_FAILED');
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
     const header = this.t._('COMMON.ARE_YOU_SURE');
@@ -118,7 +118,7 @@ export class EventPage {
       { text: this.t._('COMMON.DELETE'), role: 'destructive', handler: doDelete }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   enterEditMode(): void {
@@ -128,7 +128,7 @@ export class EventPage {
 
   exitEditMode(): void {
     if (this.editMode === UXMode.INSERT) this.app.closePage();
-    else {
+    else if (this.entityBeforeChange) {
       this.event = this.entityBeforeChange;
       this.errors = new Set<string>();
       this.editMode = UXMode.VIEW;

@@ -52,7 +52,7 @@ export class BallotVotesDetailStandaloneComponent implements OnInit {
   /**
    * The ballot option to show.
    */
-  @Input() ballotOption: string;
+  @Input({ required: true }) ballotOption!: string;
   /**
    * The result (numeric value) of the ballot option.
    */

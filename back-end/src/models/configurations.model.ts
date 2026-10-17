@@ -37,19 +37,19 @@ export class Configurations extends Resource {
   /**
    * The subtitle of the platform.
    */
-  appSubtitle: string;
+  appSubtitle?: string;
   /**
    * A contact email to reach if support is needed by users.
    */
-  supportEmail: string;
+  supportEmail?: string;
   /**
    * The logo of the platform (in light mode); if not specified, the default logo is shown.
    */
-  appLogoURL: string;
+  appLogoURL?: string;
   /**
    * The logo of the platform in dark mode; if not specified, the default logo is shown.
    */
-  appLogoURLDarkMode: string;
+  appLogoURLDarkMode?: string;
   /**
    * The timezone to use for dates and deadlines.
    */

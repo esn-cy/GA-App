@@ -18,21 +18,21 @@ import { StatisticEntityTypes } from '@models/statistic.model';
   styleUrls: ['topics.page.scss']
 })
 export class TopicsPage implements OnInit {
-  topics: Topic[];
+  topics: Topic[] | undefined;
 
-  @ViewChild('searchbar') searchbar: IonSearchbar;
+  @ViewChild('searchbar') searchbar: IonSearchbar | undefined;
 
-  categories: TopicCategory[];
-  filterByCategory: string = null;
+  categories: TopicCategory[] | undefined;
+  filterByCategory: string | undefined;
 
-  events: GAEvent[];
-  filterByEvent: string = null;
+  events: GAEvent[] | undefined;
+  filterByEvent: string | undefined;
 
-  filterByStatus: TopicsFilterByStatus = null;
+  filterByStatus: TopicsFilterByStatus | undefined;
   Statuses = TopicsFilterByStatus;
 
   TopicTypes = TopicTypes;
-  filterByType: TopicTypes = null;
+  filterByType: TopicTypes | undefined;
 
   sortBy: TopicsSortBy = TopicsSortBy.CREATED_DATE_DESC;
   TopicsSortBy = TopicsSortBy;
@@ -53,7 +53,7 @@ export class TopicsPage implements OnInit {
   }
 
   ionViewDidEnter(): void {
-    this.filter(null, null, true);
+    void this.filter(undefined, undefined, true);
   }
 
   private async loadResources(): Promise<void> {
@@ -62,13 +62,13 @@ export class TopicsPage implements OnInit {
   }
 
   async handleRefresh(refresh: IonRefresher): Promise<void> {
-    this.topics = null;
+    this.topics = undefined;
     await this.loadResources();
-    refresh.complete();
+    await refresh.complete();
   }
 
   async filter(search = '', scrollToNextPage?: IonInfiniteScroll, force = false): Promise<void> {
-    let startPaginationAfterId = null;
+    let startPaginationAfterId;
     if (scrollToNextPage && this.topics?.length) startPaginationAfterId = this.topics[this.topics.length - 1].topicId;
 
     this.topics = await this._topics.getActiveList({
@@ -79,7 +79,7 @@ export class TopicsPage implements OnInit {
       status: this.filterByStatus,
       type: this.filterByType,
       withPagination: true,
-      startPaginationAfterId,
+      startPaginationAfterId: startPaginationAfterId,
       sortBy: this.sortBy
     });
 
@@ -107,6 +107,6 @@ export class TopicsPage implements OnInit {
     ];
 
     const actions = await this.actionsCtrl.create({ header, buttons });
-    actions.present();
+    await actions.present();
   }
 }

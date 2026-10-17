@@ -17,20 +17,20 @@ export class VotePage implements OnInit {
   /**
    * The ID of session to voter for.
    */
-  @Input() sessionId: string;
+  @Input({ required: true }) sessionId!: string;
   /**
    * The ID of the voter.
    */
-  @Input() voterId: string;
+  @Input({ required: true }) voterId!: string;
   /**
    * The ID of the ticket that allows the voter to vote.
    */
-  @Input() ticket: string;
+  @Input({ required: true }) ticket!: string;
 
-  votingSession: VotingSession;
-  votingTicket: VotingTicket;
+  votingSession: VotingSession | undefined;
+  votingTicket: VotingTicket | undefined;
 
-  errorString: string;
+  errorString: string = '';
   errors = new Set<string>();
 
   submission: number[] = [];
@@ -54,14 +54,14 @@ export class VotePage implements OnInit {
       if (String(error) === 'Error: Already voted') this.errorString = this.t._('VOTING.ALREADY_VOTED');
       else this.errorString = this.t._('VOTING.INVALID_VOTING_LINK');
     } finally {
-      this.loading.hide();
+      await this.loading.hide();
     }
   }
 
   private async showMessage(message: string, header = this.t._('COMMON.ERROR')): Promise<void> {
     const buttons = [{ text: this.t._('COMMON.GOT_IT') }];
     const alert = await this.alertCtrl.create({ header, message, buttons });
-    alert.present();
+    await alert.present();
   }
 
   hasFieldAnError(field: string): boolean {
@@ -69,19 +69,21 @@ export class VotePage implements OnInit {
   }
 
   async submitVote(): Promise<void> {
+    if (!this.votingSession || !this.votingTicket) return;
     this.errors = new Set(this.votingSession.validateVoteSubmission(this.submission));
     if (this.errors.size) return this.showMessage(this.t._('VOTING.SOME_OF_VOTES_MISSING'));
 
     const doSubmit = async (): Promise<void> => {
+      if (!this.votingTicket) return;
       try {
         await this.loading.show();
         await this._voting.submitVotes(this.votingTicket, this.submission);
         this.voted = true;
       } catch (error) {
-        if (String(error) === 'Error: Already voted') this.showMessage(this.t._('VOTING.ALREADY_VOTED'));
-        else this.showMessage(this.t._('VOTING.SUBMISSION_FAILED'));
+        if (String(error) === 'Error: Already voted') await this.showMessage(this.t._('VOTING.ALREADY_VOTED'));
+        else await this.showMessage(this.t._('VOTING.SUBMISSION_FAILED'));
       } finally {
-        this.loading.hide();
+        await this.loading.hide();
       }
     };
 
@@ -93,6 +95,6 @@ export class VotePage implements OnInit {
       { text: this.t._('VOTING.SUBMIT_VOTES'), handler: doSubmit }
     ];
     const alert = await this.alertCtrl.create({ header, subHeader, message, buttons });
-    alert.present();
+    await alert.present();
   }
 }

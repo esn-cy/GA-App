@@ -106,12 +106,12 @@ export class ImportVotersStandaloneComponent implements OnInit {
   /**
    * The voting session for which we upload voters.
    */
-  @Input() votingSession: VotingSession;
+  @Input({ required: true }) votingSession!: VotingSession;
 
   indexesOfRowsWithErr: number[] = [];
 
-  otherVotingSessions: VotingSession[];
-  votingSessionToCopy: VotingSession;
+  otherVotingSessions: VotingSession[] = [];
+  votingSessionToCopy: VotingSession | undefined;
 
   constructor(
     private modalCtrl: ModalController,
@@ -122,9 +122,8 @@ export class ImportVotersStandaloneComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.otherVotingSessions = (await this._voting.getActiveList()).filter(
-      x => x.sessionId !== this.votingSession.sessionId
-    );
+    const list = await this._voting.getActiveList();
+    this.otherVotingSessions = list?.filter(x => x.sessionId !== this.votingSession.sessionId) ?? [];
   }
 
   downloadTemplate(): void {
@@ -134,13 +133,15 @@ export class ImportVotersStandaloneComponent implements OnInit {
     this._voting.downloadVotersSpreadsheet(filename, session);
   }
 
-  async import({ target }): Promise<void> {
-    const file = target.files[0];
+  async import({ target }: { target: HTMLInputElement }): Promise<void> {
+    const file = target.files ? target.files[0] : undefined;
     if (!file) return;
 
     const fileReader = new FileReader();
     fileReader.onerror = (): Promise<void> => this.message.error('COMMON.OPERATION_FAILED');
     fileReader.onload = async event => {
+      if (!event.target) return;
+
       const wb = read(event.target.result, { type: 'binary' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const header = utils.sheet_to_json(ws, { raw: true, header: 1 })[0];
@@ -160,11 +161,11 @@ export class ImportVotersStandaloneComponent implements OnInit {
       });
 
       if (this.indexesOfRowsWithErr.length) {
-        this.message.warning('VOTING.SOME_ROWS_HAVE_ERRORS');
+        await this.message.warning('VOTING.SOME_ROWS_HAVE_ERRORS');
         this.resetFileToUpload();
-      } else this.modalCtrl.dismiss(voters);
+      } else await this.modalCtrl.dismiss(voters);
     };
-    fileReader.readAsBinaryString(file);
+    fileReader.readAsArrayBuffer(file);
   }
 
   resetFileToUpload(): void {
@@ -173,10 +174,11 @@ export class ImportVotersStandaloneComponent implements OnInit {
   }
 
   importFromOtherSession(): void {
-    this.modalCtrl.dismiss(this.votingSessionToCopy.voters.map(x => new Voter(x, this.votingSession)));
+    if (!this.votingSessionToCopy) return;
+    void this.modalCtrl.dismiss(this.votingSessionToCopy.voters.map(x => new Voter(x, this.votingSession)));
   }
 
   close(): void {
-    this.modalCtrl.dismiss();
+    void this.modalCtrl.dismiss();
   }
 }
