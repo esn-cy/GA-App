@@ -142,8 +142,8 @@ describe('ManageVotingSessionPage', () => {
     });
     mockVoting.getById.mockResolvedValueOnce(startedSession);
     mockVoting.getVotingTicketsStatus.mockResolvedValueOnce([]);
-    const checkSpy = vi.spyOn(page, 'checkWhetherSessionShouldEndEarly').mockResolvedValue(undefined);
-    const wsSpy = vi.spyOn(page, 'openWebSocketForVotingTicketsStatus').mockImplementation(() => {
+    const checkSpy = vi.spyOn(page as any, 'checkWhetherSessionShouldEndEarly').mockResolvedValue(undefined);
+    const wsSpy = vi.spyOn(page as any, 'openWebSocketForVotingTicketsStatus').mockImplementation(() => {
     });
 
     await page.ionViewWillEnter();

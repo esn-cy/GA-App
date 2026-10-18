@@ -41,11 +41,25 @@ if (fs.existsSync(angularBuilderPath)) {
 const vitestProviderPath = path.resolve(__dirname, '../node_modules/@vitest/coverage-v8/dist/provider.js');
 if (fs.existsSync(vitestProviderPath)) {
   let providerContent = fs.readFileSync(vitestProviderPath, 'utf8');
-  if (!providerContent.includes('filePath.includes(\'dist/test-out\')')) {
+  let patched = false;
+
+  if (providerContent.includes('if (this.isIncluded(filePath)) {')) {
     providerContent = providerContent.replace(
       'if (this.isIncluded(filePath)) {',
       'if (this.isIncluded(filePath) || filePath.includes(\'dist/test-out\')) {'
     );
+    patched = true;
+  }
+
+  if (providerContent.includes('if (this.testExclude.shouldInstrument(fileURLToPath(result.url))) {')) {
+    providerContent = providerContent.replace(
+      'if (this.testExclude.shouldInstrument(fileURLToPath(result.url))) {',
+      'if (this.testExclude.shouldInstrument(fileURLToPath(result.url)) || result.url.includes(\'dist/test-out\')) {'
+    );
+    patched = true;
+  }
+
+  if (patched) {
     fs.writeFileSync(vitestProviderPath, providerContent, 'utf8');
     console.log('Patched @vitest/coverage-v8 provider for test bundle coverage.');
   }
