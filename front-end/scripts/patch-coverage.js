@@ -64,3 +64,19 @@ if (fs.existsSync(vitestProviderPath)) {
     console.log('Patched @vitest/coverage-v8 provider for test bundle coverage.');
   }
 }
+
+// 3. Link idea-toolbox into ../back-end/node_modules for shared models resolution
+const backendNodeModules = path.resolve(__dirname, '../../back-end/node_modules');
+const targetIdeaToolbox = path.resolve(__dirname, '../node_modules/idea-toolbox');
+const linkIdeaToolbox = path.join(backendNodeModules, 'idea-toolbox');
+if (fs.existsSync(targetIdeaToolbox)) {
+  fs.mkdirSync(backendNodeModules, { recursive: true });
+  if (!fs.existsSync(linkIdeaToolbox)) {
+    try {
+      fs.symlinkSync(targetIdeaToolbox, linkIdeaToolbox, 'junction');
+      console.log('Linked idea-toolbox to back-end/node_modules for shared models.');
+    } catch {
+    }
+  }
+}
+

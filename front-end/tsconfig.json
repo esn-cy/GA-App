@@ -7,6 +7,9 @@
       "crypto": [
         "./node_modules/crypto-js"
       ],
+      "idea-toolbox": [
+        "./node_modules/idea-toolbox"
+      ],
       "@models/*": [
         "../back-end/src/models/*"
       ],
