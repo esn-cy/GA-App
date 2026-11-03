@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app.routing.module';
 
 import { registerLocaleData } from '@angular/common';
 import localeIt from '@angular/common/locales/it';
-import { IDEAEnvironment } from '@idea-ionic/common';
+import { IDEAEnvironment, provideIDEAChangeDetectionBridge } from '@idea-ionic/common';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { environment } from '@env';
 
@@ -26,6 +26,7 @@ registerLocaleData(localeIt, 'it');
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: IDEAEnvironment, useValue: environment },
     provideIonicAngular({ mode: 'md' }),
+    provideIDEAChangeDetectionBridge(),
     provideZoneChangeDetection()
   ],
   bootstrap: [AppComponent]

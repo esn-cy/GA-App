@@ -36,10 +36,11 @@
                   [granularity]="Granularities.DAILY"
                   [title]="'DASHBOARD.STATISTICS_APP_ACCESS' | translate"
                 />
-                <ion-label
-                  class="ion-text-wrap"
-                  [innerHTML]="'DASHBOARD.STATISTICS_RECAP' | translate: { days: Periods.ONE_MONTH, users: statistic.totals.users, countries: statistic.totals.countries, sections: statistic.totals.sections }"
-                ></ion-label>
+                <ion-label class="ion-text-wrap">
+                  <span
+                    [innerHTML]="'DASHBOARD.STATISTICS_RECAP' | translate: { days: Periods.ONE_MONTH, users: statistic.totals.users, countries: statistic.totals.countries, sections: statistic.totals.sections }"
+                  ></span>
+                </ion-label>
               </ion-item>
             }
             @if (!statistic) {
