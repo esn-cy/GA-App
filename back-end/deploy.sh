@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # project-specific parameters
-AWS_PROFILE='ga-app'
+AWS_PROFILE="${AWS_PROFILE:-ga-app}"
 PROJECT='ga-app-cyprus'
 
 # other parameters
 ACTION=$1
-STAGE=$2
-SRC_FOLDER='src/'
+export STAGE=$2
+export SRC_FOLDER='src/'
 C='\033[4;32m' # color
 NC='\033[0m'   # reset (no color)
 
@@ -38,22 +38,24 @@ fi
 if [ "${ACTION}" == "quick" ]
 then
   npm run compile && npm run deploy "${PROJECT}-dev-api" \
-    -- --context stage=dev --exclusively --hotswap --profile ${AWS_PROFILE}
+    -- --context stage=dev --exclusively --hotswap --profile "${AWS_PROFILE}"
   exit 0
 fi
 
-# install the npm modules
-echo -e "${C}Installing npm modules...${NC}"
-npm i --silent 1>/dev/null
+# install the npm modules if node_modules does not exist
+if [ ! -d "node_modules" ]; then
+  echo -e "${C}Installing npm modules...${NC}"
+  npm ci
+fi
 
 # lint the code in search for errors
 echo -e "${C}Linting...${NC}"
-npm run lint ${SRC_FOLDER} 1>/dev/null
+npm run lint
 
 # compiling models
 echo -e "${C}Compiling...${NC}"
-npm run compile 1>/dev/null
+npm run compile
 
 # build and deploy with AWS CDK
 echo -e "${C}Deploying CDK stacks...${NC}"
-npm run deploy -- --context stage="${ACTION}" --all --require-approval never --profile ${AWS_PROFILE}
+npm run deploy -- --context stage="${ACTION}" --all --require-approval never --profile "${AWS_PROFILE}"

@@ -311,4 +311,4 @@ const createApp = async (): Promise<void> => {
     certificateARN: parameters.frontEndCertificateARN
   });
 };
-createApp();
+void createApp();

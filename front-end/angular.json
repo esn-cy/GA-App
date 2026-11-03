@@ -14,10 +14,12 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "www"
+              "base": "www",
+              "browser": ""
             },
             "index": "src/index.html",
             "polyfills": [
+              "zone.js",
               "src/polyfills.ts"
             ],
             "tsConfig": "tsconfig.app.json",
@@ -34,8 +36,8 @@
               },
               {
                 "glob": "**/*",
-                "input": "./node_modules/@kolkov/angular-editor/assets/",
-                "output": "./assets/fonts/"
+                "input": "node_modules/@kolkov/angular-editor/assets/icons",
+                "output": "assets/ae-icons"
               }
             ],
             "styles": [
@@ -50,6 +52,14 @@
             "optimization": false,
             "allowedCommonJsDependencies": [
               "idea-toolbox",
+              "validator",
+              "validator/lib/isEmail",
+              "validator/lib/isMobilePhone",
+              "validator/lib/isURL",
+              "validator/lib/isFQDN",
+              "validator/lib/isDate",
+              "validator/lib/isISO8601",
+              "marked",
               "isomorphic-unfetch",
               "localforage",
               "@aws-crypto/sha256-js",
@@ -97,7 +107,14 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "app:build"
+            "buildTarget": "app:build",
+            "prebundle": {
+              "exclude": [
+                "idea-toolbox",
+                "validator",
+                "marked"
+              ]
+            }
           },
           "configurations": {
             "production": {
@@ -117,13 +134,17 @@
             "buildTarget": "app:build",
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
+            "runnerConfig": "vitest.config.ts",
             "setupFiles": [
               "tests/test-setup.ts"
             ],
             "include": [
               "../tests/**/*.spec.ts"
             ],
-            "codeCoverageExclude": [
+            "coverageInclude": [
+              "src/app/**/*.ts"
+            ],
+            "coverageExclude": [
               "**/*.spec.ts",
               "**/*.module.ts",
               "**/*.routing.module.ts",
@@ -145,7 +166,7 @@
               "src/main.ts",
               "src/app/icons.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text",
               "html",
               "lcov",

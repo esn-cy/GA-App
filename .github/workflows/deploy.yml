@@ -1,0 +1,127 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment to deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      deploy_backend:
+        description: 'Deploy backend CDK stacks'
+        required: true
+        default: true
+        type: boolean
+      deploy_frontend:
+        description: 'Deploy frontend assets'
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: deploy-${{ github.event_name == 'workflow_dispatch' && inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod' || 'dev') }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy (${{ github.event_name == 'workflow_dispatch' && inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod' || 'dev') }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Filter changed paths (for main branch commits)
+        uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          filters: |
+            backend:
+              - 'back-end/**'
+            frontend:
+              - 'front-end/**'
+              - 'back-end/deploy/environments.ts'
+              - 'back-end/src/models/**'
+
+      - name: Resolve deployment targets
+        id: targets
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            ENV="${{ inputs.environment }}"
+            DEPLOY_BACKEND="${{ inputs.deploy_backend }}"
+            DEPLOY_FRONTEND="${{ inputs.deploy_frontend }}"
+          elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            ENV="prod"
+            DEPLOY_BACKEND="true"
+            DEPLOY_FRONTEND="true"
+          else
+            ENV="dev"
+            DEPLOY_BACKEND="${{ steps.filter.outputs.backend == 'true' }}"
+            if [ "${{ steps.filter.outputs.frontend }}" = "true" ] || [ "${{ steps.filter.outputs.backend }}" = "true" ]; then
+              DEPLOY_FRONTEND="true"
+            else
+              DEPLOY_FRONTEND="false"
+            fi
+          fi
+
+          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
+          echo "deploy_backend=$DEPLOY_BACKEND" >> "$GITHUB_OUTPUT"
+          echo "deploy_frontend=$DEPLOY_FRONTEND" >> "$GITHUB_OUTPUT"
+          echo "Target Environment: $ENV"
+          echo "Deploy Backend: $DEPLOY_BACKEND"
+          echo "Deploy Frontend: $DEPLOY_FRONTEND"
+
+      - name: Set up Node.js
+        if: steps.targets.outputs.deploy_backend == 'true' || steps.targets.outputs.deploy_frontend == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: |
+            back-end/package-lock.json
+            front-end/package-lock.json
+
+      - name: Configure AWS Credentials
+        if: steps.targets.outputs.deploy_backend == 'true' || steps.targets.outputs.deploy_frontend == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'eu-central-1' }}
+
+      - name: Configure AWS ga-app CLI Profile
+        if: steps.targets.outputs.deploy_backend == 'true' || steps.targets.outputs.deploy_frontend == 'true'
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" --profile ga-app
+          aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" --profile ga-app
+          aws configure set region "${{ secrets.AWS_REGION || 'eu-central-1' }}" --profile ga-app
+          if [ -n "${{ secrets.AWS_SESSION_TOKEN }}" ]; then
+            aws configure set aws_session_token "${{ secrets.AWS_SESSION_TOKEN }}" --profile ga-app
+          fi
+
+      - name: Deploy Backend (${{ steps.targets.outputs.environment }})
+        if: steps.targets.outputs.deploy_backend == 'true'
+        working-directory: back-end
+        run: |
+          npm ci
+          ./deploy.sh ${{ steps.targets.outputs.environment }}
+
+      - name: Deploy Frontend (${{ steps.targets.outputs.environment }})
+        if: steps.targets.outputs.deploy_frontend == 'true'
+        working-directory: front-end
+        run: |
+          npm ci
+          npm run test:coverage
+          ./release.sh ${{ steps.targets.outputs.environment }}

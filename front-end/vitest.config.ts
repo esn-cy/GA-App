@@ -5,16 +5,20 @@ import path from 'node:path';
 export default defineConfig({
   plugins: [tsconfigPaths()],
   resolve: {
-    alias: {
-      '@ionic/core/components': path.resolve(__dirname, 'node_modules/@ionic/core/components/index.js'),
-      '@models': path.resolve(__dirname, '../back-end/src/models'),
-      '@env': path.resolve(__dirname, 'src/environments/environment.ts'),
-      '@app': path.resolve(__dirname, 'src/app'),
-      '@tabs': path.resolve(__dirname, 'src/app/tabs'),
-      '@common': path.resolve(__dirname, 'src/app/common')
-    }
+    alias: [
+      {
+        find: /^@ionic\/core\/components$/,
+        replacement: path.resolve(__dirname, 'node_modules/@ionic/core/components/index.js')
+      },
+      { find: '@models', replacement: path.resolve(__dirname, '../back-end/src/models') },
+      { find: '@env', replacement: path.resolve(__dirname, 'src/environments/environment.ts') },
+      { find: '@app', replacement: path.resolve(__dirname, 'src/app') },
+      { find: '@tabs', replacement: path.resolve(__dirname, 'src/app/tabs') },
+      { find: '@common', replacement: path.resolve(__dirname, 'src/app/common') }
+    ]
   },
   test: {
+    testTimeout: 15000,
     server: {
       deps: {
         inline: ['@ionic/angular', '@ionic/core', '@idea-ionic/common']
@@ -23,13 +27,10 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['tests/test-setup.ts'],
-    include: ['tests/**/*.spec.ts'],
-    exclude: ['node_modules/**', 'dist/**', 'www/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
-      include: ['src/app/**/*.ts'],
       exclude: [
         '**/*.spec.ts',
         '**/*.module.ts',

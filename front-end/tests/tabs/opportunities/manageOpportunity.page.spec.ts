@@ -115,7 +115,7 @@ describe('ManageOpportunityPage', () => {
     expect(page.opportunity.expectedAttachments.length).toBe(0);
 
     page.opportunity.additionalManagersIds.push('user-2');
-    page.removeOpportunityManagerById('user-2');
+    await page.removeOpportunityManagerById('user-2');
     expect(page.opportunity.additionalManagersIds.includes('user-2')).toBe(false);
   });
 

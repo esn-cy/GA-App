@@ -59,6 +59,14 @@ if (fs.existsSync(vitestProviderPath)) {
     patched = true;
   }
 
+  if (providerContent.includes('if (this.isIncluded(fileURLToPath(result.url))) {')) {
+    providerContent = providerContent.replace(
+      'if (this.isIncluded(fileURLToPath(result.url))) {',
+      'if (this.isIncluded(fileURLToPath(result.url)) || result.url.includes(\'dist/test-out\')) {'
+    );
+    patched = true;
+  }
+
   if (patched) {
     fs.writeFileSync(vitestProviderPath, providerContent, 'utf8');
     console.log('Patched @vitest/coverage-v8 provider for test bundle coverage.');

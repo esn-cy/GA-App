@@ -56,7 +56,7 @@ const defaultDDBTableProps: DDB.TableProps | any = {
 export class ApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id, props);
-    this.init(scope, id, props);
+    void this.init(scope, id, props);
   }
 
   private defaultLambdaFnProps: NodejsFunctionProps = {

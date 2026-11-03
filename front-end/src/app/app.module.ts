@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -25,7 +25,8 @@ registerLocaleData(localeIt, 'it');
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: IDEAEnvironment, useValue: environment },
-    provideIonicAngular({ mode: 'md' })
+    provideIonicAngular({ mode: 'md' }),
+    provideZoneChangeDetection()
   ],
   bootstrap: [AppComponent]
 })

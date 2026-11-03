@@ -56,7 +56,7 @@ Each component/page is represented by a set of files (not all of them are always
 
 - `user.page.html`: contains the HTML structure.
 - `user.page.scss`: contains the style/presentation code (CSS) .
-- `user.page.ts`: contains the business logic (Typescript).
+- `user.page.ts`: contains the business logic (TypeScript).
 - `user-routing.module.ts`: contains the routing instructions (e.g. the page is reachable through the relative path `/user`).
 - `user.module.ts`: contains the imports of the related components and modules.
 - `user.service.ts`: contains the API requests and the logics to interact with the user's data model.

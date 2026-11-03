@@ -72,17 +72,9 @@ if (typeof window !== 'undefined') {
     } as any;
   }
 
-  if (typeof globalThis.URL.createObjectURL === 'undefined') {
-    (globalThis.URL as any).createObjectURL = () => 'blob:mock-url';
-  }
-  if (typeof globalThis.URL.revokeObjectURL === 'undefined') {
-    (globalThis.URL as any).revokeObjectURL = () => {
-    };
-  }
-  if (typeof window.URL.createObjectURL === 'undefined') {
-    window.URL.createObjectURL = (globalThis.URL as any).createObjectURL;
-  }
-  if (typeof window.URL.revokeObjectURL === 'undefined') {
-    window.URL.revokeObjectURL = (globalThis.URL as any).revokeObjectURL;
-  }
+  (globalThis.URL as any).createObjectURL = () => 'blob:mock-url';
+  (globalThis.URL as any).revokeObjectURL = () => {
+  };
+  window.URL.createObjectURL = (globalThis.URL as any).createObjectURL;
+  window.URL.revokeObjectURL = (globalThis.URL as any).revokeObjectURL;
 }
