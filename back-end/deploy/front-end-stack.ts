@@ -12,6 +12,7 @@ export interface FrontEndProps extends cdk.StackProps {
   project: string;
   stage: string;
   domain: string;
+  hostedZoneDomain?: string;
   alternativeDomains?: string[];
   certificateARN?: string;
 }
@@ -32,7 +33,7 @@ export class FrontEndStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'S3BucketName', { value: frontEndBucket.bucketName });
 
     const zone = Route53.HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: props.domain.split('.').slice(-3).join('.')
+      domainName: props.hostedZoneDomain ?? props.domain
     });
 
     const certificate = props.certificateARN

@@ -10,6 +10,7 @@ export interface SESProps extends cdk.StackProps {
 export class SESStack extends cdk.Stack {
   public readonly identityArn: string;
   public readonly notificationTopicArn: string;
+  public readonly domainName: string;
 
   constructor(scope: Construct, id: string, props: SESProps) {
     super(scope, id, props);
@@ -17,9 +18,10 @@ export class SESStack extends cdk.Stack {
     const region = cdk.Stack.of(this).region;
     const account = cdk.Stack.of(this).account;
 
-    const domainName = props.domain.split('.').slice(-3).join('.');
+    const domainName = props.domain;
     const sesDomain = new VerifySesDomain(this, 'DomainIdentity', { domainName });
 
+    this.domainName = domainName;
     this.identityArn = `arn:aws:ses:${region}:${account}:identity/${domainName}`;
     this.notificationTopicArn = sesDomain.notificationTopic.topicArn;
 

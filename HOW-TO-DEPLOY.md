@@ -3,20 +3,37 @@
 Hello, there! This is a guide to deploy the app on a new environment; it only takes about one hour, and it's almost
 fully-automated.
 
-**The back-end is implemented on AWS** ([Amazon Web Services](https://aws.amazon.com/)) resources. _Note: you don't need to have particular knowledge on AWS to complete this walkthrough._
+**The back-end is implemented on AWS** ([Amazon Web Services](https://aws.amazon.com/)) resources. _Note: you don't need
+to have particular knowledge on AWS to complete this walkthrough._
 
-If you're following this guide to implement the tool for a National Organization, you may want to use [this email template](https://docs.google.com/document/d/1o9HHcC_hKjlFrVs9g53jh_VfJwZaNsg7qnL7tT-Hzug/edit#heading=h.3c135plyvtua).
+If you're following this guide to implement the tool for a National Organization, you may want to use
+[this email template](https://docs.google.com/document/d/1o9HHcC_hKjlFrVs9g53jh_VfJwZaNsg7qnL7tT-Hzug/edit#heading=h.3c135plyvtua).
 
 ## Pre-requirements
 
 ### Set up the AWS Account
 
-1. Choose an AWS account you own, or [create a new one](https://aws.amazon.com/getting-started/). **Make sure to link a valid credit card** to avoid issues later on.
-2. To completely automate the deployment
-   process, [purchase a new domain name](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html)
-   inside the [Route53](https://aws.amazon.com/route53) service in the target AWS account. The operation takes
-   approximately 30 minutes, and the expected result is a new domain registered and a new hosted zone (created
-   automatically) inside Route53. _Note: for the domain `esn-ga.link` purchased through Route53, we pay only 5$/year._
+1. Choose an AWS account you own, or [create a new one](https://aws.amazon.com/getting-started/). **Make sure to link a
+   valid credit card** to avoid issues later on.
+2. **Set up DNS in Route 53 (Choose Option A or Option B)**:
+    - **Option A (Recommended): Subdomain Delegation via NS Records No domain purchase needed**:
+
+      If your National Organization already owns a domain (e.g. `esn.org`), you can delegate a dedicated subdomain (e.g.
+      `ga.esn.org`) to AWS Route 53:
+        1. Open the [Route 53 Console](https://console.aws.amazon.com/route53/) and create a new **Public Hosted Zone**
+           with your chosen subdomain as the domain name (e.g. `ga.esncy.org`).
+        2. Once created, note the 4 **Name Server (NS)** addresses assigned to your zone (e.g. `ns-xxx.awsdns-xx.org`).
+        3. Go to your existing DNS provider (where your parent domain is managed, e.g. Cloudflare, Namecheap, cPanel)
+           and add **NS records** for that subdomain pointing to those 4 Route 53 name servers.
+        4. That's it! Route 53 is now authorised to manage all DNS records and SSL certificates for that subdomain and
+           all child records (`api.*`, `dev.*`, `media.*`, `socket.*`).
+    - **Option B: Purchase a new domain directly in Route 53**:
+
+      If you don't have an existing domain or prefer a separate standalone domain, you can
+      [purchase a new domain name](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html)
+      directly inside Route 53 (e.g. `esn-ga.link`). The operation takes approximately 30 minutes and automatically
+      creates the Public Hosted Zone in Route 53. _Note: for a domain like `esn-ga.link` purchased through Route 53, it
+      costs around $5/year._
 3. Identify an [IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html)
    ([or create a new one](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) — [here's a small video guide](https://drive.google.com/file/d/1Ko_F91PczCZwQCIMeLk7YJx5J8qDNtaJ/view?usp=drive_link));
    then, [create a new set of access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html):
@@ -39,7 +56,7 @@ If you're following this guide to implement the tool for a National Organization
    aws configure --profile {AWS_PROFILE}
 
    # example:
-   aws configure --profile esn-assembly-italy
+   aws configure --profile esn-assembly-cuba
    # AWS Access Key ID [None]: {YOUR_ACCESS_KEY_ID}
    # AWS Secret Access Key [None]: {YOUR_ACCESS_KEY_SECRET}
    # Default region name [None]: eu-central-1
@@ -56,9 +73,12 @@ If you're following this guide to implement the tool for a National Organization
 
 ## Deployment
 
-The suggested IDE is [Visual Studio Code](https://code.visualstudio.com/); we included some handy shortcuts built for it.
+The suggested IDEs are [Visual Studio Code](https://code.visualstudio.com/) or a **JetBrains IDE** (such as
+[WebStorm](https://www.jetbrains.com/webstorm/) or [PhpStorm](https://www.jetbrains.com/phpstorm/)); we included
+handy shortcuts and pre-configured run configurations for both.
 
-1. Open the terminal (command prompt) and [boostrap CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html) in the account/region identified by running:
+1. Open the terminal (command prompt) and [boostrap CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html) in
+   the account/region identified by running:
 
    ```sh
    cdk bootstrap aws://{AWS_ACCOUNT_ID}/{AWS_REGION} --profile {AWS_PROFILE}
@@ -76,145 +96,126 @@ The suggested IDE is [Visual Studio Code](https://code.visualstudio.com/); we in
    npm install
    ```
 5. Identify the file `/back-end/deploy/environments.ts` and fix the configuration with your values; explanation:
-   - `PROJECT`: choose a key to identify the project and its resources. **Try not to use a key too simple, to avoid naming-overlapping on global resources**. An optimal name would be something like: _esn-assembly-italy_. **Please use only smaller case letters and dashes to avoid uncompatibility issues later on.**
-   - `DOMAIN`: the domain name you purchased/imported earlier. Example: _esn-assembly-italy.link_.
-   - `PROD_CUSTOM_DOMAIN`: set it to `null`, following the example in the comment next to the constant.
+    - `PROJECT`: choose a key to identify the project and its resources. **Try not to use a key too simple, to avoid
+      naming-overlapping on global resources**. An optimal name would be something like: _esn-assembly-cuba_. **Please
+      use only lower case letters and dashes to avoid incompatibility issues later on.**
+    - `DOMAIN`: the domain name of your Route 53 Public Hosted Zone. This can be a delegated subdomain (e.g.
+      _ga.esn.org_) or a purchased apex domain (e.g. _esn-ga.link_).
 6. Configure the following two deploy scripts, by setting the necessary variables:
-
-   - `/back-end/deploy.sh`:
-     - `AWS_PROFILE`.
-     - `PROJECT`.
-   - `/front-end/release.sh`; note: this script supports out-of-the-box two environments: _dev_ and _prod_:
-     - `AWS_PROFILE`.
-     - `DOMAIN_PROD`: e.g. _esn-assembly-italy.link_
-     - `DOMAIN_DEV`: e.g. _dev.esn-assembly-italy.link_
+    - `/back-end/deploy.sh`:
+        - `AWS_PROFILE`.
+        - `PROJECT`.
+    - `/front-end/release.sh`; note: this script supports out-of-the-box two environments: _dev_ and _prod_:
+        - `AWS_PROFILE`.
+        - `DOMAIN_PROD`: e.g. _esn-assembly-cuba.link_
+        - `DOMAIN_DEV`: e.g. _dev.esn-assembly-cuba.link_
 
 7. Create a random secure string (`{VALUE}`) that the app will use to create authentication tokens. Note: `{PROJECT}`
    must be the same one just set above.
    ```
    aws ssm put-parameter --profile {AWS_PROFILE} --type "SecureString" --name "/{PROJECT}/auth" --value "{VALUE}"
    ```
-8. You can create as many enviroments (stages) as you like; a common (the default) configuration includes _prod_ and
+8. You can create as many environments (stages) as you like; a common (the default) configuration includes _prod_ and
    _dev_ stages. **Repeat this step for each of the desired stages**. From the terminal, make sure to be in the
    `/back-end` folder of the project, substitute the `{STAGE}` variable (based on the stage/environment you want to
    deploy) and run:
    ```sh
    cdk deploy --profile {AWS_PROFILE} --context stage={STAGE} --all --require-approval never
    ```
-9. _...it will take some time!_ If prompeted, confirm all the requests to create new resources.
-10. From Visual Studio Code menu:
-  1. "Terminal > Run build task", select "Deploy back-end environment" and select a stage you've created.
-  2. "Terminal > Run build task", select "Deploy front-end environment" and select a stage you've created.
-    - Note: since the app supports development and production back-and (API) stages, **you need decide which to use when
-      you run or release the front-end**; in `/front-end/src/environments/environment.idea.ts` you can switch between
-      "dev" and "prod" with the variable `STAGE`. Note: _dev_ and _prod_ environment have their own databases; this
-      means that the app's contents will be different based on which environment you’re referring to with the variable
-      `STAGE`. Finally: **if you are releasing the development front-end, you should target the development back-end**
-      (API) by setting the previously mentioned `STAGE` to "dev".
+9. _...it will take some time!_ If prompted, confirm all the requests to create new resources.
+10. Deploy and release your application stages using your IDE:
+    - **Visual Studio Code**:
+        1. Open "Terminal > Run build task" (or `Ctrl+Shift+B` / `Cmd+Shift+B`), select **"Deploy a back-end
+           environment"**, and pick your stage (e.g. `dev` or `prod`).
+        2. Open "Terminal > Run build task", select **"Release a front-end environment"**, and pick the target stage.
+    - **JetBrains IDEs (WebStorm / PhpStorm)**:
+        1. Open the Run/Debug configurations dropdown in the top toolbar.
+        2. Select **`Deploy Back-end Dev`** (or `Deploy Back-end Prod`) and click the Run button (`▶`).
+        3. Select **`Release Front-end Dev`** (or `Release Front-end Prod`) and click Run (`▶`). *(These run
+           configurations are pre-defined in the `.run` folder of the repository).*
+    - **Note on stages**: Since the app supports development and production back-end (API) stages, **you need to decide
+      which stage to target when running or releasing the front-end**. In
+      `/front-end/src/environments/environment.idea.ts` you can switch between `"dev"` and `"prod"` with the variable
+      `STAGE`. The _dev_ and _prod_ environments have separate databases; if you are releasing the development
+      front-end, you should target the development back-end by setting `STAGE = 'dev'`.
 11. Feel free to commit the few changed files in the forked GitHub repository (or branch). _Please, if you make any
     changes to the source code, commit them to the forked repository (or branch) so that other NOs can take advantage of
     your improvements._
 12. **Note well.** The first user to access a given app environment will automatically be administrator.
-13. Some of the internal features require the sending of email messages. To enable our AWS account to send emails
-    (through the [SES service](https://aws.amazon.com/ses/)), we need to request to AWS to be taken out of the default
-    sandbox of
-    SES. [Read here for more information](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html). To
-    do this, you can start by running the following command in the terminal, then follow AWS instructions (you will
-    receive a follow-up email within a day or two) accordingly. Basically, you have to prove that you can handle the
-    project's email sending without generating too much SPAM or receiving too many email bounces.
+13. Some internal features require sending email messages (login codes, voting links, notifications). New AWS accounts
+    place [Amazon SES](https://aws.amazon.com/ses/) in the **sandbox** by default, allowing emails only to verified
+    addresses.
 
-    ```sh
-    aws sesv2 put-account-details \
-    --profile {AWS_PROFILE}
-    --production-access-enabled \
-    --mail-type TRANSACTIONAL \
-    --website-url https://{FRONT-END-DOMAIN} \
-    --use-case-description "We send transactional emails following user-requested actions. All the target email addreses are verified. We implemented a mechanism to detect and manage bounces." \
-    --additional-contact-email-addresses {YOUR_EMAIL_ADDRESS} \
-    --contact-language EN
-    ```
+    To send emails to your users, you need to request **Production Access** in the AWS SES Console:
+
+    1. Open the [Amazon SES Console](https://console.aws.amazon.com/ses/) in your deployment region (e.g.,
+       `eu-central-1` or `eu-west-1`).
+    2. In the left navigation pane, select **Account dashboard**.
+    3. In the sandbox banner at the top, click **Request production access** (or **Edit account details**).
+    4. Fill out the request form:
+        - **Mail type**: Choose `Transactional`.
+        - **Website URL**: `https://{DOMAIN}` (e.g. `https://ga.esn.org`).
+        - **How do you plan to build or acquire your mailing list?**:
+          > "Recipients are registered members and volunteers of our National Organization attending the General
+          > Assembly. Email addresses are added by administrators or entered directly by users requesting one-time login
+          > links."
+        - **How will you handle bounces and complaints?**:
+          > "We only send transactional emails to active, internal organisation members. The application uses an SNS
+          > notification topic and automated bounce-handling mechanism to flag invalid addresses immediately."
+        - **How do recipients opt-in, and how can they opt out?**:
+          > *"Emails are strictly transactional (authentication tokens, voting notifications, and application alerts).
+          > They are directly initiated by user actions or general assembly processes."*
+        - **Use case description**:
+          > "We are hosting an internal General Assembly web application for our non-profit student volunteer
+          > organisation. Amazon SES is used strictly for transactional emails: sending magic login links, voting
+          > verification codes, and assembly notifications to our verified members. No marketing or bulk emails are
+          > sent."
+        - **Additional contact email addresses**: Enter your contact email address.
+    5. Acknowledge the terms and submit. AWS Trust & Safety usually reviews and approves the request within 24–48 hours.
 
 ## Deploying new changes
 
-If you make changes to the code (or the infrastructure), to deploy them, you can run "Terminal > Run build task" (keyboard shortcut: `shift+cmd+b`), select whether you want to deploy the back-end environment or release the front-end environment, and finally pick the desired target stage. [Learn more in the CONTRIBUTING doc](/CONTRIBUTING.md).
+### Automated Deployment (CI/CD via GitHub Actions)
 
-## Post-installation: custom domain
+Once your initial AWS setup, DNS delegation, and CDK bootstrap are completed, deployments can be fully automated using
+GitHub Actions (`.github/workflows/deploy.yml`).
 
-If you want to have your production environment available to a custom domain (e.g. _assembly.esn.it_), there are a few more steps to follow.
+#### 1. Configure Repository Secrets
 
-If you're following this guide on behalf of another National Organization, you may want to use [this email template](https://docs.google.com/document/d/1o9HHcC_hKjlFrVs9g53jh_VfJwZaNsg7qnL7tT-Hzug/edit#heading=h.9jlqqqv3bhun).
+In your GitHub repository, navigate to **Settings > Secrets and variables > Actions** and add:
 
-1. We need to create an SSL certificate that is linked to the custom domain (to ensure an HTTPS secure connection); note: the certificate must be always created in the region `us-east-1`, regardless of the region where you deployed the application. The `{CUSTOM_DOMAIN_NAME}` it's the full custom domain name you chose: `assembly.esn.it`. You can achieve this by running the following command in the terminal:
+- `AWS_ACCESS_KEY_ID`: Your AWS IAM access key ID.
+- `AWS_SECRET_ACCESS_KEY`: Your AWS IAM secret access key.
+- `AWS_REGION`: (Optional) Your target AWS region (defaults to `eu-central-1` if omitted).
+- `GITLAB_SYNC_TOKEN`: (Optional) Personal access token if using the GitLab mirror workflow (`gitlab-mirror.yml`).
 
-   ```
-   aws --profile {AWS_PROFILE} --region us-east-1 acm request-certificate \
-   --validation-method DNS --domain-name "{DOMAIN_YOU_BOUGHT}" --subject-alternative-names "*.{DOMAIN_YOU_BOUGHT}" "{CUSTOM_DOMAIN_NAME}"
+#### 2. Deployment Triggers
 
-   # example
-   aws --profile esn-assembly-italy --region us-east-1 acm request-certificate \
-   --validation-method DNS --domain-name "esn-assembly-italy.link" --subject-alternative-names "*.esn-assembly-italy.link" "assembly.esn.it"
-   ```
+The CI/CD pipeline supports three deployment flows:
 
-2. Once the certificate is created, it needs to be validated: we need to prove to AWS that we own the custom domain we
-   specified. To do so, we have to add two domain records to the custom domain's DNS. First of all, we gather the first
-   CNAME record to put in the custom domain's DNS. Run terminal command below. The `{CERTIFICATE_ARN}` is the ARN that
-   was in the output of the previous command (e.g.
-   `arn:aws:acm:us-east-1:111111111111:certificate/xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`). _In case you've lost it, you
-   can still recovering it through the AWS Console in the service ACM (AWS Certificate Manager)._
+* **Development (`dev`)**: Any push or merge into the `main` branch automatically runs linting and unit tests, and
+  deploys modified components (`back-end` and/or `front-end` based on path changes) to the `dev` stage.
+* **Production (`prod`)**: Pushing a release version tag triggers a complete deployment of both back-end and front-end
+  to production:
+  ```sh
+  git tag v1.11.3
+  git push origin v1.11.3
+  ```
+* **Manual Deployment (Workflow Dispatch)**: From your GitHub repository, go to the **Actions** tab, select **Deploy**,
+  click **Run workflow**, choose the target environment (`dev` or `prod`), and toggle whether to deploy the backend,
+  frontend, or both.
 
-   ```sh
-   aws --profile {AWS_PROFILE} --region us-east-1 acm describe-certificate \
-   --certificate-arn {CERTIFICATE_ARN}
+### Manual Deployment (Local / IDE)
 
-   # output
-   # "Certificate": {
-   #   ...
-   #   "DomainValidationOptions": [
-   #     {
-   #       "DomainName": "assembly.esn.it",
-   #       "ValidationDomain": "assembly.esn.it",
-   #       "ValidationStatus": "PENDING_VALIDATION",
-   #       "ResourceRecord": {
-   #          "Name": "xxxxx.assembly.esn.it.",
-   #          "Type": "CNAME",
-   #          "Value": "yyyyy.mhbtsbpdnt.acm-validations.aws."
-   #       },
-   #       ...
-   ```
+If you prefer to deploy manually from your local machine instead of CI/CD:
 
-3. From the output of the previous command we can gather the CNAME name/value record (`ResourceRecord`) that should be
-   added to the custom domain's DNS to validate the certificate we created. _To check on the validation status, you can
-   run again the previous command (or check the ACM service in the AWS Console)._
-4. The other CNAME record that we need to add to the custom domain's DNS represents a link between our distributed app
-   and the custom domain. The `name` of the record is the `CUSTOM_DOMAIN_NAME`; the value is the result of the following
-   terminal command. The variable `DOMAIN_YOU_BOUGHT` is the domain of the production environment, e.g.
-   `esn-assembly-italy.link`.
+- **In Visual Studio Code**: Run "Terminal > Run build task" (keyboard shortcut: `Ctrl+Shift+B` / `Cmd+Shift+B`), select
+  whether you want to deploy the back-end environment or release the front-end environment, and pick the desired target
+  stage.
+- **In JetBrains IDEs (WebStorm / IntelliJ IDEA)**: Select the desired task from the top toolbar Run configuration
+  dropdown (e.g. `Deploy Back-end Dev`, `Release Front-end Dev`, etc.) and click Run (`▶`).
+- **Via Command Line**:
+    - Back-end: `cd back-end && ./deploy.sh [dev|prod]`
+    - Front-end: `cd front-end && ./release.sh [dev|prod]`
 
-   ```sh
-   aws cloudfront list-distributions --profile {AWS_PROFILE} --output text \
-   --query "DistributionList.Items[?Aliases.Items[0] == '{DOMAIN_YOU_BOUGHT}'].DomainName | [0]"
-
-   # output
-   zzzzzzzzz.cloudfront.net
-   ```
-
-5. Add (or ask to add) the two CNAME records that we gathered in the previous steps. Once you did, or you receive
-   confirmation that the records have been successfully implemented, we can go on with the last few steps.
-6. Open the file `/back-end/deploy/environments.ts` and:
-   1. Fix the `PROD_CUSTOM_DOMAIN` value with your chosen custom domain, e.g.:
-      ```typescript
-      export const PROD_CUSTOM_DOMAIN = 'assembly.esn.it';
-      ```
-   2. In the `parameters`, replace the SSL certificate ARN with the one created earlier, e.g.:
-      ```typescript
-      export const parameters: Parameters = {
-         ...
-         frontEndCertificateARN: PROD_CUSTOM_DOMAIN
-            ? '{CERTIFICATE_ARN}'
-            : undefined
-         };
-      ```
-7. From Visual Studio Code menu: "Terminal > Run build task", select "Deploy back-end environment" and select "prod".
-   _Note: this deploy will fail in case the certificate hasn't been validated yet._
-8. Wait a few minutes and your production environment should be available at the new custom domain: well done!
-9. Don't forget to commit this changes in the forked repository (or branch).
+[Learn more in the CONTRIBUTING doc](/CONTRIBUTING.md).

@@ -3,12 +3,13 @@
  */
 export const PROJECT = 'ga-app-cyprus';
 /**
- * The purchased domain to use.
+ * The base domain to use.
  */
 export const DOMAIN = 'ga.esncy.org';
 
 export const parameters: Parameters = {
   project: PROJECT,
+  hostedZoneDomain: DOMAIN,
   apiDomain: 'api.'.concat(DOMAIN),
   webSocketApiDomain: 'socket.'.concat(DOMAIN),
   mediaDomain: 'media.'.concat(DOMAIN)
@@ -33,11 +34,15 @@ export interface Parameters {
    */
   project: string;
   /**
+   * The base Route 53 hosted zone domain name.
+   */
+  hostedZoneDomain: string;
+  /**
    * HTTP API for each environment will be available at `${apiDomain}/${env.stage}`.
    */
   apiDomain: string;
   /**
-   * Web Socket API for each environment will be available at `${apiDomain}/${env.stage}`.
+   * WebSocket API for each environment will be available at `${apiDomain}/${env.stage}`.
    */
   webSocketApiDomain: string;
   /**
@@ -55,6 +60,10 @@ export interface Stage {
    * The domain name where to reach the front-end.
    */
   domain: string;
+  /**
+   * Optional custom hosted zone domain if different from parameters.hostedZoneDomain.
+   */
+  hostedZoneDomain?: string;
   /**
    * The (optional) alternative domain names to reach the front-end.
    */

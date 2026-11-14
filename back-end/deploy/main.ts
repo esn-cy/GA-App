@@ -259,23 +259,26 @@ const createApp = async (): Promise<void> => {
   const mediaStack = new MediaStack(app, `${parameters.project}-media`, {
     env,
     mediaBucketName: `${parameters.project}-media`,
-    mediaDomain: parameters.mediaDomain
+    mediaDomain: parameters.mediaDomain,
+    hostedZoneDomain: parameters.hostedZoneDomain
   });
 
   const apiDomainStack = new ApiDomainStack(app, `${parameters.project}-api-domain`, {
     env,
-    domain: parameters.apiDomain
+    domain: parameters.apiDomain,
+    hostedZoneDomain: parameters.hostedZoneDomain
   });
 
   const webSocketApiDomainStack = new ApiDomainStack(app, `${parameters.project}-socket-api-domain`, {
     env,
-    domain: parameters.webSocketApiDomain
+    domain: parameters.webSocketApiDomain,
+    hostedZoneDomain: parameters.hostedZoneDomain
   });
 
   const sesStack = new SESStack(app, `${parameters.project}-ses`, {
     env,
     project: parameters.project,
-    domain: parameters.apiDomain
+    domain: parameters.hostedZoneDomain
   });
 
   //
@@ -292,7 +295,11 @@ const createApp = async (): Promise<void> => {
     resourceControllers: apiResources,
     tables,
     mediaBucketArn: mediaStack.mediaBucketArn,
-    ses: { identityArn: sesStack.identityArn, notificationTopicArn: sesStack.notificationTopicArn },
+    ses: {
+      identityArn: sesStack.identityArn,
+      notificationTopicArn: sesStack.notificationTopicArn,
+      domainName: sesStack.domainName
+    },
     removalPolicy: STAGE_VARIABLES.destroyDataOnDelete ? cdk.RemovalPolicy.DESTROY : cdk.RemovalPolicy.RETAIN,
     lambdaLogLevel: STAGE_VARIABLES.logLevel ?? 'INFO',
     appDomain: STAGE_VARIABLES.domain
@@ -307,6 +314,7 @@ const createApp = async (): Promise<void> => {
     project: parameters.project,
     stage: STAGE,
     domain: STAGE_VARIABLES.domain,
+    hostedZoneDomain: STAGE_VARIABLES.hostedZoneDomain ?? parameters.hostedZoneDomain,
     alternativeDomains: STAGE_VARIABLES.alternativeDomains,
     certificateARN: parameters.frontEndCertificateARN
   });

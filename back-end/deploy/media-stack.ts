@@ -15,6 +15,7 @@ import * as IAM from 'aws-cdk-lib/aws-iam';
 export interface MediaProps extends cdk.StackProps {
   mediaBucketName: string;
   mediaDomain: string;
+  hostedZoneDomain?: string;
 }
 
 export class MediaStack extends cdk.Stack {
@@ -84,7 +85,7 @@ export class MediaStack extends cdk.Stack {
       })
     );
 
-    createCloudFrontDistributionForMediaBucket(this, s3MediaBucket, props.mediaDomain);
+    createCloudFrontDistributionForMediaBucket(this, s3MediaBucket, props.mediaDomain, props.hostedZoneDomain);
   }
 }
 
@@ -200,10 +201,11 @@ const createHTMLToPDFLambdaFunctions = (
 const createCloudFrontDistributionForMediaBucket = (
   scope: Construct,
   mediaBucket: S3.Bucket,
-  mediaDomain: string
+  mediaDomain: string,
+  hostedZoneDomain?: string
 ): void => {
   const zone = Route53.HostedZone.fromLookup(scope, 'HostedZone', {
-    domainName: mediaDomain.split('.').slice(-3).join('.')
+    domainName: hostedZoneDomain ?? mediaDomain
   });
 
   const certificate = new ACM.DnsValidatedCertificate(scope, 'MediaCertificate', {

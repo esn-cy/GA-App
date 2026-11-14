@@ -26,7 +26,7 @@ export interface ApiProps extends cdk.StackProps {
   resourceControllers: ResourceController[];
   tables: { [tableName: string]: DDBTable };
   mediaBucketArn: string;
-  ses: { identityArn: string; notificationTopicArn: string };
+  ses: { identityArn: string; notificationTopicArn: string; domainName?: string };
   removalPolicy: RemovalPolicy;
   lambdaLogLevel: 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
   appDomain: string;
@@ -111,7 +111,7 @@ export class ApiStack extends cdk.Stack {
     this.allowLambdaFunctionsToAccessSES({
       lambdaFunctions: Object.values(lambdaFunctions),
       sesIdentityArn: props.ses.identityArn,
-      apiDomain: props.apiDomain
+      sesDomain: props.ses.domainName ?? props.appDomain
     });
 
     const { tables } = this.createDDBTablesAndAllowLambdaFunctions({
@@ -338,7 +338,7 @@ export class ApiStack extends cdk.Stack {
   private allowLambdaFunctionsToAccessSES(params: {
     lambdaFunctions: NodejsFunction[];
     sesIdentityArn: string;
-    apiDomain: string;
+    sesDomain: string;
   }): void {
     const region = cdk.Stack.of(this).region;
 
@@ -348,8 +348,7 @@ export class ApiStack extends cdk.Stack {
     params.lambdaFunctions.forEach(lambdaFn => {
       if (lambdaFn.role) lambdaFn.role.attachInlinePolicy(accessSES);
       lambdaFn.addEnvironment('SES_IDENTITY_ARN', params.sesIdentityArn);
-      const domainName = params.apiDomain.split('.').slice(-3).join('.');
-      lambdaFn.addEnvironment('SES_SOURCE_ADDRESS', `no-reply@${domainName}`);
+      lambdaFn.addEnvironment('SES_SOURCE_ADDRESS', `no-reply@${params.sesDomain}`);
       lambdaFn.addEnvironment('SES_REGION', region);
     });
   }

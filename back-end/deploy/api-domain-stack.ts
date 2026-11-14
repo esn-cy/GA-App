@@ -7,6 +7,7 @@ import * as Route53Targets from 'aws-cdk-lib/aws-route53-targets';
 
 export interface ApiDomainProps extends cdk.StackProps {
   domain: string;
+  hostedZoneDomain?: string;
 }
 
 export class ApiDomainStack extends cdk.Stack {
@@ -14,7 +15,7 @@ export class ApiDomainStack extends cdk.Stack {
     super(scope, id, props);
 
     const zone = Route53.HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: props.domain.split('.').slice(-3).join('.')
+      domainName: props.hostedZoneDomain ?? props.domain
     });
 
     const certificate = new ACM.Certificate(this, 'ApiCertificate', {
