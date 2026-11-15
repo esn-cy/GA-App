@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -20,6 +21,7 @@ import { AppService } from '@app/app.service';
 @Component({
   imports: [FormsModule, IonicModule],
   selector: 'app-datetime-timezone',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ion-item [lines]="lines" [color]="color">
       <ion-label position="stacked">{{ label }} @if (obligatory) {

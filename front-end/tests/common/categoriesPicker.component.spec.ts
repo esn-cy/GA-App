@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CategoriesPickerComponent } from '@common/categoriesPicker.component';
 import { TopicCategoryService } from '@tabs/configurations/categories/categories.service';
 import { TopicCategoryAttached } from '@models/category.model';
@@ -19,11 +19,17 @@ describe('CategoriesPickerComponent', () => {
     component = new CategoriesPickerComponent(mockCategoryService as TopicCategoryService);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create and load categories on ngOnInit', async () => {
+    const querySpy = vi.spyOn(document, 'querySelectorAll');
     expect(component).toBeDefined();
     await component.ngOnInit();
     expect(mockCategoryService.getList).toHaveBeenCalled();
     expect(component.categories).toEqual(mockCategories);
+    expect(querySpy).toHaveBeenCalledWith('ion-app .ion-page:not(.ion-page-hidden)');
   });
 
   it('should compare categories by categoryId', () => {

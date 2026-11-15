@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EventsPickerComponent } from '@common/eventsPicker.component';
 import { GAEventsService } from '@tabs/configurations/events/events.service';
 import { GAEvent, GAEventAttached } from '@models/event.model';
@@ -19,11 +19,17 @@ describe('EventsPickerComponent', () => {
     component = new EventsPickerComponent(mockEventsService as GAEventsService);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create and load events on ngOnInit', async () => {
+    const querySpy = vi.spyOn(document, 'querySelectorAll');
     expect(component).toBeDefined();
     await component.ngOnInit();
     expect(mockEventsService.getList).toHaveBeenCalled();
     expect(component.events).toEqual(mockEvents);
+    expect(querySpy).toHaveBeenCalledWith('ion-app .ion-page:not(.ion-page-hidden)');
   });
 
   it('should compare events by eventId', () => {

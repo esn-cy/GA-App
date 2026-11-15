@@ -1,9 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { IonicModule, PopoverController } from '@ionic/angular';
 import Chart from 'chart.js/auto';
-import { IDEATranslatePipe, IDEATranslationsService } from '@idea-ionic/common';
+import { IDEATranslatePipe, IDEATranslationsService, refreshVisibleIonicPages } from '@idea-ionic/common';
 
 import { MajorityTypeStandaloneComponent } from './majorityType.component';
 import { BallotVotesDetailStandaloneComponent } from './ballotVotesDetail.component';
@@ -16,6 +25,7 @@ import { VotingResults } from '@models/votingResult.model';
 @Component({
   imports: [CommonModule, FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-voting-ballots',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ion-reorder-group [disabled]="!showActions" (ionItemReorder)="handleBallotReorder($event)">
       @for (ballot of votingSession.ballots; track ballot; let bIndex = $index) {
@@ -183,6 +193,7 @@ export class BallotsStandaloneComponent implements OnChanges, OnDestroy {
       this.charts = [];
       // we need to continue refresh the canvas ID because sometimes the chart's canvas doesn't update
       this.chartCanvasBaseId = 'chartBallot-'.concat(Date.now().toString(), '-');
+      refreshVisibleIonicPages();
       clearTimeout(this.chartTimeout);
       this.chartTimeout = setTimeout((): void => this.buildCharts(), 300);
     }

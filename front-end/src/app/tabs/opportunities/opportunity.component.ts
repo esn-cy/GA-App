@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AppService } from '@app/app.service';
 
@@ -9,7 +9,8 @@ import { StatisticEntityTypes } from '@models/statistic.model';
   selector: 'app-opportunity',
   templateUrl: 'opportunity.component.html',
   styleUrls: ['opportunity.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class OpportunityComponent {
   /**

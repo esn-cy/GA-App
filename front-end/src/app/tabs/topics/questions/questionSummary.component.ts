@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AppService } from '@app/app.service';
 
@@ -8,7 +8,8 @@ import { Question } from '@models/question.model';
   selector: 'app-question-summary',
   templateUrl: 'questionSummary.component.html',
   styleUrls: ['questionSummary.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class QuestionSummaryComponent {
   /**

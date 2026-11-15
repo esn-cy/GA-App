@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AppService } from '@app/app.service';
 
@@ -10,7 +10,8 @@ import { StatisticEntityTypes } from '@models/statistic.model';
   selector: 'app-topic',
   templateUrl: 'topic.component.html',
   styleUrls: ['topic.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TopicComponent {
   /**

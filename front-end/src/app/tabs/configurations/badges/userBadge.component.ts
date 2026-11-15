@@ -1,7 +1,7 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, PopoverController } from '@ionic/angular';
-import { IDEATranslatePipe, IDEATranslationsService } from '@idea-ionic/common';
+import { IDEATranslatePipe, IDEATranslationsService, refreshVisibleIonicPages } from '@idea-ionic/common';
 
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 
@@ -13,6 +13,7 @@ import { Badge, UserBadge } from '@models/badge.model';
 @Component({
   imports: [CommonModule, IonicModule, IDEATranslatePipe, DateTimezonePipe],
   selector: 'app-user-badge',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (badge && userBadge) {
       <ion-card color="white">
@@ -95,6 +96,7 @@ export class UserBadgeComponent implements OnInit {
       })
       : this._badges.getDetailOfUserBadge(this.userBadge);
     if (!this.badge) this.badge = new Badge({ badgeId: 'NOT_FOUND', name: this._t._('COMMON.NOT_FOUND') });
+    refreshVisibleIonicPages();
   }
 
   close(): void {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { DateTimezonePipe } from '@common/dateTimezone.pipe';
 
@@ -8,6 +8,7 @@ import { Communication } from '@models/communication.model';
 @Component({
   imports: [CommonModule, IonicModule, DateTimezonePipe],
   selector: 'app-communication',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (!communication) {
       <ion-card [color]="color">

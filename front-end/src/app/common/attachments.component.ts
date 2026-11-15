@@ -1,6 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Attachment } from 'idea-toolbox';
-import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from '@idea-ionic/common';
+import {
+  IDEALoadingService,
+  IDEAMessageService,
+  IDEATranslationsService,
+  refreshVisibleIonicPages
+} from '@idea-ionic/common';
 
 import { AppService } from '../app.service';
 import { PublicAttachmentsService } from './attachments.service';
@@ -13,7 +18,8 @@ export const ACCEPTED_ATTACHMENTS_FORMATS = ['image/*', '.pdf', '.doc', '.docx',
   selector: 'app-attachments',
   templateUrl: 'attachments.component.html',
   styleUrls: ['attachments.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class AttachmentsComponent {
   /**
@@ -73,6 +79,8 @@ export class AttachmentsComponent {
       this.uploadErrors.push({ file: name, error: err.message });
       this.removeAttachment(attachment);
       await this.message.error(err.message, { dontTranslate: true });
+    } finally {
+      refreshVisibleIonicPages();
     }
   }
 

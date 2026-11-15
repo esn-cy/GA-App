@@ -1,5 +1,4 @@
-
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { IDEATranslatePipe } from '@idea-ionic/common';
 
@@ -8,6 +7,7 @@ import { UsefulLink } from '@models/usefulLink.model';
 @Component({
   imports: [IonicModule, IDEATranslatePipe],
   selector: 'app-useful-link',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (!link) {
       <ion-item [color]="color">

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SecurityContext, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SecurityContext, SimpleChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { AppService } from '@app/app.service';
@@ -9,7 +9,8 @@ import { Subject } from '@models/subject.model';
   selector: 'app-message-bubble',
   templateUrl: 'messageBubble.component.html',
   styleUrls: ['messageBubble.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class MessageBubbleComponent implements OnChanges {
   /**

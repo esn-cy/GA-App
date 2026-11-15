@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -14,7 +14,8 @@ import { VotingSession, VotingSessionTypes } from '@models/votingSession.model';
   imports: [CommonModule, FormsModule, IonicModule, IDEATranslatePipe, DateTimezonePipe],
   selector: 'app-voting-session',
   templateUrl: 'votingSession.component.html',
-  styleUrls: ['votingSession.component.scss']
+  styleUrls: ['votingSession.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class VotingSessionStandaloneComponent {
   /**

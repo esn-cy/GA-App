@@ -1,13 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import {
-  IDEALoadingService,
-  IDEAMessageService,
-  IDEATranslatePipe,
-  IDEATranslationsService
-} from '@idea-ionic/common';
+import { IDEALoadingService, IDEAMessageService, IDEATranslatePipe, IDEATranslationsService } from '@idea-ionic/common';
 
 import { SubjectModule } from '@common/subject.module';
 import { HTMLEditorModule } from '@common/htmlEditor.module';
@@ -29,6 +24,7 @@ import { Application, ApplicationStatuses } from '@models/application.model';
     DateTimezonePipe
   ],
   selector: 'app-application',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (card) {
       <ion-card [color]="color">

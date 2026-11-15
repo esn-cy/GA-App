@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import { AppService } from '@app/app.service';
 
@@ -8,7 +8,8 @@ import { Subject, SubjectTypes } from '@models/subject.model';
   selector: 'app-subject',
   templateUrl: 'subject.component.html',
   styleUrls: ['subject.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class SubjectComponent {
   /**

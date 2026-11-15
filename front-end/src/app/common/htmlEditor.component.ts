@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -11,12 +12,14 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { docsSoap } from 'docs-soap';
+import { refreshVisibleIonicPages } from '@idea-ionic/common';
 
 @Component({
   selector: 'app-html-editor',
   templateUrl: 'htmlEditor.component.html',
   styleUrls: ['htmlEditor.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class HTMLEditorComponent implements OnInit, OnChanges {
   /**
@@ -80,6 +83,7 @@ export class HTMLEditorComponent implements OnInit, OnChanges {
     setTimeout((): void => {
       this.text = docsSoap(this.text ?? '');
       this.contentChange.emit(this.text);
+      refreshVisibleIonicPages();
     }, 100);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { addDays } from 'date-fns';
 import Chart from 'chart.js/auto';
@@ -24,7 +24,8 @@ import { Statistic, StatisticEntityTypes, StatisticGranularities } from '@models
       }
     `
   ],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class StatisticsButtonComponent {
   /**
@@ -83,7 +84,8 @@ export class StatisticsButtonComponent {
   selector: 'app-statistics',
   templateUrl: 'statistics.component.html',
   styleUrls: ['statistics.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class StatisticsComponent implements OnInit {
   @Input({ required: true }) entityType!: StatisticEntityTypes;

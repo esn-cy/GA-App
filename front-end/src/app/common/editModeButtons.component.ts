@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AppService } from '../app.service';
 
@@ -6,7 +6,8 @@ import { AppService } from '../app.service';
   selector: 'app-edit-mode-buttons',
   templateUrl: 'editModeButtons.component.html',
   styleUrls: ['editModeButtons.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class EditModeButtonsComponent {
   /**

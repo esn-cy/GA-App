@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { isToday, isTomorrow } from 'date-fns';
 import { IDEATranslationsService } from '@idea-ionic/common';
@@ -13,6 +13,7 @@ import { Deadline } from '@models/deadline.model';
 @Component({
   imports: [CommonModule, IonicModule, DateTimezonePipe],
   selector: 'app-deadline',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     @if (!deadline) {
       <ion-item [color]="color">

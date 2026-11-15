@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslatePipe } from '@idea-ionic/common';
+import { IDEATranslatePipe, refreshVisibleIonicPages } from '@idea-ionic/common';
 
 import { GAEventsService } from '@tabs/configurations/events/events.service';
 
@@ -11,6 +11,7 @@ import { GAEvent, GAEventAttached } from '@models/event.model';
 @Component({
   imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-events-picker',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ion-item [lines]="lines" [color]="color">
       <ion-select
@@ -67,6 +68,7 @@ export class EventsPickerComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.events = await this._events.getList();
+    refreshVisibleIonicPages();
   }
 
   compareWithEvent(e1: GAEventAttached, e2: GAEventAttached): boolean {

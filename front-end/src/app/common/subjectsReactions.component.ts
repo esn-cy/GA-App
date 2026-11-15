@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
+import { refreshVisibleIonicPages } from '@idea-ionic/common';
 
 import { AppService } from '@app/app.service';
 
@@ -9,7 +10,8 @@ import { Subject } from '@models/subject.model';
   selector: 'app-subject-reactions',
   templateUrl: 'subjectsReactions.component.html',
   styleUrls: ['subjectsReactions.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class SubjectsReactionsComponent implements AfterViewInit {
   /**
@@ -34,6 +36,7 @@ export class SubjectsReactionsComponent implements AfterViewInit {
     this.showSpinner = false;
     this.icon = this.getIcon();
     this.color = this.getColor();
+    refreshVisibleIonicPages();
   }
 
   private getIcon(): string {

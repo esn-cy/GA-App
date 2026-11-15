@@ -1,6 +1,19 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { AlertController, PopoverController } from '@ionic/angular';
-import { IDEALoadingService, IDEAMessageService, IDEATranslationsService } from '@idea-ionic/common';
+import {
+  IDEALoadingService,
+  IDEAMessageService,
+  IDEATranslationsService,
+  refreshVisibleIonicPages
+} from '@idea-ionic/common';
 
 import { SubjectsReactionsComponent } from '@app/common/subjectsReactions.component';
 
@@ -19,7 +32,8 @@ import { UserDraft } from '@models/userDraft.model';
   selector: 'app-question',
   templateUrl: 'question.component.html',
   styleUrls: ['question.component.scss'],
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class QuestionComponent implements OnChanges {
   /**
@@ -58,13 +72,15 @@ export class QuestionComponent implements OnChanges {
   ) {}
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.question?.currentValue)
+    if (changes.question?.currentValue) {
       [this.answers, this.userUpvoted, this.userClapped, this.fromDraft] = await Promise.all([
         this._answers.getListOfQuestion(this.question, { force: true }),
         this._questions.userHasUpvoted(this.topic, this.question),
         this._questions.userClaps(this.topic, this.question),
         this._drafts.getAnswerOfQuestion(this.question)
       ]);
+      refreshVisibleIonicPages();
+    }
   }
 
   async upvoteQuestion(upvote: boolean): Promise<void> {

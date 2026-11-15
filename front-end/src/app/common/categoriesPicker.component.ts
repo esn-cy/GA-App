@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IDEATranslatePipe } from '@idea-ionic/common';
+import { IDEATranslatePipe, refreshVisibleIonicPages } from '@idea-ionic/common';
 
 import { TopicCategoryService } from '@tabs/configurations/categories/categories.service';
 
@@ -11,6 +11,7 @@ import { TopicCategoryAttached } from '@models/category.model';
 @Component({
   imports: [FormsModule, IonicModule, IDEATranslatePipe],
   selector: 'app-categories-picker',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ion-item [lines]="lines" [color]="color">
       <ion-select
@@ -69,6 +70,7 @@ export class CategoriesPickerComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.categories = await this._categories.getList();
+    refreshVisibleIonicPages();
   }
 
   compareWithCategory(c1: TopicCategoryAttached, c2: TopicCategoryAttached): boolean {
