@@ -9,7 +9,7 @@ to have particular knowledge on AWS to complete this walkthrough._
 If you're following this guide to implement the tool for a National Organization, you may want to use
 [this email template](https://docs.google.com/document/d/1o9HHcC_hKjlFrVs9g53jh_VfJwZaNsg7qnL7tT-Hzug/edit#heading=h.3c135plyvtua).
 
-## Pre-requirements
+## Prerequisites
 
 ### Set up the AWS Account
 
@@ -44,8 +44,7 @@ If you're following this guide to implement the tool for a National Organization
 
 ### Set up your local computer
 
-1. Ideally, you are running these instructions from a Mac (macOS) or Linux computer; if you're using a Windows
-   PC, [make sure you can run shell script files (.sh)](https://superuser.com/questions/120045/how-to-execute-sh-file-on-windows).
+1. Any modern OS (**macOS**, **Linux**, or **Windows**) works. We're going to be using a cross-platform CLI.
 2. Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html).
 3. Open your terminal (command prompt) and [configure a **named
    profile**](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) with the credentials (access
@@ -63,13 +62,10 @@ If you're following this guide to implement the tool for a National Organization
    # Default output format [None]: json
    ```
 
-4. Install [Node.js](https://nodejs.org/en/). The app is built on TypeScript and Node.js, so it's a mandatory
-   development tool.
-5. Install the [AWS Cloud Development Kit (CDK)](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html); this
-   Infrastructure as Code (IaC) toolkit will deploy the app environment for us.
-6. Install the CLI of [Angular](https://angular.io/guide/setup-local#install-the-angular-cli)
-   and [Ionic](https://ionicframework.com/docs/cli); they are our development frameworks, and we need them to compile
-   our project's code.
+4. Install [Node.js](https://nodejs.org/en/) (v24 or newer). The app and CLI are built on TypeScript and Node.js.
+5. Install the [AWS Cloud Development Kit (CDK)](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
+   and [Angular CLI](https://angular.io/guide/setup-local#install-the-angular-cli) / [Ionic CLI](https://ionicframework.com/docs/cli)
+   (optional globally, as project dependencies include them).
 
 ## Deployment
 
@@ -77,76 +73,69 @@ The suggested IDEs are [Visual Studio Code](https://code.visualstudio.com/) or a
 [WebStorm](https://www.jetbrains.com/webstorm/) or [PhpStorm](https://www.jetbrains.com/phpstorm/)); we included
 handy shortcuts and pre-configured run configurations for both.
 
-1. Open the terminal (command prompt) and [boostrap CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html) in
-   the account/region identified by running:
-
-   ```sh
-   cdk bootstrap aws://{AWS_ACCOUNT_ID}/{AWS_REGION} --profile {AWS_PROFILE}
-   ```
-
-2. Fork the [repository on GitHub](https://github.com/uatisdeproblem/esn-assembly) (or create a new branch from the
+1. Fork the [repository on GitHub](https://github.com/uatisdeproblem/esn-assembly) (or create a new branch from the
    `main` one) and download the project's files.
-3. Open the project folder in the IDE.
-4. Make sure you have installed the project's libraries and dependencies by running in the terminal, from project's
-   root:
+2. Open the project folder in the IDE and install the CLI dependencies (optionally linking `ga-app` globally):
    ```sh
-   cd back-end
+   cd cli
    npm install
-   cd ../front-end
-   npm install
+   # optional: link `ga-app` globally so you can run `ga-app` instead of `node cli`
+   npm link
    ```
-5. Identify the file `/back-end/deploy/environments.ts` and fix the configuration with your values; explanation:
-    - `PROJECT`: choose a key to identify the project and its resources. **Try not to use a key too simple, to avoid
-      naming-overlapping on global resources**. An optimal name would be something like: _esn-assembly-cuba_. **Please
-      use only lower case letters and dashes to avoid incompatibility issues later on.**
-    - `DOMAIN`: the domain name of your Route 53 Public Hosted Zone. This can be a delegated subdomain (e.g.
-      _ga.esn.org_) or a purchased apex domain (e.g. _esn-ga.link_).
-6. Configure the following two deploy scripts, by setting the necessary variables:
-    - `/back-end/deploy.sh`:
-        - `AWS_PROFILE`.
-        - `PROJECT`.
-    - `/front-end/release.sh`; note: this script supports out-of-the-box two environments: _dev_ and _prod_:
-        - `AWS_PROFILE`.
-        - `DOMAIN_PROD`: e.g. _esn-assembly-cuba.link_
-        - `DOMAIN_DEV`: e.g. _dev.esn-assembly-cuba.link_
+3. Run the interactive setup wizard from the repository root:
+   ```sh
+   node cli setup
+   # or, if linked globally:
+   ga-app setup
+   ```
+   The wizard will guide you through:
+    - Choosing your `project` codename (lowercase letters, numbers, and dashes only — e.g. `esn-assembly-cuba`),
+    - Setting your base Route 53 Hosted Zone `domain` (e.g. `ga.esn.org` or `esn-ga.link`),
+    - Configuring your AWS region, AWS CLI profile (optionally stored in the gitignored `ga-app.local.json` override),
+      and deployment stages (`prod` and `dev`),
+    - Installing `back-end` and `front-end` npm dependencies,
+    - Running `cdk bootstrap` on your AWS account/region if needed, and
+    - Creating the `/<project>/auth` `SecureString` parameter in AWS Systems Manager Parameter Store.
 
-7. Create a random secure string (`{VALUE}`) that the app will use to create authentication tokens. Note: `{PROJECT}`
-   must be the same one just set above.
-   ```
-   aws ssm put-parameter --profile {AWS_PROFILE} --type "SecureString" --name "/{PROJECT}/auth" --value "{VALUE}"
-   ```
-8. You can create as many environments (stages) as you like; a common (the default) configuration includes _prod_ and
-   _dev_ stages. **Repeat this step for each of the desired stages**. From the terminal, make sure to be in the
-   `/back-end` folder of the project, substitute the `{STAGE}` variable (based on the stage/environment you want to
-   deploy) and run:
+   All shared project configuration is saved to a single centralised file at the repository root: [
+   `ga-app.config.json`](/ga-app.config.json) (with IDE schema validation from [
+   `ga-app.config.schema.json`](/ga-app.config.schema.json)). Personal local overrides (such as your local
+   `aws.profile`) can go into a gitignored `ga-app.local.json` file.
+
+4. Run the preflight diagnostics check before your first deployment:
    ```sh
-   cdk deploy --profile {AWS_PROFILE} --context stage={STAGE} --all --require-approval never
+   node cli doctor
    ```
-9. _...it will take some time!_ If prompted, confirm all the requests to create new resources.
-10. Deploy and release your application stages using your IDE:
+5. Deploy your back-end and release your front-end using the interactive CLI or your IDE:
+    - **Interactive CLI**:
+      ```sh
+      node cli
+      ```
+      Or directly by command (replace `node cli` with `ga-app` if you ran `npm link`):
+      ```sh
+      node cli deploy backend --stage dev
+      node cli deploy frontend --stage dev
+      ```
     - **Visual Studio Code**:
-        1. Open "Terminal > Run build task" (or `Ctrl+Shift+B` / `Cmd+Shift+B`), select **"Deploy a back-end
-           environment"**, and pick your stage (e.g. `dev` or `prod`).
+        1. Open "Terminal > Run build task" (`Ctrl+Shift+B` / `Cmd+Shift+B`), select **"Deploy a back-end
+           environment"**, and pick your stage (`dev` or `prod`).
         2. Open "Terminal > Run build task", select **"Release a front-end environment"**, and pick the target stage.
     - **JetBrains IDEs (WebStorm / PhpStorm)**:
         1. Open the Run/Debug configurations dropdown in the top toolbar.
-        2. Select **`Deploy Back-end Dev`** (or `Deploy Back-end Prod`) and click the Run button (`▶`).
+        2. Select **`Deploy Back-end Dev`** (or `Deploy Back-end Prod`) and click Run (`▶`).
         3. Select **`Release Front-end Dev`** (or `Release Front-end Prod`) and click Run (`▶`). *(These run
            configurations are pre-defined in the `.run` folder of the repository).*
-    - **Note on stages**: Since the app supports development and production back-end (API) stages, **you need to decide
-      which stage to target when running or releasing the front-end**. In
-      `/front-end/src/environments/environment.idea.ts` you can switch between `"dev"` and `"prod"` with the variable
-      `STAGE`. The _dev_ and _prod_ environments have separate databases; if you are releasing the development
-      front-end, you should target the development back-end by setting `STAGE = 'dev'`.
-11. Feel free to commit the few changed files in the forked GitHub repository (or branch). _Please, if you make any
-    changes to the source code, commit them to the forked repository (or branch) so that other NOs can take advantage of
-    your improvements._
-12. **Note well.** The first user to access a given app environment will automatically be administrator.
-13. Some internal features require sending email messages (login codes, voting links, notifications). New AWS accounts
-    place [Amazon SES](https://aws.amazon.com/ses/) in the **sandbox** by default, allowing emails only to verified
-    addresses.
+    - **Note on local front-end development**: When running the front-end locally (`cd front-end && npm start`), it
+      targets `prod` by default; run `npx ng serve --configuration=dev` to target the `dev` back-end stage.
+6. Feel free to commit `ga-app.config.json` (and any code changes) in your forked GitHub repository (or branch).
+   _Please, if you make any changes to the source code, commit them so that other NOs can take advantage of your
+   improvements._
+7. **Note well.** The first user to access a given app environment will automatically be administrator.
+8. Some internal features require sending email messages (login codes, voting links, notifications). New AWS accounts
+   place [Amazon SES](https://aws.amazon.com/ses/) in the **sandbox** by default, allowing emails only to verified
+   addresses.
 
-    To send emails to your users, you need to request **Production Access** in the AWS SES Console:
+   To send emails to your users, you need to request **Production Access** in the AWS SES Console:
 
     1. Open the [Amazon SES Console](https://console.aws.amazon.com/ses/) in your deployment region (e.g.,
        `eu-central-1` or `eu-west-1`).
@@ -214,8 +203,55 @@ If you prefer to deploy manually from your local machine instead of CI/CD:
   stage.
 - **In JetBrains IDEs (WebStorm / IntelliJ IDEA)**: Select the desired task from the top toolbar Run configuration
   dropdown (e.g. `Deploy Back-end Dev`, `Release Front-end Dev`, etc.) and click Run (`▶`).
-- **Via Command Line**:
-    - Back-end: `cd back-end && ./deploy.sh [dev|prod]`
-    - Front-end: `cd front-end && ./release.sh [dev|prod]`
+- **Via Command Line (`node cli` or `ga-app` if globally linked)**:
+    - Interactive menu: `node cli`
+    - Back-end: `node cli deploy backend --stage [dev|prod]`
+    - Quick Lambda hotswap: `node cli deploy quick --stage dev`
+    - Front-end: `node cli deploy frontend --stage [dev|prod]`
+    - Custom domains & ACM certs: `node cli domain`
+    - Diagnostics: `node cli doctor`
+    - CloudWatch logs: `node cli logs --stage [dev|prod]`
+
+## Post-installation: Custom (Alternative) Domain
+
+If you want your production environment to also be reachable at an additional custom domain (e.g. `assembly.esn.org`)
+alongside your Route 53 domain, use the CLI's `domain` command.
+
+If you're following this guide on behalf of another National Organization, you may want to use
+[this email template](https://docs.google.com/document/d/1o9HHcC_hKjlFrVs9g53jh_VfJwZaNsg7qnL7tT-Hzug/edit#heading=h.9jlqqqv3bhun).
+
+1. Run the custom domain wizard from the repository root (replace `node cli` with `ga-app` if linked globally):
+
+   ```sh
+   node cli domain add assembly.esn.org --stage prod
+   ```
+
+   The CLI will automatically:
+    - Request (or reuse) a `us-east-1` ACM certificate covering `{DOMAIN}`, `*.{DOMAIN}`, and your custom domain,
+    - Offer to create the Route 53 validation CNAME record for `{DOMAIN}` automatically,
+    - Print the exact **ACM validation CNAME** and **CloudFront routing CNAME** (`zzzzzzzzz.cloudfront.net`) to add in
+      your custom domain's DNS,
+    - Save `frontEndCertificateARN` and `stages.<stage>.alternativeDomains` in [
+      `ga-app.config.json`](/ga-app.config.json),
+    - Optionally wait until the certificate becomes `ISSUED` and deploy the back-end for you.
+
+2. Check certificate validation status or view the required CNAME records anytime:
+
+   ```sh
+   node cli domain status
+   ```
+
+3. Once the ACM certificate is `ISSUED` (if you didn't deploy during step 1), deploy the back-end so CloudFront picks
+   up the certificate and alias:
+
+   ```sh
+   node cli deploy backend --stage prod
+   ```
+
+4. To remove an alternative domain later:
+
+   ```sh
+   node cli domain remove assembly.esn.it --stage prod
+   ```
 
 [Learn more in the CONTRIBUTING doc](/CONTRIBUTING.md).

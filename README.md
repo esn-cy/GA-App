@@ -1,6 +1,8 @@
 # ESN Assembly app
 
-If you are a **National Organization (NO) of [Erasmus Student Network (ESN)](https://esn.org/)** and you want to implement this tool, please get in touch with _[ITcom](https://wiki.esn.org/x/AgGl)_ and the _[General Assembly (GA) team](https://wiki.esn.org/x/BwBuG)_ at the following email addresses:
+If you are a **National Organization (NO) of [Erasmus Student Network (ESN)](https://esn.org/)** and you want to
+implement this tool, please get in touch with _[ITcom](https://wiki.esn.org/x/AgGl)_ and the
+_[General Assembly (GA) team](https://wiki.esn.org/x/BwBuG)_ at the following email addresses:
 
 - it-chair@esn.org
 - ga-team@esn.org
@@ -34,4 +36,6 @@ If you are a **National Organization (NO) of [Erasmus Student Network (ESN)](htt
 
 ![CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)
 
-**[Assembly app](https://github.com/uatisdeproblem/esn-assembly)** was created in 2023 by [Matteo Carbone](https://matteocarbone.com) for [Erasmus Student Network](https://esn.org); the latter is free to use it, develop it and maintan it at free will, forever. The work is licensed under [CC BY-NC-SA 4.0](/LICENSE).
+**[Assembly app](https://github.com/uatisdeproblem/esn-assembly)** was created in 2023
+by [Matteo Carbone](https://matteocarbone.com) for [Erasmus Student Network](https://esn.org); the latter is free to use
+it, develop it and maintan it at free will, forever. The work is licensed under [CC BY-NC-SA 4.0](/LICENSE).

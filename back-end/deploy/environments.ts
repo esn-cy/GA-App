@@ -1,32 +1,71 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface RawConfig {
+  project: string;
+  domain: string;
+  aws?: {
+    profile?: string;
+    region?: string;
+  };
+  domains?: {
+    api?: string;
+    socket?: string;
+    media?: string;
+  };
+  frontEndCertificateARN?: string;
+  stages: { [stage: string]: Stage };
+}
+
+function readJsonFile(filePath: string): Partial<RawConfig> {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8')) as Partial<RawConfig>;
+}
+
+function loadConfig(): RawConfig {
+  const rootDir = path.resolve(__dirname, '../..');
+  const basePath = path.join(rootDir, 'ga-app.config.json');
+  const localPath = path.join(rootDir, 'ga-app.local.json');
+
+  if (!fs.existsSync(basePath)) {
+    throw new Error(`Missing centralized config file at ${basePath}. Run the setup CLI first.`);
+  }
+
+  const base = readJsonFile(basePath) as RawConfig;
+  if (!fs.existsSync(localPath)) {
+    return base;
+  }
+
+  const local = readJsonFile(localPath);
+  return {
+    ...base,
+    ...local,
+    aws: { ...base.aws, ...local.aws },
+    domains: { ...base.domains, ...local.domains },
+    stages: { ...base.stages, ...local.stages }
+  };
+}
+
+const config = loadConfig();
+
 /**
  * The codename of the project.
  */
-export const PROJECT = 'ga-app-cyprus';
+export const PROJECT = config.project;
 /**
  * The base domain to use.
  */
-export const DOMAIN = 'ga.esncy.org';
+export const DOMAIN = config.domain;
 
 export const parameters: Parameters = {
   project: PROJECT,
   hostedZoneDomain: DOMAIN,
-  apiDomain: 'api.'.concat(DOMAIN),
-  webSocketApiDomain: 'socket.'.concat(DOMAIN),
-  mediaDomain: 'media.'.concat(DOMAIN)
+  apiDomain: config.domains?.api ?? 'api.'.concat(DOMAIN),
+  webSocketApiDomain: config.domains?.socket ?? 'socket.'.concat(DOMAIN),
+  mediaDomain: config.domains?.media ?? 'media.'.concat(DOMAIN),
+  frontEndCertificateARN: config.frontEndCertificateARN
 };
 
-export const stages: { [stage: string]: Stage } = {
-  prod: {
-    domain: DOMAIN,
-    destroyDataOnDelete: false,
-    logLevel: 'INFO'
-  },
-  dev: {
-    domain: 'dev.'.concat(DOMAIN),
-    destroyDataOnDelete: true,
-    logLevel: 'DEBUG'
-  }
-};
+export const stages: { [stage: string]: Stage } = config.stages;
 
 export interface Parameters {
   /**

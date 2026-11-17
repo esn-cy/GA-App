@@ -16,14 +16,15 @@
     {
       "label": "Deploy a back-end environment",
       "type": "shell",
-      "command": "./deploy.sh",
+      "command": "node",
       "args": [
+        "cli",
+        "deploy",
+        "backend",
+        "--stage",
         "${input:environment}"
       ],
       "group": "build",
-      "options": {
-        "cwd": "back-end"
-      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -32,24 +33,31 @@
     {
       "label": "Quickly deploy Lambda fn source code changed (dev back-end)",
       "type": "shell",
-      "command": "./deploy.sh quick",
+      "command": "node",
+      "args": [
+        "cli",
+        "deploy",
+        "quick",
+        "--stage",
+        "dev"
+      ],
       "group": "build",
-      "options": {
-        "cwd": "back-end"
-      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
       }
     },
     {
-      "label": "Show logs of back-end environment (dev)",
+      "label": "Show logs of back-end environment",
       "type": "shell",
-      "command": "npm run logs",
+      "command": "node",
+      "args": [
+        "cli",
+        "logs",
+        "--stage",
+        "${input:environment}"
+      ],
       "group": "build",
-      "options": {
-        "cwd": "back-end"
-      },
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -58,14 +66,42 @@
     {
       "label": "Release a front-end environment",
       "type": "shell",
-      "command": "./release.sh",
+      "command": "node",
       "args": [
+        "cli",
+        "deploy",
+        "frontend",
+        "--stage",
         "${input:environment}"
       ],
       "group": "build",
-      "options": {
-        "cwd": "front-end"
-      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "GA App CLI: Interactive Menu",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "cli"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "GA App CLI: Doctor",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "cli",
+        "doctor"
+      ],
+      "group": "test",
       "presentation": {
         "reveal": "always",
         "panel": "new"

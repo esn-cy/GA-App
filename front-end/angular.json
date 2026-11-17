@@ -101,6 +101,14 @@
             },
             "ci": {
               "progress": false
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.stage.ts",
+                  "with": "src/environments/environment.stage.dev.ts"
+                }
+              ]
             }
           }
         },
@@ -119,6 +127,9 @@
           "configurations": {
             "production": {
               "buildTarget": "app:build:production"
+            },
+            "dev": {
+              "buildTarget": "app:build:dev"
             }
           }
         },

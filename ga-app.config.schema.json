@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GA-App Configuration",
+  "description": "Centralized deployment and environment configuration for GA-App.",
+  "type": "object",
+  "required": [
+    "project",
+    "domain",
+    "stages"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique project codename (lowercase letters, numbers, and dashes only)."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Base Route 53 Hosted Zone domain name."
+    },
+    "aws": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "type": "string",
+          "description": "Default AWS CLI profile name (can be overridden in ga-app.local.json or --profile)."
+        },
+        "region": {
+          "type": "string",
+          "default": "eu-central-1",
+          "description": "Target AWS region."
+        }
+      }
+    },
+    "domains": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": {
+          "type": "string",
+          "description": "HTTP API domain (defaults to api.<domain>)."
+        },
+        "socket": {
+          "type": "string",
+          "description": "WebSocket API domain (defaults to socket.<domain>)."
+        },
+        "media": {
+          "type": "string",
+          "description": "Media CloudFront/S3 domain (defaults to media.<domain>)."
+        }
+      }
+    },
+    "frontEndCertificateARN": {
+      "type": "string",
+      "description": "Optional custom ACM certificate ARN (in us-east-1) for CloudFront alternative domains."
+    },
+    "stages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "domain",
+          "destroyDataOnDelete"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Domain name where the front-end for this stage is served."
+          },
+          "hostedZoneDomain": {
+            "type": "string",
+            "description": "Optional Route 53 Hosted Zone domain if different from the root domain."
+          },
+          "alternativeDomains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional alternative domain aliases for the front-end distribution."
+          },
+          "destroyDataOnDelete": {
+            "type": "boolean",
+            "description": "Whether DynamoDB tables are destroyed when the stack is deleted (false for prod, true for dev)."
+          },
+          "logLevel": {
+            "type": "string",
+            "enum": [
+              "TRACE",
+              "DEBUG",
+              "INFO",
+              "WARN",
+              "ERROR",
+              "FATAL"
+            ],
+            "default": "INFO",
+            "description": "Minimum Lambda log level."
+          }
+        }
+      }
+    }
+  }
+}

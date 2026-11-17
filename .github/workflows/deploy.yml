@@ -50,9 +50,10 @@ jobs:
           filters: |
             backend:
               - 'back-end/**'
+              - 'ga-app.config.json'
             frontend:
               - 'front-end/**'
-              - 'back-end/deploy/environments.ts'
+              - 'ga-app.config.json'
               - 'back-end/src/models/**'
 
       - name: Resolve deployment targets
@@ -90,6 +91,7 @@ jobs:
           node-version: 24
           cache: 'npm'
           cache-dependency-path: |
+            cli/package-lock.json
             back-end/package-lock.json
             front-end/package-lock.json
 
@@ -101,27 +103,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION || 'eu-central-1' }}
 
-      - name: Configure AWS ga-app CLI Profile
+      - name: Build GA-App CLI
         if: steps.targets.outputs.deploy_backend == 'true' || steps.targets.outputs.deploy_frontend == 'true'
+        working-directory: cli
         run: |
-          aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" --profile ga-app
-          aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" --profile ga-app
-          aws configure set region "${{ secrets.AWS_REGION || 'eu-central-1' }}" --profile ga-app
-          if [ -n "${{ secrets.AWS_SESSION_TOKEN }}" ]; then
-            aws configure set aws_session_token "${{ secrets.AWS_SESSION_TOKEN }}" --profile ga-app
-          fi
+          npm ci
+          npm run build
 
       - name: Deploy Backend (${{ steps.targets.outputs.environment }})
         if: steps.targets.outputs.deploy_backend == 'true'
-        working-directory: back-end
         run: |
-          npm ci
-          ./deploy.sh ${{ steps.targets.outputs.environment }}
+          npm --prefix back-end ci
+          node cli deploy backend --stage ${{ steps.targets.outputs.environment }} --ci --skip-install
 
       - name: Deploy Frontend (${{ steps.targets.outputs.environment }})
         if: steps.targets.outputs.deploy_frontend == 'true'
-        working-directory: front-end
         run: |
-          npm ci
-          npm run test:coverage
-          ./release.sh ${{ steps.targets.outputs.environment }}
+          npm --prefix front-end ci
+          npm --prefix front-end run test:coverage
+          node cli deploy frontend --stage ${{ steps.targets.outputs.environment }} --ci --skip-install

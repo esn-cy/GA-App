@@ -1,0 +1,34 @@
+{
+  "name": "ga-app-cli",
+  "version": "1.0.0",
+  "description": "Interactive CLI for configuring, deploying, diagnosing, and monitoring the GA App.",
+  "private": true,
+  "type": "module",
+  "main": "./dist/bin/ga-app.js",
+  "bin": {
+    "ga-app": "./dist/bin/ga-app.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepare": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "ga-app": "node dist/bin/ga-app.js"
+  },
+  "dependencies": {
+    "@clack/core": "^1.0.1",
+    "@clack/prompts": "^1.0.1",
+    "commander": "^15.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsup": "^8.4.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

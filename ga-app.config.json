@@ -1,0 +1,26 @@
+{
+  "$schema": "./ga-app.config.schema.json",
+  "project": "ga-app-cyprus",
+  "domain": "ga.esncy.org",
+  "aws": {
+    "profile": "ga-app",
+    "region": "eu-central-1"
+  },
+  "domains": {
+    "api": "api.ga.esncy.org",
+    "socket": "socket.ga.esncy.org",
+    "media": "media.ga.esncy.org"
+  },
+  "stages": {
+    "prod": {
+      "domain": "ga.esncy.org",
+      "destroyDataOnDelete": false,
+      "logLevel": "INFO"
+    },
+    "dev": {
+      "domain": "dev.ga.esncy.org",
+      "destroyDataOnDelete": true,
+      "logLevel": "DEBUG"
+    }
+  }
+}
