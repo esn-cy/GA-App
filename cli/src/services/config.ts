@@ -63,6 +63,16 @@ export function validateConfig(raw: GaAppConfig): string[] {
       if (stageErr) errors.push(`stages.${stageName}: ${stageErr}`);
       const stageDomainErr = validateDomain(stage?.domain ?? '');
       if (stageDomainErr) errors.push(`stages.${stageName}.domain: ${stageDomainErr}`);
+      if (stage?.hostedZoneDomain) {
+        const hzErr = validateDomain(stage.hostedZoneDomain);
+        if (hzErr) errors.push(`stages.${stageName}.hostedZoneDomain: ${hzErr}`);
+      }
+      if (stage?.alternativeDomains) {
+        for (const alt of stage.alternativeDomains) {
+          const altErr = validateDomain(alt);
+          if (altErr) errors.push(`stages.${stageName}.alternativeDomains ("${alt}"): ${altErr}`);
+        }
+      }
       if (typeof stage?.destroyDataOnDelete !== 'boolean') {
         errors.push(`stages.${stageName}.destroyDataOnDelete: must be a boolean.`);
       }

@@ -302,7 +302,7 @@ const createApp = async (): Promise<void> => {
     },
     removalPolicy: STAGE_VARIABLES.destroyDataOnDelete ? cdk.RemovalPolicy.DESTROY : cdk.RemovalPolicy.RETAIN,
     lambdaLogLevel: STAGE_VARIABLES.logLevel ?? 'INFO',
-    appDomain: STAGE_VARIABLES.domain
+    appDomain: STAGE_VARIABLES.alternativeDomains?.[0] ?? STAGE_VARIABLES.domain
   });
   apiStack.addStackDependency(mediaStack);
   apiStack.addStackDependency(apiDomainStack);

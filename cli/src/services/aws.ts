@@ -118,6 +118,39 @@ export async function findHostedZone(domain: string, opts: AwsOptions): Promise<
   return match ? { id: match.Id.replace('/hostedzone/', ''), name: match.Name } : null;
 }
 
+export async function getHostedZoneNameServers(hostedZoneId: string, opts: AwsOptions): Promise<string[]> {
+  const data = await awsJson<{ DelegationSet?: { NameServers?: string[] } }>(
+    ['route53', 'get-hosted-zone', '--id', hostedZoneId],
+    opts
+  );
+  return data.DelegationSet?.NameServers ?? [];
+}
+
+export async function createHostedZone(
+  domain: string,
+  opts: AwsOptions
+): Promise<{ id: string; name: string; nameServers: string[] }> {
+  const data = await awsJson<{
+    HostedZone: { Id: string; Name: string };
+    DelegationSet?: { NameServers?: string[] };
+  }>(
+    [
+      'route53',
+      'create-hosted-zone',
+      '--name',
+      domain,
+      '--caller-reference',
+      `ga-app-${Date.now()}`
+    ],
+    opts
+  );
+  return {
+    id: data.HostedZone.Id.replace('/hostedzone/', ''),
+    name: data.HostedZone.Name,
+    nameServers: data.DelegationSet?.NameServers ?? []
+  };
+}
+
 export async function getSesStatus(opts: AwsOptions): Promise<{ productionAccess: boolean; sendingEnabled: boolean }> {
   const data = await awsJson<{ ProductionAccessEnabled?: boolean; SendingEnabled?: boolean }>(
     ['sesv2', 'get-account'],

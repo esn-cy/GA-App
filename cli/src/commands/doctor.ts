@@ -1,6 +1,7 @@
 import pc from 'picocolors';
 import {
   checkSsmParam,
+  describeAcmCertificateUsEast1,
   findHostedZone,
   getCallerIdentity,
   getSesStatus,
@@ -11,6 +12,7 @@ import { getStageOrThrow, resolveConfig } from '../services/config.js';
 import { commandExists, npxCmd } from '../utils/exec.js';
 import { log, outro, spinner } from '@clack/prompts';
 import { showBanner } from '../ui/banner.js';
+import { buildCertificateDomains, certCoversDomains } from './domain.js';
 
 export interface DoctorOptions {
   stage?: string;
@@ -140,6 +142,48 @@ export async function runDoctor(opts: DoctorOptions): Promise<void> {
           name: `Stacks (${stage})`,
           status: apiStatus && feStatus ? 'pass' : 'warn',
           detail: `api=${apiStatus ?? 'not deployed'}, front-end=${feStatus ?? 'not deployed'}`
+        });
+      }
+
+      const allAlternativeDomains = stageNames.flatMap(s => config.stages[s].alternativeDomains ?? []);
+      if (config.frontEndCertificateARN) {
+        try {
+          const cert = await describeAcmCertificateUsEast1(config.frontEndCertificateARN, awsOpts);
+          const required = buildCertificateDomains(config);
+          const coversAll = certCoversDomains(cert, required);
+          if (cert.status === 'ISSUED' && coversAll) {
+            results.push({
+              name: 'Custom Domain ACM',
+              status: 'pass',
+              detail: `ISSUED in us-east-1 (${cert.certificateArn})`
+            });
+          } else if (cert.status === 'PENDING_VALIDATION') {
+            results.push({
+              name: 'Custom Domain ACM',
+              status: 'warn',
+              detail: `PENDING_VALIDATION in us-east-1 — run "ga-app domain status" to view CNAME records`
+            });
+          } else {
+            results.push({
+              name: 'Custom Domain ACM',
+              status: 'fail',
+              detail: !coversAll
+                ? `Certificate does not cover all configured domains (${required.join(', ')})`
+                : `Unexpected certificate status: ${cert.status}`
+            });
+          }
+        } catch (err) {
+          results.push({
+            name: 'Custom Domain ACM',
+            status: 'fail',
+            detail: err instanceof Error ? err.message : 'Unable to describe frontEndCertificateARN in us-east-1'
+          });
+        }
+      } else if (allAlternativeDomains.length > 0) {
+        results.push({
+          name: 'Custom Domain ACM',
+          status: 'fail',
+          detail: `alternativeDomains (${allAlternativeDomains.join(', ')}) configured without frontEndCertificateARN — run "ga-app domain add"`
         });
       }
     }

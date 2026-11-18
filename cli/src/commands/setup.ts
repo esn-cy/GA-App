@@ -6,7 +6,10 @@ import type { GaAppConfig } from '../types.js';
 import {
   bootstrapCdk,
   checkSsmParam,
+  createHostedZone,
+  findHostedZone,
   getCallerIdentity,
+  getHostedZoneNameServers,
   isCdkBootstrapped,
   listAwsProfiles,
   putSsmSecureParam
@@ -33,11 +36,13 @@ import {
 } from '../utils/prompt.js';
 import { showBanner } from '../ui/banner.js';
 import { validateDomain, validateProjectName, validateRegion } from '../utils/validators.js';
+import { runDomainAdd } from './domain.js';
 
 export interface SetupOptions {
   ci?: boolean;
   project?: string;
   domain?: string;
+  customDomain?: string;
   region?: string;
   profile?: string;
   localProfile?: boolean;
@@ -59,6 +64,10 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
     if (projectErr) throw new Error(projectErr);
     const domainErr = validateDomain(opts.domain);
     if (domainErr) throw new Error(domainErr);
+    if (opts.customDomain) {
+      const customErr = validateDomain(opts.customDomain);
+      if (customErr) throw new Error(customErr);
+    }
     const region = opts.region ?? existing?.aws?.region ?? DEFAULT_REGION;
     const regionErr = validateRegion(region);
     if (regionErr) throw new Error(regionErr);
@@ -78,6 +87,7 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
       stages: {
         prod: {
           domain: opts.prodDomain?.trim() || opts.domain.trim(),
+          ...(opts.customDomain ? { alternativeDomains: [opts.customDomain.trim().toLowerCase()] } : {}),
           destroyDataOnDelete: false,
           logLevel: 'INFO'
         },
@@ -116,10 +126,34 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
     })
   ).trim();
 
+  const domainStrategy = unwrapPrompt(
+    await select<'ns-delegation' | 'standalone'>({
+      message: 'How will you set up your domain & Route 53 DNS?',
+      options: [
+        {
+          value: 'ns-delegation',
+          label: 'Option 1: Subdomain delegation via NS records (Recommended)',
+          hint: 'e.g. ga.esncy.org — no domain purchase needed'
+        },
+        {
+          value: 'standalone',
+          label: 'Option 2: Purchase / use a standalone Route 53 domain',
+          hint: 'e.g. esn-ga.link (plus optional custom domain alias)'
+        }
+      ]
+    })
+  );
+
   const domain = unwrapPrompt(
     await text({
-      message: 'Base Route 53 Hosted Zone domain:',
-      defaultValue: opts.domain ?? existing?.domain ?? 'ga.esncy.org',
+      message:
+        domainStrategy === 'ns-delegation'
+          ? 'Delegated subdomain (Route 53 Hosted Zone domain):'
+          : 'Standalone Route 53 domain:',
+      defaultValue:
+        opts.domain ??
+        existing?.domain ??
+        (domainStrategy === 'ns-delegation' ? 'ga.esncy.org' : 'esn-ga.link'),
       validate: validateDomain
     })
   ).trim();
@@ -258,11 +292,41 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
     })
   );
 
+  const { prod: existingProd, dev: existingDev, ...otherExistingStages } = existing?.stages ?? {};
+
+  let customDomain: string | undefined;
+  if (domainStrategy === 'standalone') {
+    const wantsCustomDomain = unwrapPrompt(
+      await confirm({
+        message: 'Do you also want to point a custom domain alias to production (e.g. assembly.esn.org)?',
+        initialValue: Boolean(opts.customDomain || existingProd?.alternativeDomains?.length)
+      })
+    );
+    if (wantsCustomDomain) {
+      customDomain = unwrapPrompt(
+        await text({
+          message: 'Custom (alternative) production domain:',
+          defaultValue: opts.customDomain ?? existingProd?.alternativeDomains?.[0] ?? 'assembly.esn.org',
+          validate: validateDomain
+        })
+      )
+        .trim()
+        .toLowerCase();
+    }
+  }
+
+  const nextProdAlts = customDomain
+    ? Array.from(new Set([customDomain, ...(existingProd?.alternativeDomains ?? [])]))
+    : existingProd?.alternativeDomains;
+
   const stages: GaAppConfig['stages'] = {
+    ...otherExistingStages,
     prod: {
+      ...existingProd,
       domain: prodDomain,
+      ...(nextProdAlts && nextProdAlts.length > 0 ? { alternativeDomains: nextProdAlts } : {}),
       destroyDataOnDelete: false,
-      logLevel: existing?.stages?.prod?.logLevel ?? 'INFO'
+      logLevel: existingProd?.logLevel ?? 'INFO'
     }
   };
 
@@ -270,14 +334,15 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
     const devDomain = unwrapPrompt(
       await text({
         message: 'Development front-end domain:',
-        defaultValue: existing?.stages?.dev?.domain ?? `dev.${domain}`,
+        defaultValue: existingDev?.domain ?? `dev.${domain}`,
         validate: validateDomain
       })
     ).trim();
     stages.dev = {
+      ...existingDev,
       domain: devDomain,
       destroyDataOnDelete: true,
-      logLevel: existing?.stages?.dev?.logLevel ?? 'DEBUG'
+      logLevel: existingDev?.logLevel ?? 'DEBUG'
     };
   }
 
@@ -329,11 +394,14 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
     }
   }
 
-  // Optional AWS provisioning (CDK bootstrap + SSM auth secret)
+  let hostedZoneConfigured = false;
+  let customDomainCertConfigured = Boolean(existing?.frontEndCertificateARN);
+
+  // Optional AWS provisioning (Route 53 Hosted Zone, CDK bootstrap, SSM auth secret, custom domain ACM)
   if (awsCheck.ok) {
     const checkAws = unwrapPrompt(
       await confirm({
-        message: 'Verify AWS credentials, CDK bootstrap, and SSM auth secret now?',
+        message: 'Verify AWS credentials, Route 53 Hosted Zone, CDK bootstrap, and SSM auth secret now?',
         initialValue: true
       })
     );
@@ -345,6 +413,49 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
       try {
         const identity = await getCallerIdentity(awsOpts);
         s.stop(`AWS Account: ${pc.cyan(identity.account)} (${identity.arn})`);
+
+        const zone = await findHostedZone(domain, awsOpts).catch(() => null);
+        if (zone) {
+          hostedZoneConfigured = true;
+          log.success(`Route 53 Hosted Zone found: ${zone.name} (${zone.id})`);
+          if (domainStrategy === 'ns-delegation') {
+            const ns = await getHostedZoneNameServers(zone.id, awsOpts).catch(() => []);
+            if (ns.length > 0) {
+              note(
+                [
+                  `Ensure these 4 NS records exist for ${pc.cyan(domain)} at your parent DNS provider:`,
+                  ...ns.map(server => `  • ${server}`)
+                ].join('\n'),
+                'Route 53 Name Servers (NS Delegation)'
+              );
+            }
+          }
+        } else if (domainStrategy === 'ns-delegation') {
+          const createZone = unwrapPrompt(
+            await confirm({
+              message: `No Route 53 Hosted Zone found for "${domain}". Create it now and get the 4 NS records?`,
+              initialValue: true
+            })
+          );
+          if (createZone) {
+            const created = await createHostedZone(domain, awsOpts);
+            hostedZoneConfigured = true;
+            log.success(`Created Route 53 Hosted Zone ${created.name} (${created.id}).`);
+            if (created.nameServers.length > 0) {
+              note(
+                [
+                  `Add these 4 NS records for ${pc.cyan(domain)} in your parent DNS provider (Cloudflare / Namecheap / cPanel):`,
+                  ...created.nameServers.map(server => `  • ${server}`)
+                ].join('\n'),
+                'Route 53 Name Servers (NS Delegation)'
+              );
+            }
+          }
+        } else {
+          log.warn(
+            `No Route 53 Hosted Zone found for "${domain}". Purchase/register it in Route 53 before deploying.`
+          );
+        }
 
         const bootstrapped = await isCdkBootstrapped(awsOpts);
         if (bootstrapped) {
@@ -397,6 +508,23 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
             log.success(`Created SSM SecureString ${paramName}.`);
           }
         }
+
+        if (customDomain) {
+          const setupCertNow = unwrapPrompt(
+            await confirm({
+              message: `Request & configure the us-east-1 ACM certificate for "${customDomain}" now?`,
+              initialValue: hostedZoneConfigured
+            })
+          );
+          if (setupCertNow) {
+            await runDomainAdd(customDomain, {
+              stage: 'prod',
+              profile: selectedProfile,
+              region
+            });
+            customDomainCertConfigured = true;
+          }
+        }
       } catch (err) {
         s.stop(pc.yellow('Could not connect to AWS with those credentials.'));
         log.warn(err instanceof Error ? err.message : String(err));
@@ -421,13 +549,21 @@ export async function runSetup(opts: SetupOptions): Promise<void> {
   }
 
   const cmdPrefix = linkedGlobally ? 'ga-app' : 'node cli';
-  note(
-    [
-      `1. Run ${pc.cyan(`${cmdPrefix} doctor`)} to verify Route 53, CDK, SSM, and SES.`,
-      `2. Deploy back-end: ${pc.cyan(`${cmdPrefix} deploy backend --stage ${includeDev ? 'dev' : 'prod'}`)}`,
-      `3. Release front-end: ${pc.cyan(`${cmdPrefix} deploy frontend --stage ${includeDev ? 'dev' : 'prod'}`)}`
-    ].join('\n'),
-    'Next steps'
+  const nextSteps: string[] = [];
+  if (domainStrategy === 'ns-delegation' && !hostedZoneConfigured) {
+    nextSteps.push(`• Create a Route 53 Public Hosted Zone for ${pc.cyan(domain)} and delegate NS records from your parent DNS.`);
+  } else if (domainStrategy === 'standalone' && !hostedZoneConfigured) {
+    nextSteps.push(`• Purchase/register ${pc.cyan(domain)} in Route 53 (~30 min for Hosted Zone creation).`);
+  }
+  if (customDomain && !customDomainCertConfigured) {
+    nextSteps.push(`• Configure your custom domain ACM certificate: ${pc.cyan(`${cmdPrefix} domain add ${customDomain} --stage prod`)}`);
+  }
+  nextSteps.push(
+    `• Run ${pc.cyan(`${cmdPrefix} doctor`)} to verify Route 53, CDK, SSM, and SES.`,
+    `• Deploy back-end: ${pc.cyan(`${cmdPrefix} deploy backend --stage ${includeDev ? 'dev' : 'prod'}`)}`,
+    `• Release front-end: ${pc.cyan(`${cmdPrefix} deploy frontend --stage ${includeDev ? 'dev' : 'prod'}`)}`
   );
+
+  note(nextSteps.join('\n'), 'Next steps');
   outro('Setup complete!');
 }

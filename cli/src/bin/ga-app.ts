@@ -17,7 +17,7 @@ export function createProgram(): Command {
   program
     .name('ga-app')
     .description('GA-App deployment, setup, diagnostics, and logs CLI')
-    .version('1.0.0');
+    .version('1.0.1');
 
   program
     .command('setup')
@@ -25,6 +25,7 @@ export function createProgram(): Command {
     .option('--ci', 'Run non-interactively (requires --project and --domain)')
     .option('--project <name>', 'Project codename (lowercase letters, numbers, dashes)')
     .option('--domain <domain>', 'Base Route 53 Hosted Zone domain')
+    .option('--custom-domain <domain>', 'Optional custom production domain alias (alternativeDomains)')
     .option('--region <region>', 'Target AWS region (default: eu-central-1)')
     .option('--profile <profile>', 'AWS CLI profile name')
     .option('--local-profile', 'Save aws.profile in gitignored ga-app.local.json instead of ga-app.config.json')

@@ -40,6 +40,13 @@ async function deployBackend(
   awsOpts: { profile?: string; region: string },
   opts: DeployOptions
 ): Promise<void> {
+  const stageCfg = getStageOrThrow(config, stage);
+  if (stageCfg.alternativeDomains?.length && !config.frontEndCertificateARN) {
+    throw new Error(
+      `Stage "${stage}" has alternativeDomains (${stageCfg.alternativeDomains.join(', ')}) configured, but frontEndCertificateARN is missing. Run "ga-app domain add" first.`
+    );
+  }
+
   const backEndDir = path.join(config.rootDir, 'back-end');
   await ensureNodeModules(backEndDir, opts.skipInstall);
 
@@ -192,7 +199,8 @@ async function deployFrontend(
   if (invRes.code !== 0) {
     throw new Error(invRes.stderr || invRes.stdout || 'CloudFront invalidation failed.');
   }
-  log.success(`Front-end released to https://${stageCfg.domain}`);
+  const primaryDomain = stageCfg.alternativeDomains?.[0] ?? stageCfg.domain;
+  log.success(`Front-end released to https://${primaryDomain}`);
 }
 
 export async function runDeploy(rawTarget: string | undefined, opts: DeployOptions): Promise<void> {
