@@ -17,7 +17,7 @@ export function createProgram(): Command {
   program
     .name('ga-app')
     .description('GA-App deployment, setup, diagnostics, and logs CLI')
-    .version('1.0.1');
+    .version('1.0.2');
 
   program
     .command('setup')

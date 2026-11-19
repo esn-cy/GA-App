@@ -1,6 +1,6 @@
 {
   "name": "ga-app-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Interactive CLI for configuring, deploying, diagnosing, and monitoring the GA App.",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "ga-app": "./dist/bin/ga-app.js"
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "prepare": "tsup",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "prepare": "tsdown",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "ga-app": "node dist/bin/ga-app.js"
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
-    "tsup": "^8.4.0",
+    "tsdown": "^0.23.7",
     "typescript": "^6.0.3",
     "vitest": "^4.1.12"
   },

@@ -1,5 +1,6 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
   entry: ['src/bin/ga-app.ts'],
   outDir: 'dist/bin',
@@ -9,5 +10,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   dts: false,
-  splitting: false
+  fixedExtension: false
 });
