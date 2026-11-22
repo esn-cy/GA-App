@@ -43,7 +43,7 @@ import { VotingBallot, VotingMajorityTypes } from '@models/votingSession.model';
               {{ 'VOTING.BALLOT_MAJORITY' | translate }}
               <ion-text class="obligatoryDot" />
             </div>
-            @for (mt of MajorityTypes | keyvalue; track mt.key) {
+            @for (mt of MajorityTypes | keyvalue : null; track mt.key) {
               <ion-select-option [value]="mt.value">
                 {{ 'VOTING.MAJORITY_TYPES.' + mt.key | translate }}
               </ion-select-option>

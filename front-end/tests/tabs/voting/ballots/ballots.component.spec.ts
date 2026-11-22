@@ -102,6 +102,29 @@ describe('BallotsStandaloneComponent', () => {
     } as any;
     expect(component.getWinningBallotOptionIndex(0)).toBe(-1);
 
+    // Three-fourths majority: 76/100 > 3/4 -> wins
+    component.votingSession.ballots[0].majorityType = VotingMajorityTypes.THREE_FOURTHS;
+    component.results = {
+      0: {
+        0: { value: 76, voters: [] },
+        1: { value: 24, voters: [] },
+        2: { value: 10, voters: [] },
+        3: { value: 5, voters: [] }
+      }
+    } as any;
+    expect(component.getWinningBallotOptionIndex(0)).toBe(0);
+
+    // Three-fourths majority: 75/100 <= 3/4 -> no winner
+    component.results = {
+      0: {
+        0: { value: 75, voters: [] },
+        1: { value: 25, voters: [] },
+        2: { value: 10, voters: [] },
+        3: { value: 5, voters: [] }
+      }
+    } as any;
+    expect(component.getWinningBallotOptionIndex(0)).toBe(-1);
+
     // Tie between options
     component.votingSession.ballots[0].majorityType = VotingMajorityTypes.SIMPLE;
     component.results = {
