@@ -10,7 +10,7 @@ const webSocketApiDomain = appConfig.domains?.socket ?? 'socket.'.concat(appConf
  */
 export const environment = {
   idea: {
-    app: { version: '1.11.3', mediaUrl: 'https://'.concat(mediaDomain), maxFileUploadSizeMB: 50 },
+    app: { version: '1.11.4', mediaUrl: 'https://'.concat(mediaDomain), maxFileUploadSizeMB: 50 },
     api: { url: apiDomain, stage: STAGE },
     socket: { url: webSocketApiDomain, stage: STAGE },
     ionicExtraModules: ['common']

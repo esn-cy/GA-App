@@ -187,8 +187,8 @@ The CI/CD pipeline supports three deployment flows:
 * **Production (`prod`)**: Pushing a release version tag triggers a complete deployment of both back-end and front-end
   to production:
   ```sh
-  git tag v1.11.3
-  git push origin v1.11.3
+  git tag v1.11.4
+  git push origin v1.11.4
   ```
 * **Manual Deployment (Workflow Dispatch)**: From your GitHub repository, go to the **Actions** tab, select **Deploy**,
   click **Run workflow**, choose the target environment (`dev` or `prod`), and toggle whether to deploy the backend,
